@@ -16,8 +16,9 @@ jobs:
           cache: 'yarn'
       - uses: actions/cache@v2
         with:
-          path: 'node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
+          path: node_modules
+          key: modules-${{ hashFiles('yarn.lock') }}
+          restore-keys: modules-
 
       - uses: actions/checkout@v2
         if: github.event_name == 'push'
