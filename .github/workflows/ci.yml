@@ -25,6 +25,8 @@ jobs:
         run: yarn
       - name: Build
         run: yarn build
+        env:
+          PREFIX_PATHS: true
 
       - name: Deploy
         if: github.event_name == 'push'

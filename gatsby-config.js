@@ -1,7 +1,7 @@
 const path = require('path')
 
 module.exports = {
-  pathPrefix: 'z-game',
+  pathPrefix: '/z-game',
   siteMetadata: {
     title: 'z-game',
     siteUrl: 'https://doramanjyu.github.io/z-game',
