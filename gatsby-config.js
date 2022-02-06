@@ -13,7 +13,6 @@ module.exports = {
         alias: {
           '@doramanjyu/z-game': path.resolve(__dirname, 'src'),
         },
-        extensions: [],
       },
     },
   ],

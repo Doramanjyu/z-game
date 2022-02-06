@@ -10,12 +10,12 @@ const IndexPage = () => {
   const spliteRef = useRef(null)
 
   useEffect(() => {
-    if (spliteRef.current) {
+    if (canvasRef.current && spliteRef.current) {
       const g = new Game(canvasRef.current, spliteRef.current)
       g.start()
       return () => g.stop()
     }
-  }, [spliteRef])
+  }, [canvasRef, spliteRef])
 
   return (
     <main>
@@ -38,7 +38,7 @@ const IndexPage = () => {
       >
         <canvas
           ref={canvasRef}
-          tabindex="1"
+          tabIndex={1}
           style={{
             backgroundColor: '#000',
             width: '640px',

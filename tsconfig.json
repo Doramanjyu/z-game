@@ -1,5 +1,4 @@
 {
-  "include": ["./src/**/*"],
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
@@ -10,6 +9,20 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "noEmit": true,
-    "skipLibCheck": true
-  }
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "paths": {
+      "@doramanjyu/z-game/*": [
+        "./src/*"
+      ]
+    }
+  },
+  "include": [
+    "./src/**/*.ts",
+    "./src/**/*.tsx",
+    "*.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

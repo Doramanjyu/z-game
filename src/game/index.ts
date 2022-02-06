@@ -1,10 +1,10 @@
-import { Anime } from "./anime"
+import { Anime } from './anime'
 
 class Game {
   readonly canvas: HTMLCanvasElement
   readonly ctx: CanvasRenderingContext2D
   readonly splite: HTMLImageElement
-  readonly timerId: number
+  timerId?: ReturnType<typeof setInterval>
 
   // temporary
   readonly kernelAnime: Anime
@@ -16,8 +16,12 @@ class Game {
   // /temporary
 
   constructor(canvas: HTMLCanvasElement, splite: HTMLImageElement) {
+    const ctx = canvas.getContext('2d')
+    if (!ctx) {
+      throw 'failed to get canvas context'
+    }
+    this.ctx = ctx
     this.canvas = canvas
-    this.ctx = canvas.getContext('2d')
     this.ctx.imageSmoothingEnabled = false
     this.splite = splite
 
@@ -32,7 +36,7 @@ class Game {
     this.kernelX = 100
     this.kernelY = 100
     this.kernelDir = 0
-    this.command = {}
+    this.command = new Map<string, boolean>()
   }
 
   start() {
@@ -42,35 +46,36 @@ class Game {
   }
 
   stop() {
-    clearInterval(this.timerId)
+    if (this.timerId) {
+      clearInterval(this.timerId)
+    }
   }
 
   tick() {
     this.ctx.fillStyle = 'black'
     this.ctx.fillRect(0, 0, 640, 480)
 
-    if ('ArrowLeft' in this.command) {
+    if (this.command.has('ArrowLeft')) {
       this.kernelX -= 3
       this.kernelDir = 0
     }
-    if ('ArrowRight' in this.command) {
+    if (this.command.has('ArrowRight')) {
       this.kernelX += 3
       this.kernelDir = 1
     }
-    this.command = {}
+    this.command = new Map<string, boolean>()
 
     try {
       this.kernelAnime.tick()
       this.kernelAnime.draw(this.kernelX, this.kernelY, this.kernelDir)
-    } catch(err) {
+    } catch (err) {
       console.error(err)
       this.stop()
     }
   }
 
   private keydown(e: KeyboardEvent) {
-    console.log(e.code)
-    this.command[e.code] = true
+    this.command.set(e.code, true)
   }
 }
 
