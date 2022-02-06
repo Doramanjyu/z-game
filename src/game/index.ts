@@ -4,7 +4,7 @@ class Game {
   readonly canvas: HTMLCanvasElement
   readonly ctx: CanvasRenderingContext2D
   readonly splite: HTMLImageElement
-  cleanup: () => void
+  cleanup?: () => void
 
   // temporary
   readonly kernelAnime: Anime
@@ -40,15 +40,14 @@ class Game {
   }
 
   start() {
-    this.timerId = setInterval(this.tick.bind(this), 100)
-
     const keydown = this.keydown.bind(this)
     const keyup = this.keyup.bind(this)
     this.canvas.addEventListener('keydown', keydown)
     this.canvas.addEventListener('keyup', keyup)
     this.canvas.focus()
+    const timerId = setInterval(this.tick.bind(this), 100)
     this.cleanup = () => {
-      clearInterval(this.timerId)
+      clearInterval(timerId)
       this.canvas.removeEventListener('keydown', this.keydown.bind(this))
       this.canvas.removeEventListener('keyup', this.keyup.bind(this))
     }

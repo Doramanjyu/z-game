@@ -6,21 +6,24 @@ import frame from '@doramanjyu/z-game/images/frame.svg'
 import splite from '@doramanjyu/z-game/images/splite.png'
 
 const IndexPage = () => {
-  const canvasRef = useRef(null)
-  const spliteRef = useRef(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const spliteRef = useRef<HTMLImageElement>(null)
 
   useEffect(() => {
-    if (canvasRef.current && spliteRef.current) {
-      const g = new Game(canvasRef.current, spliteRef.current)
-      g.start()
-
-      const setFocus = () => canvasRef.current.focus()
-      document.addEventListener('click', setFocus)
-
-      return () => {
-        document.removeEventListener('click', setFocus)
-        g.stop()
+    if (!canvasRef.current || !spliteRef.current) {
+      return
+    }
+    const g = new Game(canvasRef.current, spliteRef.current)
+    g.start()
+    const setFocus = () => {
+      if (canvasRef.current) {
+        canvasRef.current.focus()
       }
+    }
+    document.addEventListener('click', setFocus)
+    return () => {
+      document.removeEventListener('click', setFocus)
+      g.stop()
     }
   }, [canvasRef, spliteRef])
 
