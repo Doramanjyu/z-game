@@ -4,6 +4,7 @@ class Game {
   readonly canvas: HTMLCanvasElement
   readonly ctx: CanvasRenderingContext2D
   readonly splite: HTMLImageElement
+  readonly messageBox: HTMLDivElement
   cleanup?: () => void
 
   // temporary
@@ -15,7 +16,11 @@ class Game {
   kernelDir: number
   // /temporary
 
-  constructor(canvas: HTMLCanvasElement, splite: HTMLImageElement) {
+  constructor(
+    canvas: HTMLCanvasElement,
+    splite: HTMLImageElement,
+    messageBox: HTMLDivElement,
+  ) {
     const ctx = canvas.getContext('2d')
     if (!ctx) {
       throw 'failed to get canvas context'
@@ -24,6 +29,7 @@ class Game {
     this.canvas = canvas
     this.ctx.imageSmoothingEnabled = false
     this.splite = splite
+    this.messageBox = messageBox
 
     this.kernelAnime = new Anime(this.ctx, this.splite, {
       sx: 0,
@@ -45,9 +51,22 @@ class Game {
     this.canvas.addEventListener('keydown', keydown)
     this.canvas.addEventListener('keyup', keyup)
     this.canvas.focus()
-    const timerId = setInterval(this.tick.bind(this), 100)
+    const tickTimer = setInterval(this.tick.bind(this), 100)
+
+    let showMessage = false
+    const messageTest = () => {
+      if (showMessage) {
+        this.showMessage("What's poppin?")
+      } else {
+        this.hideMessage()
+      }
+      showMessage = !showMessage
+    }
+    const messageTimer = setInterval(messageTest, 5000)
+
     this.cleanup = () => {
-      clearInterval(timerId)
+      clearInterval(tickTimer)
+      clearInterval(messageTimer)
       this.canvas.removeEventListener('keydown', this.keydown.bind(this))
       this.canvas.removeEventListener('keyup', this.keyup.bind(this))
     }
@@ -86,6 +105,15 @@ class Game {
   }
   private keyup(e: KeyboardEvent) {
     this.command.delete(e.code)
+  }
+
+  private showMessage(text: string) {
+    this.messageBox.innerText = text
+    this.messageBox.style.display = 'block'
+    this.messageBox.classList.remove('hide')
+  }
+  private hideMessage() {
+    this.messageBox.classList.add('hide')
   }
 }
 
