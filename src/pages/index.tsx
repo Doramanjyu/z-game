@@ -13,7 +13,14 @@ const IndexPage = () => {
     if (canvasRef.current && spliteRef.current) {
       const g = new Game(canvasRef.current, spliteRef.current)
       g.start()
-      return () => g.stop()
+
+      const setFocus = () => canvasRef.current.focus()
+      document.addEventListener('click', setFocus)
+
+      return () => {
+        document.removeEventListener('click', setFocus)
+        g.stop()
+      }
     }
   }, [canvasRef, spliteRef])
 
