@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react'
+import { css, keyframes } from '@emotion/react'
 
 import Game from '@doramanjyu/z-game/game'
 
@@ -8,12 +9,13 @@ import splite from '@doramanjyu/z-game/images/splite.png'
 const IndexPage = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const spliteRef = useRef<HTMLImageElement>(null)
+  const messageRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!canvasRef.current || !spliteRef.current) {
+    if (!canvasRef.current || !spliteRef.current || !messageRef.current) {
       return
     }
-    const g = new Game(canvasRef.current, spliteRef.current)
+    const g = new Game(canvasRef.current, spliteRef.current, messageRef.current)
     g.start()
     const setFocus = () => {
       if (canvasRef.current) {
@@ -25,19 +27,11 @@ const IndexPage = () => {
       document.removeEventListener('click', setFocus)
       g.stop()
     }
-  }, [canvasRef, spliteRef])
+  }, [canvasRef, spliteRef, messageRef])
 
   return (
     <main>
-      <title>Home Page</title>
-      <h1
-        style={{
-          overflow: 'show',
-          height: 0,
-        }}
-      >
-        What's poppin?
-      </h1>
+      <title>What's poppin?</title>
       <div
         style={{
           width: '808px',
@@ -61,6 +55,36 @@ const IndexPage = () => {
           width="640"
           height="480"
         />
+        <div
+          ref={messageRef}
+          style={{
+            boxSizing: 'border-box',
+            backgroundColor: 'rgba(255, 255, 255, 0.8)',
+            borderWidth: '2px',
+            borderStyle: 'dotted',
+            borderRadius: '0 20px 20px 20px',
+            borderColor: 'white',
+            position: 'absolute',
+            width: '540px',
+            height: '85px',
+            left: '134px',
+            bottom: '40px',
+            padding: '10px 20px',
+            fontSize: '20px',
+            lineHeight: '25px',
+            color: '#600',
+            display: 'none',
+            animationIterationCount: 1,
+            animationFillMode: 'forwards',
+          }}
+          css={css`
+            animation: ${bounceIn} 0.8s ease;
+            &.hide {
+              animation: ${bounceOut} 0.5s ease;
+            }
+          `}
+        >
+        </div>
       </div>
       <img
         ref={spliteRef}
@@ -73,7 +97,35 @@ const IndexPage = () => {
   )
 }
 
-export default IndexPage
-/*
+const bounceIn = keyframes`
+  from, 20%, 46%, 80%, to {
+    transform: translate3d(0,0,0);
+    visibility: visible;
+  }
+  40%, 42% {
+    transform: translate3d(0, -20px, 0);
+  }
+  70% {
+    transform: translate3d(0, -8px, 0);
+  }
+  90% {
+    transform: translate3d(0,-2px,0);
+  }
+`
 
- */
+const bounceOut = keyframes`
+  from, 50% {
+    transform: translate3d(0,0,0);
+  }
+  20% {
+    transform: translate3d(0,-2px,0);
+  }
+  70% {
+    transform: translate3d(0,-5px,0);
+  }
+  to {
+    visibility: hidden;
+  }
+`
+
+export default IndexPage

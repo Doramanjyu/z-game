@@ -7,6 +7,7 @@ module.exports = {
     siteUrl: 'https://doramanjyu.github.io/z-game',
   },
   plugins: [
+    'gatsby-plugin-emotion',
     {
       resolve: 'gatsby-plugin-alias-imports',
       options: {
