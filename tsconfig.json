@@ -11,6 +11,7 @@
     "noEmit": true,
     "skipLibCheck": true,
     "moduleResolution": "node",
+    "types": ["@emotion/react/types/css-prop"],
     "paths": {
       "@doramanjyu/z-game/*": [
         "./src/*"
