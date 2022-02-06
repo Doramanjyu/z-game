@@ -19,6 +19,11 @@ jobs:
           path: node_modules
           key: modules-${{ hashFiles('yarn.lock') }}
           restore-keys: modules-
+      - uses: actions/cache@v2
+        with:
+          path: .cache
+          key: build-${{ github.sha }}
+          restore-keys: build-
 
       - uses: actions/checkout@v2
         if: github.event_name == 'push'
