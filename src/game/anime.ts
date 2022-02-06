@@ -17,7 +17,9 @@ export class Anime {
     splite: HTMLImageElement,
     prop: AnimeProp,
   ) {
-    [this.ctx, this.splite, this.prop] = [ctx, splite, prop]
+    this.ctx = ctx
+    this.splite = splite
+    this.prop = prop
   }
 
   draw(x: number, y: number, mode: number) {
