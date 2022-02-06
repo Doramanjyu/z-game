@@ -42,6 +42,7 @@ class Game {
   start() {
     this.timerId = setInterval(this.tick.bind(this), 100)
     this.canvas.addEventListener('keydown', this.keydown.bind(this))
+    this.canvas.addEventListener('keyup', this.keyup.bind(this))
     this.canvas.focus()
   }
 
@@ -63,7 +64,6 @@ class Game {
       this.kernelX += 3
       this.kernelDir = 1
     }
-    this.command = new Map<string, boolean>()
 
     try {
       this.kernelAnime.tick()
@@ -76,6 +76,9 @@ class Game {
 
   private keydown(e: KeyboardEvent) {
     this.command.set(e.code, true)
+  }
+  private keyup(e: KeyboardEvent) {
+    this.command.delete(e.code)
   }
 }
 
