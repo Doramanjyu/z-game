@@ -11,6 +11,11 @@ jobs:
         with:
           node-version: '16'
           cache: 'yarn'
+      - uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: modules-${{ hashFiles('yarn.lock') }}
+          restore-keys: modules-
 
       - name: Install deps
         run: yarn
