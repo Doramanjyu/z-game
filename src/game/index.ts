@@ -38,6 +38,7 @@ class Game {
   start() {
     this.timerId = setInterval(this.tick.bind(this), 100)
     this.canvas.addEventListener('keydown', this.keydown.bind(this))
+    this.canvas.focus()
   }
 
   stop() {
