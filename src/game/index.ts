@@ -16,7 +16,11 @@ class Game {
   kernelDir: number
   // /temporary
 
-  constructor(canvas: HTMLCanvasElement, splite: HTMLImageElement, messageBox: HTMLDivElement) {
+  constructor(
+    canvas: HTMLCanvasElement,
+    splite: HTMLImageElement,
+    messageBox: HTMLDivElement,
+  ) {
     const ctx = canvas.getContext('2d')
     if (!ctx) {
       throw 'failed to get canvas context'
@@ -52,8 +56,8 @@ class Game {
     let showMessage = false
     const messageTest = () => {
       if (showMessage) {
-        this.showMessage('What\'s poppin?')
-      }else{
+        this.showMessage("What's poppin?")
+      } else {
         this.hideMessage()
       }
       showMessage = !showMessage

@@ -83,8 +83,7 @@ const IndexPage = () => {
               animation: ${bounceOut} 0.5s ease;
             }
           `}
-        >
-        </div>
+        ></div>
       </div>
       <img
         ref={spliteRef}
