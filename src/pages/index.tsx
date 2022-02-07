@@ -92,6 +92,21 @@ const IndexPage = () => {
           display: 'none',
         }}
       />
+      <div
+        style={{
+          paddingTop: '10px',
+          textAlign: 'right',
+          color: '#666',
+        }}
+        css={css`
+          > a {
+            color: #666;
+            textdecolation: none;
+          }
+        `}
+      >
+        <a href="https://github.com/Doramanjyu/z-game">Source repository</a>
+      </div>
     </main>
   )
 }
