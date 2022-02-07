@@ -1,3 +1,7 @@
+export interface Drawer {
+  draw(x: number, y: number, mode1: number, mode2: number): void
+}
+
 export type SpliteProp = {
   sx: number
   sy: number
@@ -5,7 +9,7 @@ export type SpliteProp = {
   h: number
 }
 
-export class Splite {
+export class Splite implements Drawer {
   readonly ctx: CanvasRenderingContext2D
   readonly splite: HTMLImageElement
   readonly prop: SpliteProp
