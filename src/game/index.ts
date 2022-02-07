@@ -75,8 +75,8 @@ class Game {
       (x: number, y: number) => new SimpleCell(mapData[y][x], y),
     )
 
-    this.kernelX = 100
-    this.kernelY = 109
+    this.kernelX = 0
+    this.kernelY = 9
     this.kernelDir = 0
     this.command = new Map<string, boolean>()
   }
@@ -128,9 +128,26 @@ class Game {
     }
 
     try {
-      this.gameMap.draw(this.bg, 0, 113, 16, 16)
+      this.gameMap.draw(
+        this.bg,
+        -100,
+        0,
+        100,
+        3,
+        -this.kernelX / 3,
+        113,
+        640,
+        480,
+        3,
+      )
       this.kernelAnime.tick()
-      this.kernelAnime.draw(this.kernelX, this.kernelY, this.kernelDir, 0)
+      this.kernelAnime.draw(
+        this.kernelX + 100,
+        this.kernelY + 100,
+        3,
+        this.kernelDir,
+        0,
+      )
     } catch (err) {
       console.error(err)
       this.stop()

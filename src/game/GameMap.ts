@@ -29,12 +29,40 @@ export class GameMap<T extends Cell> {
     return this.d[y * this.w + x]
   }
 
-  draw(d: Drawer, ox: number, oy: number, cw: number, ch: number) {
-    for (let j = 0; j < this.h; j++) {
-      for (let i = 0; i < this.w; i++) {
-        const c = this.at(i, j)
+  draw(
+    d: Drawer,
+    si: number,
+    sj: number,
+    ei: number,
+    ej: number,
+    ox: number,
+    oy: number,
+    w: number,
+    h: number,
+    scale: number,
+  ) {
+    const cw = d.width()
+    const ch = d.height()
+
+    const left = ox - si * cw
+    const si2 = left >= 0 ? si : si - Math.floor(left) / cw
+    const ox2 = left >= 0 ? ox : ox - Math.floor(left)
+    const right = ox + ei * cw
+    const ei2 = right < w ? ei : ei - Math.floor(right - w) / cw
+
+    const top = oy - sj * ch
+    const sj2 = top >= 0 ? sj : sj - Math.floor(top) / ch
+    const oy2 = top >= 0 ? oy : oy - Math.floor(top)
+    const bottom = oy + ej * ch
+    const ej2 = bottom < h ? ej : ej - Math.floor(bottom - h) / ch
+
+    for (let j = sj2; j < ej2; j++) {
+      for (let i = si2; i < ei2; i++) {
+        const u = ((i % this.w) + this.w) % this.w
+        const v = ((j % this.h) + this.h) % this.h
+        const c = this.at(u, v)
         const a = c.appearance()
-        d.draw(ox + i * cw, oy + j * ch, a.mode1, a.mode2)
+        d.draw(ox2 + i * cw, oy2 + j * ch, scale, a.mode1, a.mode2)
       }
     }
   }

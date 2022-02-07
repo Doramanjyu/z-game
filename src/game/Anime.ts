@@ -24,8 +24,14 @@ export class Anime extends Splite implements Drawer {
     }
   }
 
-  draw(x: number, y: number, mode1: number, mode2: number) {
-    super.draw(x, y, this.prop.frames[this.cnt] + this.patterns * mode2, mode1)
+  draw(x: number, y: number, scale: number, mode1: number, mode2: number) {
+    super.draw(
+      x,
+      y,
+      scale,
+      this.prop.frames[this.cnt] + this.patterns * mode2,
+      mode1,
+    )
   }
 
   tick() {
