@@ -1,5 +1,7 @@
 export interface Drawer {
-  draw(x: number, y: number, mode1: number, mode2: number): void
+  draw(x: number, y: number, scale: number, mode1: number, mode2: number): void
+  width(): number
+  height(): number
 }
 
 export type SpliteProp = {
@@ -24,17 +26,25 @@ export class Splite implements Drawer {
     this.prop = prop
   }
 
-  draw(x: number, y: number, mode1: number, mode2: number) {
+  draw(x: number, y: number, scale: number, mode1: number, mode2: number) {
     this.ctx.drawImage(
       this.splite,
       this.prop.sx + mode1 * this.prop.w,
       this.prop.sy + mode2 * this.prop.h,
       this.prop.w,
       this.prop.h,
-      x * 3,
-      y * 3,
-      this.prop.w * 3,
-      this.prop.h * 3,
+      x * scale,
+      y * scale,
+      this.prop.w * scale,
+      this.prop.h * scale,
     )
+  }
+
+  width() {
+    return this.prop.w
+  }
+
+  height() {
+    return this.prop.h
   }
 }
