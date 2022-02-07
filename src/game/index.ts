@@ -1,5 +1,21 @@
 import { Anime } from './Anime'
 import { Splite } from './Splite'
+import { GameMap, Cell, Appearance } from './GameMap'
+
+class SimpleCell implements Cell {
+  readonly v: Appearance
+
+  constructor(mode1: number, mode2: number) {
+    this.v = {
+      mode1,
+      mode2,
+    }
+  }
+
+  appearance(): Appearance {
+    return this.v
+  }
+}
 
 class Game {
   readonly canvas: HTMLCanvasElement
@@ -10,7 +26,8 @@ class Game {
 
   // temporary
   readonly kernelAnime: Anime
-  readonly bgGround: Splite
+  readonly bg: Splite
+  readonly gameMap: GameMap<SimpleCell>
 
   command: Map<string, boolean>
   kernelX: number
@@ -40,12 +57,23 @@ class Game {
       h: 12,
       frames: [0, 0, 0, 2, 0, 1, 0],
     })
-    this.bgGround = new Splite(this.ctx, this.splite, {
+    this.bg = new Splite(this.ctx, this.splite, {
       sx: 0,
       sy: 977,
       w: 16,
       h: 16,
     })
+
+    const mapData = [
+      [0, 1, 2, 3, 2, 1, 3, 2, 0, 4, 6, 5, 3, 2],
+      [1, 0, 2, 0, 3, 0, 1, 2, 3, 4, 6, 5, 1, 0],
+      [2, 0, 1, 0, 1, 0, 2, 2, 3, 4, 6, 5, 0, 1],
+    ]
+    this.gameMap = new GameMap<SimpleCell>(
+      14,
+      3,
+      (x: number, y: number) => new SimpleCell(mapData[y][x], y),
+    )
 
     this.kernelX = 100
     this.kernelY = 109
@@ -99,20 +127,10 @@ class Game {
       this.kernelDir = 1
     }
 
-    const groundPattern = [
-      [0, 1, 2, 3, 2, 1, 3, 2, 0, 4, 6, 5, 3, 2],
-      [1, 0, 2, 0, 3, 0, 1, 2, 3, 4, 6, 5, 1, 0],
-      [2, 0, 1, 0, 1, 0, 2, 2, 3, 4, 6, 5, 0, 1],
-    ]
-
     try {
-      groundPattern.forEach((pp, j) =>
-        pp.forEach((p, i) => {
-          this.bgGround.draw(i * 16, 113 + j * 16, p, j)
-        }),
-      )
+      this.gameMap.draw(this.bg, 0, 113, 16, 16)
       this.kernelAnime.tick()
-      this.kernelAnime.draw(this.kernelX, this.kernelY, this.kernelDir)
+      this.kernelAnime.draw(this.kernelX, this.kernelY, this.kernelDir, 0)
     } catch (err) {
       console.error(err)
       this.stop()
