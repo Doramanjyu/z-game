@@ -1,4 +1,5 @@
-import { Anime } from './anime'
+import { Anime } from './Anime'
+import { Splite } from './Splite'
 
 class Game {
   readonly canvas: HTMLCanvasElement
@@ -9,6 +10,7 @@ class Game {
 
   // temporary
   readonly kernelAnime: Anime
+  readonly bgGround: Splite
 
   command: Map<string, boolean>
   kernelX: number
@@ -38,9 +40,15 @@ class Game {
       h: 12,
       frames: [0, 0, 0, 2, 0, 1, 0],
     })
+    this.bgGround = new Splite(this.ctx, this.splite, {
+      sx: 0,
+      sy: 977,
+      w: 16,
+      h: 16,
+    })
 
     this.kernelX = 100
-    this.kernelY = 100
+    this.kernelY = 109
     this.kernelDir = 0
     this.command = new Map<string, boolean>()
   }
@@ -91,7 +99,18 @@ class Game {
       this.kernelDir = 1
     }
 
+    const groundPattern = [
+      [0, 1, 2, 3, 2, 1, 3, 2, 0, 4, 6, 5, 3, 2],
+      [1, 0, 2, 0, 3, 0, 1, 2, 3, 4, 6, 5, 1, 0],
+      [2, 0, 1, 0, 1, 0, 2, 2, 3, 4, 6, 5, 0, 1],
+    ]
+
     try {
+      groundPattern.forEach((pp, j) =>
+        pp.forEach((p, i) => {
+          this.bgGround.draw(i * 16, 113 + j * 16, p, j)
+        }),
+      )
       this.kernelAnime.tick()
       this.kernelAnime.draw(this.kernelX, this.kernelY, this.kernelDir)
     } catch (err) {
