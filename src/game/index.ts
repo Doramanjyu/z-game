@@ -73,6 +73,12 @@ class Game {
       14,
       3,
       (x: number, y: number) => new SimpleCell(mapData[y][x], y),
+      -100,
+      0,
+      100,
+      3,
+      640,
+      480,
     )
 
     this.kernelX = 0
@@ -128,18 +134,7 @@ class Game {
     }
 
     try {
-      this.gameMap.draw(
-        this.bg,
-        -100,
-        0,
-        100,
-        3,
-        -this.kernelX / 3,
-        113,
-        640,
-        480,
-        3,
-      )
+      this.gameMap.draw(this.bg, -this.kernelX / 3, 113, 3)
       this.kernelAnime.tick()
       this.kernelAnime.draw(
         this.kernelX + 100,
