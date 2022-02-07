@@ -101,7 +101,9 @@ const IndexPage = () => {
         css={css`
           > a {
             color: #666;
-            textdecolation: none;
+          }
+          > a:hover {
+            color: #999;
           }
         `}
       >
