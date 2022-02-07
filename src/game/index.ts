@@ -51,17 +51,13 @@ class Game {
     this.messageBox = messageBox
 
     this.kernelAnime = new Anime(this.ctx, this.splite, {
-      sx: 0,
-      sy: 0,
-      w: 12,
-      h: 12,
+      topLeft: [0, 0],
+      sz: [12, 12],
       frames: [0, 0, 0, 2, 0, 1, 0],
     })
     this.bg = new Splite(this.ctx, this.splite, {
-      sx: 0,
-      sy: 977,
-      w: 16,
-      h: 16,
+      topLeft: [0, 977],
+      sz: [16, 16],
     })
 
     const mapData = [
@@ -70,9 +66,11 @@ class Game {
       [2, 0, 1, 0, 1, 0, 2, 2, 3, 4, 6, 5, 0, 1],
     ]
     this.gameMap = new GameMap<SimpleCell>(
-      14,
-      3,
+      [14, 3],
       (x: number, y: number) => new SimpleCell(mapData[y][x], y),
+      [-100, 0],
+      [100, 3],
+      [640, 480],
     )
 
     this.kernelX = 0
@@ -128,22 +126,10 @@ class Game {
     }
 
     try {
-      this.gameMap.draw(
-        this.bg,
-        -100,
-        0,
-        100,
-        3,
-        -this.kernelX / 3,
-        113,
-        640,
-        480,
-        3,
-      )
+      this.gameMap.draw(this.bg, [-this.kernelX / 3, 113], 3)
       this.kernelAnime.tick()
       this.kernelAnime.draw(
-        this.kernelX + 100,
-        this.kernelY + 100,
+        [this.kernelX + 100, this.kernelY + 100],
         3,
         this.kernelDir,
         0,

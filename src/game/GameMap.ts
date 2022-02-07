@@ -1,4 +1,5 @@
 import { Drawer } from './Splite'
+import { Vec2 } from './Vec'
 
 export type Appearance = {
   mode1: number
@@ -10,60 +11,67 @@ export interface Cell {
 }
 
 export class GameMap<T extends Cell> {
-  readonly w: number
-  readonly h: number
-  readonly d: Array<T>
+  readonly sz: Vec2
+  readonly data: Array<T>
+  readonly s: Vec2
+  readonly e: Vec2
+  readonly screenSize: Vec2
 
-  constructor(w: number, h: number, loader: (x: number, y: number) => T) {
-    this.w = w
-    this.h = h
-    this.d = new Array<T>(w * h)
-    for (let j = 0; j < h; j++) {
-      for (let i = 0; i < w; i++) {
-        this.d[j * w + i] = loader(i, j)
+  constructor(
+    sz: Vec2,
+    loader: (x: number, y: number) => T,
+    s: Vec2,
+    e: Vec2,
+    screenSize: Vec2,
+  ) {
+    this.sz = sz
+    this.s = s
+    this.e = e
+    this.screenSize = screenSize
+    this.data = new Array<T>(sz[0] * sz[1])
+    for (let j = 0; j < sz[1]; j++) {
+      for (let i = 0; i < sz[0]; i++) {
+        this.data[j * sz[0] + i] = loader(i, j)
       }
     }
   }
 
-  at(x: number, y: number): T {
-    return this.d[y * this.w + x]
+  at(p: Vec2): T {
+    return this.data[p[1] * this.sz[0] + p[0]]
   }
 
-  draw(
-    d: Drawer,
-    si: number,
-    sj: number,
-    ei: number,
-    ej: number,
-    ox: number,
-    oy: number,
-    w: number,
-    h: number,
-    scale: number,
-  ) {
-    const cw = d.width()
-    const ch = d.height()
+  draw(d: Drawer, o: Vec2, scale: number) {
+    const [cw, ch] = d.sz()
 
-    const left = ox - si * cw
-    const si2 = left >= 0 ? si : si - Math.floor(left) / cw
-    const ox2 = left >= 0 ? ox : ox - Math.floor(left)
-    const right = ox + ei * cw
-    const ei2 = right < w ? ei : ei - Math.floor(right - w) / cw
+    const left = o[0] - this.s[0] * cw
+    const si2 = left >= 0 ? this.s[0] : this.s[0] - Math.floor(left) / cw
+    const ox2 = left >= 0 ? o[0] : o[0] - Math.floor(left)
+    const right = o[0] + this.e[0] * cw
+    const ei2 =
+      right < this.screenSize[0]
+        ? this.e[0]
+        : this.e[0] - Math.floor(right - this.screenSize[0]) / cw
 
-    const top = oy - sj * ch
-    const sj2 = top >= 0 ? sj : sj - Math.floor(top) / ch
-    const oy2 = top >= 0 ? oy : oy - Math.floor(top)
-    const bottom = oy + ej * ch
-    const ej2 = bottom < h ? ej : ej - Math.floor(bottom - h) / ch
+    const top = o[1] - this.s[1] * ch
+    const sj2 = top >= 0 ? this.s[1] : this.s[1] - Math.floor(top) / ch
+    const oy2 = top >= 0 ? o[1] : o[1] - Math.floor(top)
+    const bottom = o[1] + this.e[1] * ch
+    const ej2 =
+      bottom < this.screenSize[1]
+        ? this.e[1]
+        : this.e[1] - Math.floor(bottom - this.screenSize[1]) / ch
 
     for (let j = sj2; j < ej2; j++) {
       for (let i = si2; i < ei2; i++) {
-        const u = ((i % this.w) + this.w) % this.w
-        const v = ((j % this.h) + this.h) % this.h
-        const c = this.at(u, v)
+        const c = this.at(posMod([i, j], this.sz))
         const a = c.appearance()
-        d.draw(ox2 + i * cw, oy2 + j * ch, scale, a.mode1, a.mode2)
+        d.draw([ox2 + i * cw, oy2 + j * ch], scale, a.mode1, a.mode2)
       }
     }
   }
+}
+
+const posMod = (a: Vec2, b: Vec2): Vec2 => {
+  const m = [a[0] % b[0], a[1] % b[1]]
+  return [m[0] < 0 ? m[0] + b[0] : m[0], m[1] < 0 ? m[1] + b[1] : m[1]]
 }

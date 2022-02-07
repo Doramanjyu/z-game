@@ -1,3 +1,4 @@
+import { Vec2 } from './Vec'
 import { Splite, SpliteProp, Drawer } from './Splite'
 
 export type AnimeProp = SpliteProp & {
@@ -24,10 +25,9 @@ export class Anime extends Splite implements Drawer {
     }
   }
 
-  draw(x: number, y: number, scale: number, mode1: number, mode2: number) {
+  draw(p: Vec2, scale: number, mode1: number, mode2: number) {
     super.draw(
-      x,
-      y,
+      p,
       scale,
       this.prop.frames[this.cnt] + this.patterns * mode2,
       mode1,

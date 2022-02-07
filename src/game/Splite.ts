@@ -1,14 +1,13 @@
+import { Vec2 } from './Vec'
+
 export interface Drawer {
-  draw(x: number, y: number, scale: number, mode1: number, mode2: number): void
-  width(): number
-  height(): number
+  draw(s: Vec2, scale: number, mode1: number, mode2: number): void
+  sz(): Vec2
 }
 
 export type SpliteProp = {
-  sx: number
-  sy: number
-  w: number
-  h: number
+  topLeft: Vec2
+  sz: Vec2
 }
 
 export class Splite implements Drawer {
@@ -26,25 +25,21 @@ export class Splite implements Drawer {
     this.prop = prop
   }
 
-  draw(x: number, y: number, scale: number, mode1: number, mode2: number) {
+  draw(p: Vec2, scale: number, mode1: number, mode2: number) {
     this.ctx.drawImage(
       this.splite,
-      this.prop.sx + mode1 * this.prop.w,
-      this.prop.sy + mode2 * this.prop.h,
-      this.prop.w,
-      this.prop.h,
-      x * scale,
-      y * scale,
-      this.prop.w * scale,
-      this.prop.h * scale,
+      this.prop.topLeft[0] + mode1 * this.prop.sz[0],
+      this.prop.topLeft[1] + mode2 * this.prop.sz[1],
+      this.prop.sz[0],
+      this.prop.sz[1],
+      p[0] * scale,
+      p[1] * scale,
+      this.prop.sz[0] * scale,
+      this.prop.sz[1] * scale,
     )
   }
 
-  width() {
-    return this.prop.w
-  }
-
-  height() {
-    return this.prop.h
+  sz() {
+    return this.prop.sz
   }
 }
