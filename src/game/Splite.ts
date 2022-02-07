@@ -1,32 +1,30 @@
-export type AnimeProp = {
+export type SpliteProp = {
   sx: number
   sy: number
   w: number
   h: number
-  frames: number[]
 }
 
-export class Anime {
+export class Splite {
   readonly ctx: CanvasRenderingContext2D
   readonly splite: HTMLImageElement
-  readonly prop: AnimeProp
-  cnt = 0
+  readonly prop: SpliteProp
 
   constructor(
     ctx: CanvasRenderingContext2D,
     splite: HTMLImageElement,
-    prop: AnimeProp,
+    prop: SpliteProp,
   ) {
     this.ctx = ctx
     this.splite = splite
     this.prop = prop
   }
 
-  draw(x: number, y: number, mode: number) {
+  draw(x: number, y: number, mode1: number, mode2: number) {
     this.ctx.drawImage(
       this.splite,
-      this.prop.sx + this.prop.frames[this.cnt] * this.prop.w,
-      this.prop.sy + mode * this.prop.h,
+      this.prop.sx + mode1 * this.prop.w,
+      this.prop.sy + mode2 * this.prop.h,
       this.prop.w,
       this.prop.h,
       x * 3,
@@ -34,9 +32,5 @@ export class Anime {
       this.prop.w * 3,
       this.prop.h * 3,
     )
-  }
-
-  tick() {
-    this.cnt = (this.cnt + 1) % this.prop.frames.length
   }
 }

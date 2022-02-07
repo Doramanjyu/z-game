@@ -68,7 +68,7 @@ const IndexPage = () => {
             width: '540px',
             height: '85px',
             left: '134px',
-            bottom: '40px',
+            bottom: '34px',
             padding: '10px 20px',
             fontSize: '20px',
             lineHeight: '25px',
