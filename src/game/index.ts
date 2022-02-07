@@ -56,20 +56,27 @@ class Game {
       frames: [0, 0, 0, 2, 0, 1, 0],
     })
     this.bg = new Splite(this.ctx, this.splite, {
-      topLeft: [0, 977],
+      topLeft: [0, 962],
       sz: [16, 16],
     })
 
-    const mapData = [
-      [0, 1, 2, 3, 2, 1, 3, 2, 0, 4, 6, 5, 3, 2],
-      [1, 0, 2, 0, 3, 0, 1, 2, 3, 4, 6, 5, 1, 0],
-      [2, 0, 1, 0, 1, 0, 2, 2, 3, 4, 6, 5, 0, 1],
+    const mapData1 = [
+      [0, 1, 2, 3, 2, 1, 3, 2, 0, 4, 8, 5, 3, 2],
+      [0, 1, 2, 3, 0, 1, 3, 2, 0, 6, 8, 5, 3, 2],
+      [1, 0, 2, 0, 6, 7, 1, 2, 6, 8, 8, 5, 1, 0],
+      [2, 0, 1, 2, 6, 8, 7, 2, 6, 8, 8, 8, 8, 8],
+    ]
+    const mapData2 = [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3],
+      [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
     ]
     this.gameMap = new GameMap<SimpleCell>(
-      [14, 3],
-      (x: number, y: number) => new SimpleCell(mapData[y][x], y),
+      [14, 4],
+      (x: number, y: number) => new SimpleCell(mapData1[y][x], mapData2[y][x]),
       [-100, 0],
-      [100, 3],
+      [100, 4],
       [640, 480],
     )
 
@@ -126,10 +133,10 @@ class Game {
     }
 
     try {
-      this.gameMap.draw(this.bg, [-this.kernelX / 3, 113], 3)
+      this.gameMap.draw(this.bg, [-this.kernelX / 3, 97], 3)
       this.kernelAnime.tick()
       this.kernelAnime.draw(
-        [this.kernelX + 100, this.kernelY + 100],
+        [this.kernelX + 100, this.kernelY + 84],
         3,
         this.kernelDir,
         0,
