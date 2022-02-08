@@ -39,11 +39,11 @@ class Game {
   readonly gameMap: GameMap<SimpleCell>
 
   command: Map<string, boolean>
-  kernelPos: Vec2
-  kernelVel: Vec2
-  kernelJumpPow: Vec2
-  kernelOnGround: boolean
-  kernelDir: number
+  kernelPos!: Vec2
+  kernelVel!: Vec2
+  kernelJumpPow!: Vec2
+  kernelOnGround!: boolean
+  kernelDir!: number
   // /temporary
 
   constructor(
