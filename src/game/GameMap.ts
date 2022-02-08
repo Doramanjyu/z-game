@@ -37,7 +37,8 @@ export class GameMap<T extends Cell> {
   }
 
   at(p: Vec2): T {
-    return this.data[p[1] * this.sz[0] + p[0]]
+    const p2 = posMod(p, this.sz)
+    return this.data[p2[1] * this.sz[0] + p2[0]]
   }
 
   draw(d: Drawer, o: Vec2, scale: number) {
@@ -63,7 +64,7 @@ export class GameMap<T extends Cell> {
 
     for (let j = sj2; j < ej2; j++) {
       for (let i = si2; i < ei2; i++) {
-        const c = this.at(posMod([i, j], this.sz))
+        const c = this.at([i, j])
         const a = c.appearance()
         d.draw([ox2 + i * cw, oy2 + j * ch], scale, a.mode1, a.mode2)
       }
