@@ -1,5 +1,6 @@
 import { Anime } from './Anime'
 import { Splite } from './Splite'
+import { Vec2 } from './Vec'
 import { GameMap, Cell, Appearance } from './GameMap'
 
 class SimpleCell implements Cell {
@@ -25,13 +26,19 @@ class Game {
   cleanup?: () => void
 
   // temporary
-  readonly kernelAnime: Anime
+  readonly kernelAnime: {
+    idle: Anime
+    squat: Anime
+    jump: Anime
+  }
   readonly bg: Splite
   readonly gameMap: GameMap<SimpleCell>
 
   command: Map<string, boolean>
-  kernelX: number
-  kernelY: number
+  kernelPos: Vec2
+  kernelVel: Vec2
+  kernelJumpPow: number
+  kernelOnGround: boolean
   kernelDir: number
   // /temporary
 
@@ -50,11 +57,23 @@ class Game {
     this.splite = splite
     this.messageBox = messageBox
 
-    this.kernelAnime = new Anime(this.ctx, this.splite, {
-      topLeft: [0, 0],
-      sz: [12, 12],
-      frames: [0, 0, 0, 2, 0, 1, 0],
-    })
+    this.kernelAnime = {
+      idle: new Anime(this.ctx, this.splite, {
+        topLeft: [0, 0],
+        sz: [12, 12],
+        frames: [0, 0, 0, 2, 0, 1, 0],
+      }),
+      squat: new Anime(this.ctx, this.splite, {
+        topLeft: [0, 0],
+        sz: [12, 12],
+        frames: [3],
+      }),
+      jump: new Anime(this.ctx, this.splite, {
+        topLeft: [0, 0],
+        sz: [12, 12],
+        frames: [2, 2, 0, 2, 2, 2, 0],
+      }),
+    }
     this.bg = new Splite(this.ctx, this.splite, {
       topLeft: [0, 512],
       sz: [16, 16],
@@ -80,8 +99,10 @@ class Game {
       [640, 480],
     )
 
-    this.kernelX = 0
-    this.kernelY = 9
+    this.kernelPos = [0, 0]
+    this.kernelVel = [0, 0]
+    this.kernelOnGround = true
+    this.kernelJumpPow = 0
     this.kernelDir = 0
     this.command = new Map<string, boolean>()
   }
@@ -123,20 +144,73 @@ class Game {
     this.ctx.fillStyle = 'black'
     this.ctx.fillRect(0, 0, 640, 480)
 
-    if (this.command.has('ArrowLeft')) {
-      this.kernelX -= 3
+    if (this.command.has('ArrowLeft') && this.kernelOnGround) {
+      this.kernelVel[0]--
+      if (this.kernelVel[0] < -4) {
+        this.kernelVel[0] = -4
+      }
       this.kernelDir = 0
     }
-    if (this.command.has('ArrowRight')) {
-      this.kernelX += 3
+    if (this.command.has('ArrowRight') && this.kernelOnGround) {
+      this.kernelVel[0]++
+      if (this.kernelVel[0] > 4) {
+        this.kernelVel[0] = 4
+      }
       this.kernelDir = 1
+    }
+    if (
+      !this.command.has('ArrowLeft') &&
+      !this.command.has('ArrowRight') &&
+      this.kernelOnGround
+    ) {
+      if (this.kernelVel[0] > 0) {
+        this.kernelVel[0]--
+      } else if (this.kernelVel[0] < 0) {
+        this.kernelVel[0]++
+      }
+    }
+
+    if (this.kernelJumpPow === 0) {
+      this.kernelPos[0] += this.kernelVel[0]
+    }
+    this.kernelPos[1] += this.kernelVel[1]
+
+    let kernel = this.kernelAnime.idle
+    if (this.command.has('Space') && this.kernelOnGround) {
+      kernel = this.kernelAnime.squat
+      this.kernelJumpPow += 2
+      if (this.kernelJumpPow > 10) {
+        this.kernelJumpPow = 10
+      }
+    } else {
+      if (!this.command.has('Space') && this.kernelJumpPow > 0) {
+        this.kernelOnGround = false
+        this.kernelVel[1] = this.kernelJumpPow
+        this.kernelJumpPow = 0
+      }
+      if (!this.kernelOnGround) {
+        this.kernelVel[1] -= 2
+        if (this.kernelVel[1] < -15) {
+          this.kernelVel[1] = -15
+        }
+        if (this.kernelPos[1] < 0) {
+          this.kernelPos[1] = 0
+          this.kernelVel = [0, 0]
+          this.kernelOnGround = true
+        }
+        if (this.kernelVel[1] > 0) {
+          kernel = this.kernelAnime.jump
+        } else if (this.kernelVel[1] < 0) {
+          kernel = this.kernelAnime.squat
+        }
+      }
     }
 
     try {
-      this.gameMap.draw(this.bg, [-this.kernelX / 3, 97], 3)
-      this.kernelAnime.tick()
-      this.kernelAnime.draw(
-        [this.kernelX + 100, this.kernelY + 84],
+      this.gameMap.draw(this.bg, [-this.kernelPos[0] / 3, 97], 3)
+      kernel.tick()
+      kernel.draw(
+        [this.kernelPos[0] + 100, -this.kernelPos[1] + 93],
         3,
         this.kernelDir,
         0,
