@@ -4,6 +4,7 @@ import { css, keyframes } from '@emotion/react'
 import Game from '@doramanjyu/z-game/game'
 
 import frame from '@doramanjyu/z-game/images/frame.svg'
+import frameInner from '@doramanjyu/z-game/images/frame_inner.svg'
 import splite from '@doramanjyu/z-game/images/splite.png'
 
 const IndexPage = () => {
@@ -47,13 +48,23 @@ const IndexPage = () => {
             backgroundColor: '#000',
             width: '640px',
             height: '480px',
-            borderRadius: '60px',
+            borderRadius: '30px',
             position: 'absolute',
             left: '84px',
             top: '188px',
           }}
           width="640"
           height="480"
+        />
+        <div
+          style={{
+            width: '640px',
+            height: '480px',
+            backgroundImage: `url(${frameInner})`,
+            position: 'absolute',
+            left: '84px',
+            top: '188px',
+          }}
         />
         <div
           ref={messageRef}
