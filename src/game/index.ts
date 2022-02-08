@@ -86,8 +86,8 @@ class Game {
 
     const mapData1 = [
       [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8],
-      [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8],
-      [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8],
+      [8, 8, 7, 1, 6, 8, 8, 8, 8, 8, 8, 8, 8, 8],
+      [8, 8, 7, 2, 6, 8, 8, 8, 8, 8, 8, 8, 8, 8],
       [0, 1, 2, 3, 2, 1, 3, 2, 0, 4, 8, 5, 3, 2],
       [0, 1, 2, 3, 1, 1, 3, 2, 0, 6, 8, 5, 3, 2],
       [1, 0, 2, 3, 2, 9, 1, 2, 6, 8, 8, 5, 1, 0],
@@ -96,7 +96,7 @@ class Game {
     const mapData2 = [
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1],
       [3, 3, 3, 3, 3, 2, 2, 2, 2, 0, 0, 3, 3, 3],
@@ -104,7 +104,7 @@ class Game {
     ]
     const mapDataType = [
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1],
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1],
@@ -194,9 +194,19 @@ class Game {
 
     this.kernelPos[0] += this.kernelVel[0]
     this.kernelPos[1] += this.kernelVel[1]
-    const mp: Vec2 = [
-      Math.round((this.kernelPos[0] + this.kernelVel[0] - 7) / 16),
-      Math.round((36 - this.kernelPos[1] - this.kernelVel[1]) / 16),
+    const vBottom = this.kernelVel[1] < 0 ? this.kernelVel[1] : 0
+    const mpBottom: Vec2 = [
+      Math.round((this.kernelPos[0] - 2) / 16),
+      Math.round((36 - this.kernelPos[1] - vBottom) / 16),
+    ]
+    const vUp = this.kernelVel[1] > 0 ? this.kernelVel[1] : 0
+    const mpUp: Vec2 = [
+      Math.round((this.kernelPos[0] + this.kernelVel[0] - 2) / 16),
+      Math.round((36 - this.kernelPos[1] - vUp - 1) / 16),
+    ]
+    const mpSide: Vec2 = [
+      Math.round((this.kernelPos[0] + this.kernelVel[0] - 2) / 16),
+      Math.round((36 - this.kernelPos[1]) / 16),
     ]
 
     let kernel = this.kernelAnime.idle
@@ -217,8 +227,13 @@ class Game {
         if (this.kernelVel[1] < -15) {
           this.kernelVel[1] = -15
         }
-        if (this.gameMap.at(mp).solid) {
-          this.kernelPos[1] = 0
+        if (this.gameMap.at(mpSide).solid) {
+          this.kernelVel[0] = -0.5 * this.kernelVel[0]
+        }
+        if (this.gameMap.at(mpUp).solid) {
+          this.kernelVel[1] = -1
+        } else if (this.gameMap.at(mpBottom).solid) {
+          this.kernelPos[1] = mpBottom[1] - 2
           this.kernelVel = [0, 0]
           this.kernelOnGround = true
           kernel = this.kernelAnime.squat
