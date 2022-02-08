@@ -119,13 +119,17 @@ class Game {
       [100, 7],
       [640, 480],
     )
+    this.command = new Map<string, boolean>()
 
+    this.reset()
+  }
+
+  reset() {
     this.kernelPos = [100, 0]
     this.kernelVel = [0, 0]
     this.kernelOnGround = true
     this.kernelJumpPow = [0, 0]
     this.kernelDir = 0
-    this.command = new Map<string, boolean>()
   }
 
   start() {
@@ -197,7 +201,7 @@ class Game {
     const vBottom = this.kernelVel[1] < 0 ? this.kernelVel[1] : 0
     const mpBottom: Vec2 = [
       Math.round((this.kernelPos[0] - 2) / 16),
-      Math.round((36 - this.kernelPos[1] - vBottom) / 16),
+      Math.round((36 - this.kernelPos[1] - vBottom + 1) / 16),
     ]
     const vUp = this.kernelVel[1] > 0 ? this.kernelVel[1] : 0
     const mpUp: Vec2 = [
@@ -230,9 +234,10 @@ class Game {
         if (this.gameMap.at(mpSide).solid) {
           this.kernelVel[0] = -0.5 * this.kernelVel[0]
         }
-        if (this.gameMap.at(mpUp).solid) {
+        if (this.gameMap.at(mpUp).solid && this.kernelVel[1] > 0) {
           this.kernelVel[1] = -1
-        } else if (this.gameMap.at(mpBottom).solid) {
+          this.kernelPos[1] = mpUp[1] + 11
+        } else if (this.gameMap.at(mpBottom).solid && this.kernelVel[1] <= 0) {
           this.kernelPos[1] = mpBottom[1] - 2
           this.kernelVel = [0, 0]
           this.kernelOnGround = true
@@ -244,6 +249,10 @@ class Game {
           kernel = this.kernelAnime.squat
         }
       }
+    }
+
+    if (this.kernelPos[1] < -16 * 6) {
+      this.reset()
     }
 
     try {
