@@ -37,7 +37,7 @@ class Game {
   command: Map<string, boolean>
   kernelPos: Vec2
   kernelVel: Vec2
-  kernelJumpPow: number
+  kernelJumpPow: Vec2
   kernelOnGround: boolean
   kernelDir: number
   // /temporary
@@ -102,7 +102,7 @@ class Game {
     this.kernelPos = [0, 0]
     this.kernelVel = [0, 0]
     this.kernelOnGround = true
-    this.kernelJumpPow = 0
+    this.kernelJumpPow = [0, 0]
     this.kernelDir = 0
     this.command = new Map<string, boolean>()
   }
@@ -145,58 +145,58 @@ class Game {
     this.ctx.fillRect(0, 0, 640, 480)
 
     if (this.command.has('ArrowLeft') && this.kernelOnGround) {
-      this.kernelVel[0]--
-      if (this.kernelVel[0] < -4) {
-        this.kernelVel[0] = -4
+      this.kernelJumpPow[0]--
+      if (this.kernelJumpPow[0] < -4) {
+        this.kernelJumpPow[0] = -4
       }
       this.kernelDir = 0
     }
     if (this.command.has('ArrowRight') && this.kernelOnGround) {
-      this.kernelVel[0]++
-      if (this.kernelVel[0] > 4) {
-        this.kernelVel[0] = 4
+      this.kernelJumpPow[0]++
+      if (this.kernelJumpPow[0] > 4) {
+        this.kernelJumpPow[0] = 4
       }
       this.kernelDir = 1
     }
     if (
       !this.command.has('ArrowLeft') &&
       !this.command.has('ArrowRight') &&
-      this.kernelOnGround
+      !this.command.has('Space') &&
+      this.kernelOnGround &&
+      this.kernelJumpPow[0] !== 0 &&
+      this.kernelJumpPow[1] === 0
     ) {
-      if (this.kernelVel[0] > 0) {
-        this.kernelVel[0]--
-      } else if (this.kernelVel[0] < 0) {
-        this.kernelVel[0]++
-      }
+      this.kernelOnGround = false
+      this.kernelVel = [this.kernelJumpPow[0], 2]
+      this.kernelJumpPow = [0, 0]
     }
 
-    if (this.kernelJumpPow === 0) {
-      this.kernelPos[0] += this.kernelVel[0]
-    }
+    this.kernelPos[0] += this.kernelVel[0]
     this.kernelPos[1] += this.kernelVel[1]
 
     let kernel = this.kernelAnime.idle
     if (this.command.has('Space') && this.kernelOnGround) {
       kernel = this.kernelAnime.squat
-      this.kernelJumpPow += 2
-      if (this.kernelJumpPow > 10) {
-        this.kernelJumpPow = 10
+      this.kernelJumpPow[1] += 2
+      if (this.kernelJumpPow[1] > 10) {
+        this.kernelJumpPow[1] = 10
       }
     } else {
-      if (!this.command.has('Space') && this.kernelJumpPow > 0) {
+      if (!this.command.has('Space') && this.kernelJumpPow[1] > 0) {
         this.kernelOnGround = false
-        this.kernelVel[1] = this.kernelJumpPow
-        this.kernelJumpPow = 0
+        this.kernelVel = this.kernelJumpPow
+        this.kernelJumpPow = [0, 0]
       }
       if (!this.kernelOnGround) {
         this.kernelVel[1] -= 2
         if (this.kernelVel[1] < -15) {
           this.kernelVel[1] = -15
         }
-        if (this.kernelPos[1] < 0) {
+        if (this.kernelPos[1] + this.kernelVel[1] < 0) {
           this.kernelPos[1] = 0
           this.kernelVel = [0, 0]
           this.kernelOnGround = true
+          kernel = this.kernelAnime.squat
         }
         if (this.kernelVel[1] > 0) {
           kernel = this.kernelAnime.jump
