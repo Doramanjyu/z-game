@@ -210,7 +210,7 @@ class Game {
       this.gameMap.draw(this.bg, [-this.kernelPos[0] / 3, 97], 3)
       kernel.tick()
       kernel.draw(
-        [this.kernelPos[0] + 100, -this.kernelPos[1] + 93],
+        [this.kernelPos[0] + 100, -this.kernelPos[1] + 92],
         3,
         this.kernelDir,
         0,
