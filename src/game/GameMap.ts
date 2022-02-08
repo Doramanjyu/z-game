@@ -37,7 +37,7 @@ export class GameMap<T extends Cell> {
   }
 
   at(p: Vec2): T {
-    const p2 = posMod(p, this.sz)
+    const p2 = posMod([Math.floor(p[0]), Math.floor(p[1])], this.sz)
     return this.data[p2[1] * this.sz[0] + p2[0]]
   }
 

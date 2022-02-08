@@ -5,12 +5,14 @@ import { GameMap, Cell, Appearance } from './GameMap'
 
 class SimpleCell implements Cell {
   readonly v: Appearance
+  readonly solid: boolean
 
-  constructor(mode1: number, mode2: number) {
+  constructor(mode1: number, mode2: number, solid: boolean) {
     this.v = {
       mode1,
       mode2,
     }
+    this.solid = solid
   }
 
   appearance(): Appearance {
@@ -24,6 +26,8 @@ class Game {
   readonly splite: HTMLImageElement
   readonly messageBox: HTMLDivElement
   cleanup?: () => void
+
+  readonly scale: number
 
   // temporary
   readonly kernelAnime: {
@@ -57,6 +61,7 @@ class Game {
     this.splite = splite
     this.messageBox = messageBox
 
+    this.scale = 3
     this.kernelAnime = {
       idle: new Anime(this.ctx, this.splite, {
         topLeft: [0, 0],
@@ -80,6 +85,9 @@ class Game {
     })
 
     const mapData1 = [
+      [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8],
+      [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8],
+      [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8],
       [0, 1, 2, 3, 2, 1, 3, 2, 0, 4, 8, 5, 3, 2],
       [0, 1, 2, 3, 1, 1, 3, 2, 0, 6, 8, 5, 3, 2],
       [1, 0, 2, 3, 2, 9, 1, 2, 6, 8, 8, 5, 1, 0],
@@ -87,19 +95,32 @@ class Game {
     ]
     const mapData2 = [
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1],
       [3, 3, 3, 3, 3, 2, 2, 2, 2, 0, 0, 3, 3, 3],
       [0, 0, 0, 0, 0, 3, 3, 3, 3, 0, 0, 0, 0, 0],
     ]
+    const mapDataType = [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
+    ]
     this.gameMap = new GameMap<SimpleCell>(
-      [14, 4],
-      (x: number, y: number) => new SimpleCell(mapData1[y][x], mapData2[y][x]),
+      [14, 7],
+      (x: number, y: number) =>
+        new SimpleCell(mapData1[y][x], mapData2[y][x], mapDataType[y][x] === 1),
       [-100, 0],
-      [100, 4],
+      [100, 7],
       [640, 480],
     )
 
-    this.kernelPos = [0, 0]
+    this.kernelPos = [100, 0]
     this.kernelVel = [0, 0]
     this.kernelOnGround = true
     this.kernelJumpPow = [0, 0]
@@ -173,6 +194,10 @@ class Game {
 
     this.kernelPos[0] += this.kernelVel[0]
     this.kernelPos[1] += this.kernelVel[1]
+    const mp: Vec2 = [
+      Math.round((this.kernelPos[0] + this.kernelVel[0] - 7) / 16),
+      Math.round((36 - this.kernelPos[1] - this.kernelVel[1]) / 16),
+    ]
 
     let kernel = this.kernelAnime.idle
     if (this.command.has('Space') && this.kernelOnGround) {
@@ -192,7 +217,7 @@ class Game {
         if (this.kernelVel[1] < -15) {
           this.kernelVel[1] = -15
         }
-        if (this.kernelPos[1] + this.kernelVel[1] < 0) {
+        if (this.gameMap.at(mp).solid) {
           this.kernelPos[1] = 0
           this.kernelVel = [0, 0]
           this.kernelOnGround = true
@@ -207,11 +232,11 @@ class Game {
     }
 
     try {
-      this.gameMap.draw(this.bg, [-this.kernelPos[0] / 3, 97], 3)
+      this.gameMap.draw(this.bg, [0, 49], this.scale)
       kernel.tick()
       kernel.draw(
-        [this.kernelPos[0] + 100, -this.kernelPos[1] + 92],
-        3,
+        [this.kernelPos[0], -this.kernelPos[1] + 92],
+        this.scale,
         this.kernelDir,
         0,
       )
