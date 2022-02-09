@@ -19,6 +19,8 @@ export class Kernel {
   }
   readonly kernelShadow: Splite
 
+  readonly ellasticCoeff: number
+
   currentKernel: Anime
 
   kernelPos!: Vec2
@@ -28,6 +30,8 @@ export class Kernel {
   kernelDir!: number
 
   constructor(splite: HTMLImageElement) {
+    this.ellasticCoeff = 0.5
+
     this.kernelAnime = {
       idle: new Anime(splite, {
         topLeft: [0, 0],
@@ -126,11 +130,11 @@ export class Kernel {
           this.kernelVel[1] = 14
         }
         if (gameMap.at(mpUp).solid && this.kernelVel[1] < 0) {
-          this.kernelVel[1] *= -0.5
-          this.kernelVel[0] *= 0.5
+          this.kernelVel[1] *= -this.ellasticCoeff
+          this.kernelVel[0] *= this.ellasticCoeff
           this.kernelPos[1] = mpUp[1] * 16 + 16 + 4
         } else if (gameMap.at(mpSide).solid) {
-          this.kernelVel[0] *= -0.5
+          this.kernelVel[0] *= -this.ellasticCoeff
         }
         if (gameMap.at(mpBottom).solid && this.kernelVel[1] >= 0) {
           this.kernelPos[1] = mpBottom[1] * 16
