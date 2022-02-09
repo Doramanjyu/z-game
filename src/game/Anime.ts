@@ -34,7 +34,8 @@ export class Anime extends Splite implements Drawer {
     )
   }
 
-  tick() {
+  tick(): number {
     this.cnt = (this.cnt + 1) % this.prop.frames.length
+    return this.prop.frames[this.cnt]
   }
 }
