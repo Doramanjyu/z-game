@@ -126,7 +126,7 @@ export class Kernel {
           this.kernelVel[1] = 14
         }
         if (gameMap.at(mpUp).solid && this.kernelVel[1] < 0) {
-          this.kernelVel[1] = 1
+          this.kernelVel[1] *= -0.5
           this.kernelVel[0] *= 0.5
           this.kernelPos[1] = mpUp[1] * 16 + 16 + 4
         } else if (gameMap.at(mpSide).solid) {
