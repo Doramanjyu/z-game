@@ -1,24 +1,8 @@
-import { Anime } from './Anime'
-import { Splite } from './Splite'
-import { Vec2 } from './Vec'
-import { GameMap, Cell, Appearance } from './GameMap'
+import { Splite } from './lib/Splite'
+import { GameMap } from './lib/GameMap'
 
-class SimpleCell implements Cell {
-  readonly v: Appearance
-  readonly solid: boolean
-
-  constructor(mode1: number, mode2: number, solid: boolean) {
-    this.v = {
-      mode1,
-      mode2,
-    }
-    this.solid = solid
-  }
-
-  appearance(): Appearance {
-    return this.v
-  }
-}
+import { Kernel } from './Kernel'
+import { MapCell } from './MapCell'
 
 class Game {
   readonly canvas: HTMLCanvasElement
@@ -29,23 +13,11 @@ class Game {
 
   readonly scale: number
 
-  // temporary
-  readonly kernelAnime: {
-    idle: Anime
-    squat: Anime
-    jump: Anime
-  }
-  readonly kernelShadow: Splite
+  readonly gameMap: GameMap<MapCell>
   readonly bg: Splite
-  readonly gameMap: GameMap<SimpleCell>
+  readonly kernel: Kernel
 
   command: Map<string, boolean>
-  kernelPos!: Vec2
-  kernelVel!: Vec2
-  kernelJumpPow!: Vec2
-  kernelOnGround!: boolean
-  kernelDir!: number
-  // /temporary
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -63,27 +35,7 @@ class Game {
     this.messageBox = messageBox
 
     this.scale = 3
-    this.kernelAnime = {
-      idle: new Anime(this.ctx, this.splite, {
-        topLeft: [0, 0],
-        sz: [12, 12],
-        frames: [0, 0, 0, 2, 0, 1, 0],
-      }),
-      squat: new Anime(this.ctx, this.splite, {
-        topLeft: [0, 0],
-        sz: [12, 12],
-        frames: [3],
-      }),
-      jump: new Anime(this.ctx, this.splite, {
-        topLeft: [0, 0],
-        sz: [12, 12],
-        frames: [2, 2, 0, 2, 2, 2, 0],
-      }),
-    }
-    this.kernelShadow = new Splite(this.ctx, this.splite, {
-      topLeft: [0, 24],
-      sz: [12, 12],
-    })
+    this.kernel = new Kernel(this.ctx, this.splite)
     this.bg = new Splite(this.ctx, this.splite, {
       topLeft: [0, 512],
       sz: [16, 16],
@@ -116,25 +68,15 @@ class Game {
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1],
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
     ]
-    this.gameMap = new GameMap<SimpleCell>(
+    this.gameMap = new GameMap<MapCell>(
       [14, 7],
       (x: number, y: number) =>
-        new SimpleCell(mapData1[y][x], mapData2[y][x], mapDataType[y][x] === 1),
+        new MapCell(mapData1[y][x], mapData2[y][x], mapDataType[y][x] === 1),
       [-100, 0],
       [100, 7],
       [640, 480],
     )
     this.command = new Map<string, boolean>()
-
-    this.reset()
-  }
-
-  reset() {
-    this.kernelPos = [100, 0]
-    this.kernelVel = [0, 0]
-    this.kernelOnGround = true
-    this.kernelJumpPow = [0, 0]
-    this.kernelDir = 0
   }
 
   start() {
@@ -174,109 +116,16 @@ class Game {
     this.ctx.fillStyle = 'black'
     this.ctx.fillRect(0, 0, 640, 480)
 
-    if (this.command.has('ArrowLeft') && this.kernelOnGround) {
-      this.kernelJumpPow[0]--
-      if (this.kernelJumpPow[0] < -4) {
-        this.kernelJumpPow[0] = -4
-      }
-      this.kernelDir = 0
-    }
-    if (this.command.has('ArrowRight') && this.kernelOnGround) {
-      this.kernelJumpPow[0]++
-      if (this.kernelJumpPow[0] > 4) {
-        this.kernelJumpPow[0] = 4
-      }
-      this.kernelDir = 1
-    }
-    if (
-      !this.command.has('ArrowLeft') &&
-      !this.command.has('ArrowRight') &&
-      !this.command.has('Space') &&
-      this.kernelOnGround &&
-      this.kernelJumpPow[0] !== 0 &&
-      this.kernelJumpPow[1] === 0
-    ) {
-      this.kernelOnGround = false
-      this.kernelVel = [this.kernelJumpPow[0], 2]
-      this.kernelJumpPow = [0, 0]
-    }
-
-    this.kernelPos[0] += this.kernelVel[0]
-    this.kernelPos[1] += this.kernelVel[1]
-    const vBottom = this.kernelVel[1] < 0 ? this.kernelVel[1] : 0
-    const mpBottom: Vec2 = [
-      Math.round((this.kernelPos[0] - 2) / 16),
-      Math.round((36 - this.kernelPos[1] - vBottom + 1) / 16),
-    ]
-    const vUp = this.kernelVel[1] > 0 ? this.kernelVel[1] : 0
-    const mpUp: Vec2 = [
-      Math.round((this.kernelPos[0] + this.kernelVel[0] - 2) / 16),
-      Math.round((36 - this.kernelPos[1] - vUp - 1) / 16),
-    ]
-    const mpSide: Vec2 = [
-      Math.round((this.kernelPos[0] + this.kernelVel[0] - 2) / 16),
-      Math.round((36 - this.kernelPos[1]) / 16),
-    ]
-
-    let kernel = this.kernelAnime.idle
-    if (this.command.has('Space') && this.kernelOnGround) {
-      kernel = this.kernelAnime.squat
-      this.kernelJumpPow[1] += 2
-      if (this.kernelJumpPow[1] > 10) {
-        this.kernelJumpPow[1] = 10
-      }
-    } else {
-      if (!this.command.has('Space') && this.kernelJumpPow[1] > 0) {
-        this.kernelOnGround = false
-        this.kernelVel = this.kernelJumpPow
-        this.kernelJumpPow = [0, 0]
-      }
-      if (!this.kernelOnGround) {
-        this.kernelVel[1] -= 2
-        if (this.kernelVel[1] < -15) {
-          this.kernelVel[1] = -15
-        }
-        if (this.gameMap.at(mpSide).solid) {
-          this.kernelVel[0] = -0.5 * this.kernelVel[0]
-        }
-        if (this.gameMap.at(mpUp).solid && this.kernelVel[1] > 0) {
-          this.kernelVel[1] = -1
-          this.kernelPos[1] = mpUp[1] + 11
-        } else if (this.gameMap.at(mpBottom).solid && this.kernelVel[1] <= 0) {
-          this.kernelPos[1] = mpBottom[1] - 2
-          this.kernelVel = [0, 0]
-          this.kernelOnGround = true
-          kernel = this.kernelAnime.squat
-        }
-        if (this.kernelVel[1] > 0) {
-          kernel = this.kernelAnime.jump
-        } else if (this.kernelVel[1] < 0) {
-          kernel = this.kernelAnime.squat
-        }
-      }
-    }
-
-    if (this.kernelPos[1] < -16 * 6) {
-      this.reset()
-    }
-
     try {
-      this.gameMap.draw(this.bg, [0, 49], this.scale)
-      const kernelMode = kernel.tick()
-      if (this.kernelOnGround) {
-        this.kernelShadow.draw(
-          [this.kernelPos[0], -this.kernelPos[1] + 93],
-          this.scale,
-          kernelMode,
-          0,
-        )
+      const kernelCmd = {
+        left: this.command.has('ArrowLeft'),
+        right: this.command.has('ArrowRight'),
+        space: this.command.has('Space'),
       }
-      kernel.draw(
-        [this.kernelPos[0], -this.kernelPos[1] + 92],
-        this.scale,
-        this.kernelDir,
-        0,
-      )
+      this.kernel.tick(kernelCmd, this.gameMap)
+
+      this.gameMap.draw(this.bg, [0, 49], this.scale)
+      this.kernel.draw(this.scale)
     } catch (err) {
       console.error(err)
       this.stop()
