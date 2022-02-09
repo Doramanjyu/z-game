@@ -27,26 +27,26 @@ export class Kernel {
   kernelOnGround!: boolean
   kernelDir!: number
 
-  constructor(ctx: CanvasRenderingContext2D, splite: HTMLImageElement) {
+  constructor(splite: HTMLImageElement) {
     this.kernelAnime = {
-      idle: new Anime(ctx, splite, {
+      idle: new Anime(splite, {
         topLeft: [0, 0],
         sz: [12, 12],
         frames: [0, 0, 0, 2, 0, 1, 0],
       }),
-      squat: new Anime(ctx, splite, {
+      squat: new Anime(splite, {
         topLeft: [0, 0],
         sz: [12, 12],
         frames: [3],
       }),
-      jump: new Anime(ctx, splite, {
+      jump: new Anime(splite, {
         topLeft: [0, 0],
         sz: [12, 12],
         frames: [2, 2, 0, 2, 2, 2, 0],
       }),
     }
     this.currentKernel = this.kernelAnime.idle
-    this.kernelShadow = new Splite(ctx, splite, {
+    this.kernelShadow = new Splite(splite, {
       topLeft: [0, 24],
       sz: [12, 12],
     })
@@ -150,10 +150,11 @@ export class Kernel {
     }
   }
 
-  draw(scale: number) {
+  draw(ctx: CanvasRenderingContext2D, scale: number) {
     const kernelMode = this.currentKernel.tick()
     if (this.kernelOnGround) {
       this.kernelShadow.draw(
+        ctx,
         [this.kernelPos[0], -this.kernelPos[1] + 93],
         scale,
         kernelMode,
@@ -161,6 +162,7 @@ export class Kernel {
       )
     }
     this.currentKernel.draw(
+      ctx,
       [this.kernelPos[0], -this.kernelPos[1] + 92],
       scale,
       this.kernelDir,

@@ -1,7 +1,13 @@
 import { Vec2 } from './Vec'
 
 export interface Drawer {
-  draw(s: Vec2, scale: number, mode1: number, mode2: number): void
+  draw(
+    ctx: CanvasRenderingContext2D,
+    s: Vec2,
+    scale: number,
+    mode1: number,
+    mode2: number,
+  ): void
   sz(): Vec2
 }
 
@@ -11,22 +17,22 @@ export type SpliteProp = {
 }
 
 export class Splite implements Drawer {
-  readonly ctx: CanvasRenderingContext2D
   readonly splite: HTMLImageElement
   readonly prop: SpliteProp
 
-  constructor(
-    ctx: CanvasRenderingContext2D,
-    splite: HTMLImageElement,
-    prop: SpliteProp,
-  ) {
-    this.ctx = ctx
+  constructor(splite: HTMLImageElement, prop: SpliteProp) {
     this.splite = splite
     this.prop = prop
   }
 
-  draw(p: Vec2, scale: number, mode1: number, mode2: number) {
-    this.ctx.drawImage(
+  draw(
+    ctx: CanvasRenderingContext2D,
+    p: Vec2,
+    scale: number,
+    mode1: number,
+    mode2: number,
+  ) {
+    ctx.drawImage(
       this.splite,
       this.prop.topLeft[0] + mode1 * this.prop.sz[0],
       this.prop.topLeft[1] + mode2 * this.prop.sz[1],

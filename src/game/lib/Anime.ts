@@ -11,12 +11,8 @@ export class Anime extends Splite implements Drawer {
   readonly patterns: number
   cnt = 0
 
-  constructor(
-    ctx: CanvasRenderingContext2D,
-    splite: HTMLImageElement,
-    prop: AnimeProp,
-  ) {
-    super(ctx, splite, prop)
+  constructor(splite: HTMLImageElement, prop: AnimeProp) {
+    super(splite, prop)
     this.prop = prop
     if (prop.patterns) {
       this.patterns = prop.patterns
@@ -25,8 +21,15 @@ export class Anime extends Splite implements Drawer {
     }
   }
 
-  draw(p: Vec2, scale: number, mode1: number, mode2: number) {
+  draw(
+    ctx: CanvasRenderingContext2D,
+    p: Vec2,
+    scale: number,
+    mode1: number,
+    mode2: number,
+  ) {
     super.draw(
+      ctx,
       p,
       scale,
       this.prop.frames[this.cnt] + this.patterns * mode2,
