@@ -15,7 +15,7 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@babel/core": "7.17.0",
+    "@babel/core": "7.17.2",
     "@emotion/react": "11.7.1",
     "gatsby": "4.6.2",
     "gatsby-plugin-alias-imports": "1.0.5",
