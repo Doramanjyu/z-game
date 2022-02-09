@@ -35,6 +35,7 @@ class Game {
     squat: Anime
     jump: Anime
   }
+  readonly kernelShadow: Splite
   readonly bg: Splite
   readonly gameMap: GameMap<SimpleCell>
 
@@ -79,6 +80,10 @@ class Game {
         frames: [2, 2, 0, 2, 2, 2, 0],
       }),
     }
+    this.kernelShadow = new Splite(this.ctx, this.splite, {
+      topLeft: [0, 24],
+      sz: [12, 12],
+    })
     this.bg = new Splite(this.ctx, this.splite, {
       topLeft: [0, 512],
       sz: [16, 16],
@@ -257,7 +262,15 @@ class Game {
 
     try {
       this.gameMap.draw(this.bg, [0, 49], this.scale)
-      kernel.tick()
+      const kernelMode = kernel.tick()
+      if (this.kernelOnGround) {
+        this.kernelShadow.draw(
+          [this.kernelPos[0], -this.kernelPos[1] + 93],
+          this.scale,
+          kernelMode,
+          0,
+        )
+      }
       kernel.draw(
         [this.kernelPos[0], -this.kernelPos[1] + 92],
         this.scale,
