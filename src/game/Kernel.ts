@@ -55,7 +55,7 @@ export class Kernel {
   }
 
   reset() {
-    this.kernelPos = [100, 0]
+    this.kernelPos = [100, 96]
     this.kernelVel = [0, 0]
     this.kernelOnGround = true
     this.kernelJumpPow = [0, 0]
@@ -86,66 +86,67 @@ export class Kernel {
       this.kernelJumpPow[1] === 0
     ) {
       this.kernelOnGround = false
-      this.kernelVel = [this.kernelJumpPow[0], 2]
+      this.kernelVel = [this.kernelJumpPow[0], -2]
       this.kernelJumpPow = [0, 0]
     }
 
     this.kernelPos[0] += this.kernelVel[0]
     this.kernelPos[1] += this.kernelVel[1]
-    const vBottom = this.kernelVel[1] < 0 ? this.kernelVel[1] : 0
+    const vBottom = this.kernelVel[1] > 0 ? this.kernelVel[1] : 0
     const mpBottom: Vec2 = [
       Math.round((this.kernelPos[0] - 2) / 16),
-      Math.round((36 - this.kernelPos[1] - vBottom + 1) / 16),
+      Math.floor((this.kernelPos[1] + vBottom + 1) / 16),
     ]
-    const vUp = this.kernelVel[1] > 0 ? this.kernelVel[1] : 0
+    const vUp = this.kernelVel[1] < 0 ? this.kernelVel[1] : 0
     const mpUp: Vec2 = [
       Math.round((this.kernelPos[0] + this.kernelVel[0] - 2) / 16),
-      Math.round((36 - this.kernelPos[1] - vUp - 1) / 16),
+      Math.floor((this.kernelPos[1] + vUp - 4) / 16),
     ]
     const mpSide: Vec2 = [
       Math.round((this.kernelPos[0] + this.kernelVel[0] - 2) / 16),
-      Math.round((36 - this.kernelPos[1]) / 16),
+      Math.floor((this.kernelPos[1] - 1) / 16),
     ]
 
     this.currentKernel = this.kernelAnime.idle
     if (cmd.space && this.kernelOnGround) {
       this.currentKernel = this.kernelAnime.squat
-      this.kernelJumpPow[1] += 2
-      if (this.kernelJumpPow[1] > 10) {
-        this.kernelJumpPow[1] = 10
+      this.kernelJumpPow[1] -= 2
+      if (this.kernelJumpPow[1] < -13) {
+        this.kernelJumpPow[1] = -13
       }
     } else {
-      if (!cmd.space && this.kernelJumpPow[1] > 0) {
+      if (!cmd.space && this.kernelJumpPow[1] < 0) {
         this.kernelOnGround = false
         this.kernelVel = this.kernelJumpPow
         this.kernelJumpPow = [0, 0]
       }
       if (!this.kernelOnGround) {
-        this.kernelVel[1] -= 2
-        if (this.kernelVel[1] < -15) {
-          this.kernelVel[1] = -15
+        this.kernelVel[1] += 2
+        if (this.kernelVel[1] > 14) {
+          this.kernelVel[1] = 14
         }
-        if (gameMap.at(mpSide).solid) {
-          this.kernelVel[0] = -0.5 * this.kernelVel[0]
+        if (gameMap.at(mpUp).solid && this.kernelVel[1] < 0) {
+          this.kernelVel[1] = 1
+          this.kernelVel[0] *= 0.5
+          this.kernelPos[1] = mpUp[1] * 16 + 16 + 4
+        } else if (gameMap.at(mpSide).solid) {
+          this.kernelVel[0] *= -0.5
         }
-        if (gameMap.at(mpUp).solid && this.kernelVel[1] > 0) {
-          this.kernelVel[1] = -1
-          this.kernelPos[1] = mpUp[1] + 11
-        } else if (gameMap.at(mpBottom).solid && this.kernelVel[1] <= 0) {
-          this.kernelPos[1] = mpBottom[1] - 2
+        if (gameMap.at(mpBottom).solid && this.kernelVel[1] >= 0) {
+          this.kernelPos[1] = mpBottom[1] * 16
           this.kernelVel = [0, 0]
           this.kernelOnGround = true
           this.currentKernel = this.kernelAnime.squat
         }
-        if (this.kernelVel[1] > 0) {
+        if (this.kernelVel[1] < 0) {
           this.currentKernel = this.kernelAnime.jump
-        } else if (this.kernelVel[1] < 0) {
+        } else if (this.kernelVel[1] > 0) {
           this.currentKernel = this.kernelAnime.squat
         }
       }
     }
 
-    if (this.kernelPos[1] < -16 * 6) {
+    if (this.kernelPos[1] > 16 * 10) {
       this.reset()
     }
   }
@@ -155,7 +156,7 @@ export class Kernel {
     if (this.kernelOnGround) {
       this.kernelShadow.draw(
         ctx,
-        [this.kernelPos[0], -this.kernelPos[1] + 93],
+        [this.kernelPos[0], this.kernelPos[1] - 5],
         scale,
         kernelMode,
         0,
@@ -163,7 +164,7 @@ export class Kernel {
     }
     this.currentKernel.draw(
       ctx,
-      [this.kernelPos[0], -this.kernelPos[1] + 92],
+      [this.kernelPos[0], this.kernelPos[1] - 6],
       scale,
       this.kernelDir,
       0,
