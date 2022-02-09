@@ -35,8 +35,8 @@ class Game {
     this.messageBox = messageBox
 
     this.scale = 3
-    this.kernel = new Kernel(this.ctx, this.splite)
-    this.bg = new Splite(this.ctx, this.splite, {
+    this.kernel = new Kernel(this.splite)
+    this.bg = new Splite(this.splite, {
       topLeft: [0, 512],
       sz: [16, 16],
     })
@@ -124,8 +124,8 @@ class Game {
       }
       this.kernel.tick(kernelCmd, this.gameMap)
 
-      this.gameMap.draw(this.bg, [0, 49], this.scale)
-      this.kernel.draw(this.scale)
+      this.gameMap.draw(this.ctx, this.bg, [0, 49], this.scale)
+      this.kernel.draw(this.ctx, this.scale)
     } catch (err) {
       console.error(err)
       this.stop()

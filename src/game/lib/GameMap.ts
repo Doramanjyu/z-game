@@ -41,7 +41,7 @@ export class GameMap<T extends Cell> {
     return this.data[p2[1] * this.sz[0] + p2[0]]
   }
 
-  draw(d: Drawer, o: Vec2, scale: number) {
+  draw(ctx: CanvasRenderingContext2D, d: Drawer, o: Vec2, scale: number) {
     const [cw, ch] = d.sz()
 
     const left = o[0] - this.s[0] * cw
@@ -66,7 +66,7 @@ export class GameMap<T extends Cell> {
       for (let i = si2; i < ei2; i++) {
         const c = this.at([i, j])
         const a = c.appearance()
-        d.draw([ox2 + i * cw, oy2 + j * ch], scale, a.mode1, a.mode2)
+        d.draw(ctx, [ox2 + i * cw, oy2 + j * ch], scale, a.mode1, a.mode2)
       }
     }
   }
