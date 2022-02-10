@@ -53,6 +53,11 @@ const IndexPage = () => {
             left: '84px',
             top: '188px',
           }}
+          css={css`
+            &:focus-visible {
+              outline-style: none !important;
+            }
+          `}
           width="640"
           height="480"
         />
