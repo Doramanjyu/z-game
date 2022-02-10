@@ -12,19 +12,36 @@ type KernelCommand = {
 }
 
 type InitialKernelState = {
-  pos: Vec2
+  pos?: Vec2
   vel?: Vec2
   jumpPow?: Vec2
   onGround?: boolean
   orientation?: number
 }
 
-type KernelState = {
+class KernelState {
   pos: Vec2
   vel: Vec2
   jumpPow: Vec2
   onGround: boolean
   orientation: number
+
+  constructor(s: InitialKernelState) {
+    this.pos = s.pos || [0, 0]
+    this.vel = s.vel || [0, 0]
+    this.jumpPow = s.jumpPow || [0, 0]
+    this.onGround = s.onGround || true
+    this.orientation = s.orientation || 0
+  }
+
+  clone(): KernelState {
+    return {
+      ...this,
+      pos: [this.pos[0], this.pos[1]],
+      vel: [this.vel[0], this.vel[1]],
+      jumpPow: [this.jumpPow[0], this.jumpPow[1]],
+    }
+  }
 }
 
 export class Kernel {
@@ -67,18 +84,12 @@ export class Kernel {
       sz: [12, 12],
     })
 
-    this.state0 = {
-      vel: [0, 0],
-      jumpPow: [0, 0],
-      onGround: true,
-      orientation: 0,
-      ...state0,
-    }
-    this.state = structuredClone(this.state0)
+    this.state0 = new KernelState(state0)
+    this.state = this.state0.clone()
   }
 
   reset() {
-    this.state = structuredClone(this.state0)
+    this.state = this.state0.clone()
   }
 
   tick(cmd: KernelCommand, gameMap: GameMap<MapCell>) {

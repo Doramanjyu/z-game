@@ -17,7 +17,6 @@
   "dependencies": {
     "@babel/core": "7.17.2",
     "@emotion/react": "11.7.1",
-    "@types/node": "17.0.17",
     "gatsby": "4.7.1",
     "gatsby-plugin-alias-imports": "1.0.5",
     "gatsby-plugin-emotion": "7.7.0",
