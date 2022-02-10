@@ -35,7 +35,9 @@ class Game {
     this.messageBox = messageBox
 
     this.scale = 3
-    this.kernel = new Kernel(this.splite)
+    this.kernel = new Kernel(this.splite, {
+      pos: [100, 96],
+    })
     this.bg = new Splite(this.splite, {
       topLeft: [0, 512],
       sz: [16, 16],
