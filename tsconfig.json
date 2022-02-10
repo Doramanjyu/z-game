@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
-    "lib": ["dom", "es2017"],
+    "lib": ["dom", "esnext"],
     "jsx": "react",
     "strict": true,
     "esModuleInterop": true,
@@ -11,7 +11,10 @@
     "noEmit": true,
     "skipLibCheck": true,
     "moduleResolution": "node",
-    "types": ["@emotion/react/types/css-prop"],
+    "types": [
+      "node",
+      "@emotion/react/types/css-prop"
+    ],
     "paths": {
       "@doramanjyu/z-game/*": [
         "./src/*"
