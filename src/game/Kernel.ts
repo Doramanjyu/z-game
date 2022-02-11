@@ -196,10 +196,13 @@ export class Kernel {
 
     if (gameMap.at(mpBottom).heat()) {
       this.state.heat++
-      if (this.state.heat > 5 * heatCount) {
+      if (this.state.heat > 5 * heatCount && this.state.popped == 0) {
         this.state.heat = 5 * heatCount
         this.state.popped = popResume
-        this.state.heat = 0
+
+        this.state.onGround = false
+        this.state.vel = [0, -15]
+        this.state.jumpPow = [0, 0]
       }
     } else {
       this.state.heat--
@@ -208,9 +211,9 @@ export class Kernel {
       }
       if (this.state.popped > 0) {
         this.state.popped--
+        this.state.heat = 0
         if (this.state.popped < 0) {
           this.state.popped = 0
-          this.state.heat = 0
         }
       }
     }

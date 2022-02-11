@@ -43,7 +43,7 @@ class Game {
 
     this.scale = 3
     this.kernel = new Kernel(this.splite, {
-      pos: [100, 96],
+      pos: [100, 112],
     })
     this.bg = new Splite(this.splite, {
       topLeft: [0, 512],
@@ -60,7 +60,7 @@ class Game {
     })
 
     this.gameMap = new GameMap<MapCell>(
-      [14, 11],
+      [14, 12],
       (x: number, y: number) =>
         new MapCell(
           mapData.main[y][x][1],
@@ -68,7 +68,7 @@ class Game {
           mapData.type[y][x],
         ),
       [-100, 0],
-      [100, 11],
+      [100, 12],
       [640, 480],
     )
     this.overlayMap = new GameMap<OverlayMapCell>(
@@ -76,7 +76,7 @@ class Game {
       (x: number, y: number) =>
         new OverlayMapCell(mapData.overlay[y][x][1], mapData.overlay[y][x][0]),
       [-100, 0],
-      [100, 11],
+      [100, 12],
       [640, 480],
     )
     this.overlayAnimeMap = new GameMap<OverlayMapCell>(
@@ -87,7 +87,7 @@ class Game {
           mapData.overlayAnime[y][x][0],
         ),
       [-100, 0],
-      [100, 11],
+      [100, 12],
       [640, 480],
     )
     this.command = new Map<string, boolean>()
