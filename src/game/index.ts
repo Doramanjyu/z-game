@@ -99,7 +99,7 @@ class Game {
     this.canvas.addEventListener('keydown', keydown)
     this.canvas.addEventListener('keyup', keyup)
     this.canvas.focus()
-    const tickTimer = setInterval(this.tick.bind(this), 100)
+    const tickTimer = setInterval(this.tick.bind(this), 80)
 
     let showMessage = false
     const messageTest = () => {
