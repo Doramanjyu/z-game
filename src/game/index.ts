@@ -60,7 +60,7 @@ class Game {
     })
 
     this.gameMap = new GameMap<MapCell>(
-      [14, 10],
+      [14, 11],
       (x: number, y: number) =>
         new MapCell(
           mapData.main[y][x][1],
@@ -68,26 +68,26 @@ class Game {
           mapData.type[y][x],
         ),
       [-100, 0],
-      [100, 10],
+      [100, 11],
       [640, 480],
     )
     this.overlayMap = new GameMap<OverlayMapCell>(
-      [14, 10],
+      [14, 11],
       (x: number, y: number) =>
         new OverlayMapCell(mapData.overlay[y][x][1], mapData.overlay[y][x][0]),
       [-100, 0],
-      [100, 10],
+      [100, 11],
       [640, 480],
     )
     this.overlayAnimeMap = new GameMap<OverlayMapCell>(
-      [14, 10],
+      [14, 11],
       (x: number, y: number) =>
         new OverlayMapCell(
           mapData.overlayAnime[y][x][1],
           mapData.overlayAnime[y][x][0],
         ),
       [-100, 0],
-      [100, 10],
+      [100, 11],
       [640, 480],
     )
     this.command = new Map<string, boolean>()
