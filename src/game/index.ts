@@ -5,6 +5,8 @@ import { GameMap } from './lib/GameMap'
 import { Kernel } from './Kernel'
 import { MapCell, OverlayMapCell } from './MapCell'
 
+import mapData from './data/map.yaml'
+
 class Game {
   readonly canvas: HTMLCanvasElement
   readonly ctx: CanvasRenderingContext2D
@@ -16,8 +18,10 @@ class Game {
 
   readonly gameMap: GameMap<MapCell>
   readonly overlayMap: GameMap<OverlayMapCell>
+  readonly overlayAnimeMap: GameMap<OverlayMapCell>
   readonly bg: Splite
-  readonly bgOverlay: Anime
+  readonly bgOverlay: Splite
+  readonly bgOverlayAnime: Anime
   readonly kernel: Kernel
 
   command: Map<string, boolean>
@@ -45,71 +49,43 @@ class Game {
       topLeft: [0, 512],
       sz: [16, 16],
     })
-    this.bgOverlay = new Anime(this.splite, {
+    this.bgOverlay = new Splite(this.splite, {
+      topLeft: [0, 896],
+      sz: [16, 16],
+    })
+    this.bgOverlayAnime = new Anime(this.splite, {
       topLeft: [0, 768],
       sz: [16, 16],
       frames: [0, 0, 1, 1, 2, 2, 1, 1],
     })
 
-    const mapData1 = [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 7, 1, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 7, 2, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 1, 2, 3, 2, 1, 3, 2, 0, 4, 0, 5, 3, 2],
-      [0, 1, 2, 3, 1, 1, 3, 2, 0, 6, 0, 5, 3, 2],
-      [1, 0, 2, 3, 2, 9, 1, 2, 6, 0, 0, 5, 1, 0],
-      [0, 0, 0, 0, 0, 7, 1, 2, 6, 0, 0, 0, 0, 0],
-    ]
-    const mapData2 = [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1],
-      [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2],
-      [4, 4, 4, 4, 4, 3, 3, 3, 3, 0, 0, 4, 4, 4],
-      [0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0],
-    ]
-    const mapDataType = [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
-    ]
-    const mapDataOverlay = [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 2, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    ]
     this.gameMap = new GameMap<MapCell>(
       [14, 10],
       (x: number, y: number) =>
-        new MapCell(mapData1[y][x], mapData2[y][x], mapDataType[y][x] === 1),
+        new MapCell(
+          mapData.main[y][x][1],
+          mapData.main[y][x][0],
+          mapData.type[y][x],
+        ),
       [-100, 0],
       [100, 10],
       [640, 480],
     )
     this.overlayMap = new GameMap<OverlayMapCell>(
       [14, 10],
-      (x: number, y: number) => new OverlayMapCell(mapDataOverlay[y][x], 0),
+      (x: number, y: number) =>
+        new OverlayMapCell(mapData.overlay[y][x][1], mapData.overlay[y][x][0]),
+      [-100, 0],
+      [100, 10],
+      [640, 480],
+    )
+    this.overlayAnimeMap = new GameMap<OverlayMapCell>(
+      [14, 10],
+      (x: number, y: number) =>
+        new OverlayMapCell(
+          mapData.overlayAnime[y][x][1],
+          mapData.overlayAnime[y][x][0],
+        ),
       [-100, 0],
       [100, 10],
       [640, 480],
@@ -161,11 +137,17 @@ class Game {
         space: this.command.has('Space'),
       }
       this.kernel.tick(kernelCmd, this.gameMap)
-      this.bgOverlay.tick()
+      this.bgOverlayAnime.tick()
 
       this.gameMap.draw(this.ctx, this.bg, [0, 0], this.scale)
       this.kernel.draw(this.ctx, this.scale)
       this.overlayMap.draw(this.ctx, this.bgOverlay, [0, 0], this.scale)
+      this.overlayAnimeMap.draw(
+        this.ctx,
+        this.bgOverlayAnime,
+        [0, 0],
+        this.scale,
+      )
     } catch (err) {
       console.error(err)
       this.stop()

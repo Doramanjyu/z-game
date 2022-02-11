@@ -155,14 +155,14 @@ export class Kernel {
         if (this.state.vel[1] > 14) {
           this.state.vel[1] = 14
         }
-        if (gameMap.at(mpUp).solid && this.state.vel[1] < 0) {
+        if (gameMap.at(mpUp).occupied() && this.state.vel[1] < 0) {
           this.state.vel[1] *= -this.ellasticCoeff
           this.state.vel[0] *= this.ellasticCoeff
           this.state.pos[1] = mpUp[1] * 16 + 16 + 4
-        } else if (gameMap.at(mpSide).solid) {
+        } else if (gameMap.at(mpSide).occupied()) {
           this.state.vel[0] *= -this.ellasticCoeff
         }
-        if (gameMap.at(mpBottom).solid && this.state.vel[1] >= 0) {
+        if (gameMap.at(mpBottom).step() && this.state.vel[1] >= 0) {
           this.state.pos[1] = mpBottom[1] * 16
           this.state.vel = [0, 0]
           this.state.onGround = true
