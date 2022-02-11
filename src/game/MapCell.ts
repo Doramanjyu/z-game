@@ -20,6 +20,10 @@ export class MapCell implements Cell {
   step(): boolean {
     return this.typ > 0
   }
+
+  heat(): boolean {
+    return this.typ == 2
+  }
 }
 
 export class OverlayMapCell implements Cell {

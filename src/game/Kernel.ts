@@ -5,6 +5,9 @@ import { GameMap } from './lib/GameMap'
 
 import { MapCell } from './MapCell'
 
+const heatCount = 8
+const popResume = 64
+
 type KernelCommand = {
   left: boolean
   right: boolean
@@ -14,7 +17,6 @@ type KernelCommand = {
 type InitialKernelState = {
   pos?: Vec2
   vel?: Vec2
-  jumpPow?: Vec2
   onGround?: boolean
   orientation?: number
 }
@@ -22,16 +24,21 @@ type InitialKernelState = {
 class KernelState {
   pos: Vec2
   vel: Vec2
-  jumpPow: Vec2
   onGround: boolean
   orientation: number
+
+  jumpPow: Vec2
+  heat: number
+  popped: number
 
   constructor(s: InitialKernelState) {
     this.pos = s.pos || [0, 0]
     this.vel = s.vel || [0, 0]
-    this.jumpPow = s.jumpPow || [0, 0]
     this.onGround = s.onGround || true
     this.orientation = s.orientation || 0
+    this.jumpPow = [0, 0]
+    this.heat = 0
+    this.popped = 0
   }
 
   clone(): KernelState {
@@ -66,16 +73,19 @@ export class Kernel {
         topLeft: [0, 0],
         sz: [12, 12],
         frames: [0, 0, 0, 2, 0, 1, 0],
+        patterns: 4,
       }),
       squat: new Anime(splite, {
         topLeft: [0, 0],
         sz: [12, 12],
         frames: [3],
+        patterns: 4,
       }),
       jump: new Anime(splite, {
         topLeft: [0, 0],
         sz: [12, 12],
         frames: [2, 2, 0, 2, 2, 2, 0],
+        patterns: 4,
       }),
     }
     this.currentAnime = this.anime.idle
@@ -176,6 +186,27 @@ export class Kernel {
       }
     }
 
+    if (gameMap.at(mpBottom).heat()) {
+      this.state.heat++
+      if (this.state.heat > 5 * heatCount) {
+        this.state.heat = 5 * heatCount
+        this.state.popped = popResume
+        this.state.heat = 0
+      }
+    } else {
+      this.state.heat--
+      if (this.state.heat < 0) {
+        this.state.heat = 0
+      }
+      if (this.state.popped > 0) {
+        this.state.popped--
+        if (this.state.popped < 0) {
+          this.state.popped = 0
+          this.state.heat = 0
+        }
+      }
+    }
+
     if (this.state.pos[1] > 16 * 10) {
       this.reset()
     }
@@ -192,12 +223,17 @@ export class Kernel {
         0,
       )
     }
+    const mode =
+      (this.state.popped > 0 && this.state.popped != 2) ||
+      this.state.heat == heatCount * 5 - 1
+        ? 5
+        : Math.min(4, Math.floor(this.state.heat / heatCount))
     this.currentAnime.draw(
       ctx,
       [this.state.pos[0], this.state.pos[1] - 6],
       scale,
       this.state.orientation,
-      0,
+      mode,
     )
   }
 }
