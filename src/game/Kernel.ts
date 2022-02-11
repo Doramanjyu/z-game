@@ -126,17 +126,19 @@ export class Kernel {
       this.state.jumpPow[1] === 0
     ) {
       this.state.onGround = false
-      this.state.vel = [this.state.jumpPow[0], -2]
+      this.state.vel = [this.state.jumpPow[0], -4]
       this.state.jumpPow = [0, 0]
     }
 
-    this.state.pos[0] += this.state.vel[0]
-    this.state.pos[1] += this.state.vel[1]
     const vBottom = this.state.vel[1] > 0 ? this.state.vel[1] : 0
     const mpBottom: Vec2 = [
       Math.round((this.state.pos[0] - 2) / 16),
       Math.floor((this.state.pos[1] + vBottom + 1) / 16),
     ]
+
+    this.state.pos[0] += this.state.vel[0]
+    this.state.pos[1] += this.state.vel[1]
+
     const vUp = this.state.vel[1] < 0 ? this.state.vel[1] : 0
     const mpUp: Vec2 = [
       Math.round((this.state.pos[0] + this.state.vel[0] - 2) / 16),
@@ -151,28 +153,34 @@ export class Kernel {
     if (cmd.space && this.state.onGround) {
       this.currentAnime = this.anime.squat
       this.state.jumpPow[1] -= 2
-      if (this.state.jumpPow[1] < -13) {
-        this.state.jumpPow[1] = -13
+      if (this.state.jumpPow[1] < -11) {
+        this.state.jumpPow[1] = -11
       }
     } else {
       if (!cmd.space && this.state.jumpPow[1] < 0) {
         this.state.onGround = false
         this.state.vel = this.state.jumpPow
         this.state.jumpPow = [0, 0]
-      }
-      if (!this.state.onGround) {
+      } else if (!this.state.onGround) {
         this.state.vel[1] += 2
         if (this.state.vel[1] > 14) {
           this.state.vel[1] = 14
         }
+      }
+      if (!this.state.onGround) {
         if (gameMap.at(mpUp).occupied() && this.state.vel[1] < 0) {
           this.state.vel[1] *= -this.ellasticCoeff
           this.state.vel[0] *= this.ellasticCoeff
           this.state.pos[1] = mpUp[1] * 16 + 16 + 4
-        } else if (gameMap.at(mpSide).occupied()) {
+        }
+        if (gameMap.at(mpSide).occupied()) {
           this.state.vel[0] *= -this.ellasticCoeff
         }
-        if (gameMap.at(mpBottom).step() && this.state.vel[1] >= 0) {
+        if (
+          gameMap.at(mpBottom).step() &&
+          this.state.vel[1] >= 0 &&
+          !cmd.space
+        ) {
           this.state.pos[1] = mpBottom[1] * 16
           this.state.vel = [0, 0]
           this.state.onGround = true
