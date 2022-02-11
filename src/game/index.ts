@@ -48,7 +48,7 @@ class Game {
     this.bgOverlay = new Anime(this.splite, {
       topLeft: [0, 768],
       sz: [16, 16],
-      frames: [0, 1, 2, 1],
+      frames: [0, 0, 1, 1, 2, 2, 1, 1],
     })
 
     const mapData1 = [
@@ -92,9 +92,9 @@ class Game {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 2, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -164,8 +164,8 @@ class Game {
       this.bgOverlay.tick()
 
       this.gameMap.draw(this.ctx, this.bg, [0, 0], this.scale)
-      this.overlayMap.draw(this.ctx, this.bgOverlay, [0, 0], this.scale)
       this.kernel.draw(this.ctx, this.scale)
+      this.overlayMap.draw(this.ctx, this.bgOverlay, [0, 0], this.scale)
     } catch (err) {
       console.error(err)
       this.stop()
