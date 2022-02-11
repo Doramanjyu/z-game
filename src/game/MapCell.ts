@@ -2,15 +2,23 @@ import { Cell, Appearance } from './lib/GameMap'
 
 export class MapCell implements Cell {
   readonly v: Appearance
-  readonly solid: boolean
+  readonly typ: number
 
-  constructor(mode1: number, mode2: number, solid: boolean) {
+  constructor(mode1: number, mode2: number, typ: number) {
     this.v = { mode1, mode2 }
-    this.solid = solid
+    this.typ = typ
   }
 
   appearance(): Appearance {
     return this.v
+  }
+
+  occupied(): boolean {
+    return this.typ == 1
+  }
+
+  step(): boolean {
+    return this.typ > 0
   }
 }
 
