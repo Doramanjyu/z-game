@@ -225,20 +225,20 @@ export class Kernel {
 
   draw(ctx: CanvasRenderingContext2D, scale: number) {
     const kernelMode = this.currentAnime.tick()
-    if (this.state.onGround) {
-      this.shadow.draw(
-        ctx,
-        [this.state.pos[0], this.state.pos[1] - 5],
-        scale,
-        kernelMode,
-        0,
-      )
-    }
     const mode =
       (this.state.popped > 0 && this.state.popped != 2) ||
       this.state.heat == heatCount * 5 - 1
         ? 5
         : Math.min(4, Math.floor(this.state.heat / heatCount))
+    if (this.state.onGround) {
+      this.shadow.draw(
+        ctx,
+        [this.state.pos[0], this.state.pos[1] - 5],
+        scale,
+        mode * 4 + kernelMode,
+        0,
+      )
+    }
     this.currentAnime.draw(
       ctx,
       [this.state.pos[0], this.state.pos[1] - 6],
