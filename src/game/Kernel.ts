@@ -60,7 +60,7 @@ export class Kernel {
     jump: Anime
   }
   private readonly shadow: Splite
-  private readonly trans: Anime
+  private readonly trans: Splite
   private readonly ellasticCoeff: number
   private currentAnime: Anime
   private state0: KernelState
