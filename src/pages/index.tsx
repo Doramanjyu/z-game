@@ -23,11 +23,18 @@ const IndexPage = () => {
     document.addEventListener('keydown', keydown)
     document.addEventListener('keyup', keyup)
 
+    const noPreventDefault = (e: TouchEvent): boolean => {
+      if (!e.target) {
+        return false
+      }
+      const target = e.target as Element
+      return target.closest('a') !== null
+    }
     let [tx, ty] = [0, 0]
     let touching = false
     const touchMoveThreshold = 32
     const touchStart = (e: TouchEvent) => {
-      if (e.target.closest('a')) {
+      if (noPreventDefault(e)) {
         return
       }
       e.preventDefault()
@@ -39,7 +46,7 @@ const IndexPage = () => {
       }
     }
     const touchMove = (e: TouchEvent) => {
-      if (e.target.closest('a')) {
+      if (noPreventDefault(e)) {
         return
       }
       e.preventDefault()
@@ -59,7 +66,7 @@ const IndexPage = () => {
       }
     }
     const touchEnd = (e: TouchEvent) => {
-      if (e.target.closest('a')) {
+      if (noPreventDefault(e)) {
         return
       }
       e.preventDefault()
