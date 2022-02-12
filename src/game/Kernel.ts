@@ -102,7 +102,7 @@ export class Kernel {
       topLeft: [0, 36],
       sz: [12, 12],
     })
-    this.explision = new Splite(splite, {
+    this.explosion = new Splite(splite, {
       topLeft: [0, 48],
       sz: [36, 12],
     })
@@ -275,7 +275,7 @@ export class Kernel {
       )
     }
     if (this.explosionNum > 0) {
-      this.explision.draw(
+      this.explosion.draw(
         ctx,
         [
           offset[0] + this.explosionPos[0] - 12,
