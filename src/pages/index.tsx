@@ -18,14 +18,63 @@ const IndexPage = () => {
     }
     const g = new Game(canvasRef.current, spliteRef.current, messageRef.current)
     g.start()
-    const setFocus = () => {
-      if (canvasRef.current) {
-        canvasRef.current.focus()
+    const keydown = g.keydown.bind(g)
+    const keyup = g.keyup.bind(g)
+    document.addEventListener('keydown', keydown)
+    document.addEventListener('keyup', keyup)
+
+    let [tx, ty] = [0, 0]
+    let touching = false
+    const touchMoveThreshold = 32
+    const touchStart = (e: TouchEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      if (!touching) {
+        tx = e.touches[0].screenX
+        ty = e.touches[0].screenY
+        touching = true
       }
     }
-    document.addEventListener('click', setFocus)
+    const touchMove = (e: TouchEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      if (e.touches[0].screenY > ty + touchMoveThreshold) {
+        keydown({ code: 'Space' })
+      }
+      if (e.touches[0].screenX > tx + touchMoveThreshold) {
+        keydown({ code: 'ArrowLeft' })
+        keyup({ code: 'ArrowRight' })
+      } else if (e.touches[0].screenX < tx - touchMoveThreshold) {
+        keydown({ code: 'ArrowRight' })
+        keyup({ code: 'ArrowLeft' })
+      } else {
+        keyup({ code: 'ArrowRight' })
+        keyup({ code: 'ArrowLeft' })
+      }
+    }
+    const touchEnd = (e: TouchEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      if (e.touches.length === 0) {
+        keyup({ code: 'Space' })
+        keyup({ code: 'ArrowRight' })
+        keyup({ code: 'ArrowLeft' })
+        touching = false
+      }
+    }
+
+    document.addEventListener('touchstart', touchStart)
+    document.addEventListener('touchmove', touchMove)
+    document.addEventListener('touchend', touchEnd)
+    document.addEventListener('touchcancel', touchEnd)
+
     return () => {
-      document.removeEventListener('click', setFocus)
+      document.removeEventListener('touchstart', touchStart)
+      document.removeEventListener('touchmove', touchMove)
+      document.removeEventListener('touchend', touchEnd)
+      document.removeEventListener('touchcancel', touchEnd)
+      document.removeEventListener('keydown', keydown)
+      document.removeEventListener('keyup', keyup)
       g.stop()
     }
   }, [canvasRef, spliteRef, messageRef])
@@ -43,7 +92,6 @@ const IndexPage = () => {
       >
         <canvas
           ref={canvasRef}
-          tabIndex={1}
           style={{
             backgroundColor: '#000',
             width: '640px',
