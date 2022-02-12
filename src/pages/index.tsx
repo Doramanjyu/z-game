@@ -25,6 +25,7 @@ const IndexPage = () => {
 
     let [tx, ty] = [0, 0]
     let touching = false
+    const touchMoveThreshold = 32
     const touchStart = (e: TouchEvent) => {
       e.preventDefault()
       e.stopPropagation()
@@ -37,13 +38,13 @@ const IndexPage = () => {
     const touchMove = (e: TouchEvent) => {
       e.preventDefault()
       e.stopPropagation()
-      if (e.touches[0].screenY > ty + 16) {
+      if (e.touches[0].screenY > ty + touchMoveThreshold) {
         keydown({ code: 'Space' })
       }
-      if (e.touches[0].screenX > tx + 16) {
+      if (e.touches[0].screenX > tx + touchMoveThreshold) {
         keydown({ code: 'ArrowLeft' })
         keyup({ code: 'ArrowRight' })
-      } else if (e.touches[0].screenX < tx - 16) {
+      } else if (e.touches[0].screenX < tx - touchMoveThreshold) {
         keydown({ code: 'ArrowRight' })
         keyup({ code: 'ArrowLeft' })
       } else {
