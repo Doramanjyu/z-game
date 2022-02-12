@@ -52,17 +52,16 @@ class KernelState {
 }
 
 export class Kernel {
-  readonly anime: {
+  private readonly anime: {
     idle: Anime
     squat: Anime
     jump: Anime
   }
-  readonly shadow: Splite
+  private readonly shadow: Splite
+  private readonly ellasticCoeff: number
+  private currentAnime: Anime
+  private state0: KernelState
 
-  readonly ellasticCoeff: number
-
-  currentAnime: Anime
-  state0: KernelState
   state: KernelState
 
   constructor(splite: HTMLImageElement, state0: InitialKernelState) {
@@ -213,13 +212,9 @@ export class Kernel {
         }
       }
     }
-
-    if (this.state.pos[1] > 16 * 10) {
-      this.reset()
-    }
   }
 
-  draw(ctx: CanvasRenderingContext2D, scale: number) {
+  draw(ctx: CanvasRenderingContext2D, offset: Vec2, scale: number) {
     const kernelMode = this.currentAnime.tick()
     const mode =
       (this.state.popped > 0 && this.state.popped != 2) ||
@@ -229,7 +224,7 @@ export class Kernel {
     if (this.state.onGround) {
       this.shadow.draw(
         ctx,
-        [this.state.pos[0], this.state.pos[1] - 5],
+        [offset[0] + this.state.pos[0], offset[1] + this.state.pos[1] - 5],
         scale,
         mode * 4 + kernelMode,
         0,
@@ -237,7 +232,7 @@ export class Kernel {
     }
     this.currentAnime.draw(
       ctx,
-      [this.state.pos[0], this.state.pos[1] - 6],
+      [offset[0] + this.state.pos[0], offset[1] + this.state.pos[1] - 6],
       scale,
       this.state.orientation,
       mode,
