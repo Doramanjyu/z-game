@@ -176,11 +176,7 @@ export class Kernel {
         if (gameMap.at(mpSide).occupied()) {
           this.state.vel[0] *= -this.ellasticCoeff
         }
-        if (
-          gameMap.at(mpBottom).step() &&
-          this.state.vel[1] >= 0 &&
-          !cmd.space
-        ) {
+        if (gameMap.at(mpBottom).step() && this.state.vel[1] >= 0) {
           this.state.pos[1] = mpBottom[1] * 16
           this.state.vel = [0, 0]
           this.state.onGround = true
