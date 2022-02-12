@@ -1,6 +1,7 @@
 import { Splite } from './lib/Splite'
 import { Anime } from './lib/Anime'
 import { GameMap } from './lib/GameMap'
+import { Vec2 } from './lib/Vec'
 
 import { Kernel } from './Kernel'
 import { MapCell, OverlayMapCell } from './MapCell'
@@ -26,6 +27,8 @@ class Game {
 
   command: Map<string, boolean>
 
+  origin: Vec2
+
   constructor(
     canvas: HTMLCanvasElement,
     splite: HTMLImageElement,
@@ -42,8 +45,9 @@ class Game {
     this.messageBox = messageBox
 
     this.scale = 3
+    this.origin = [mapData.start.pos[0] * 16, mapData.start.pos[1] * 16]
     this.kernel = new Kernel(this.splite, {
-      pos: [100, 112],
+      pos: this.origin,
     })
     this.bg = new Splite(this.splite, {
       topLeft: [0, 512],
@@ -132,13 +136,20 @@ class Game {
       this.kernel.tick(kernelCmd, this.gameMap)
       this.bgOverlayAnime.tick()
 
-      this.gameMap.draw(this.ctx, this.bg, [0, 0], this.scale)
-      this.kernel.draw(this.ctx, this.scale)
-      this.overlayMap.draw(this.ctx, this.bgOverlay, [0, 0], this.scale)
+      const state = this.kernel.state
+      if (state.pos[1] > 16 * 14) {
+        this.kernel.reset()
+      }
+
+      const offset: Vec2 = [0, (this.origin[1] - state.pos[1]) / 3]
+
+      this.gameMap.draw(this.ctx, this.bg, offset, this.scale)
+      this.kernel.draw(this.ctx, offset, this.scale)
+      this.overlayMap.draw(this.ctx, this.bgOverlay, offset, this.scale)
       this.overlayAnimeMap.draw(
         this.ctx,
         this.bgOverlayAnime,
-        [0, 0],
+        offset,
         this.scale,
       )
     } catch (err) {

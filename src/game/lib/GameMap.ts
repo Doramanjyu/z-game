@@ -46,7 +46,7 @@ export class GameMap<T extends Cell> {
 
     const left = o[0] - this.s[0] * cw
     const si2 = left >= 0 ? this.s[0] : this.s[0] - Math.floor(left) / cw
-    const ox2 = left >= 0 ? o[0] : o[0] - Math.floor(left)
+    const ox2 = left >= 0 ? o[0] : o[0] + (Math.floor(left) % cw)
     const right = o[0] + this.e[0] * cw
     const ei2 =
       right < this.screenSize[0]
@@ -55,7 +55,7 @@ export class GameMap<T extends Cell> {
 
     const top = o[1] - this.s[1] * ch
     const sj2 = top >= 0 ? this.s[1] : this.s[1] - Math.floor(top) / ch
-    const oy2 = top >= 0 ? o[1] : o[1] - Math.floor(top)
+    const oy2 = top >= 0 ? o[1] : o[1] + (Math.floor(top) % ch)
     const bottom = o[1] + this.e[1] * ch
     const ej2 =
       bottom < this.screenSize[1]
