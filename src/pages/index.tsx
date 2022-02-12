@@ -23,10 +23,20 @@ const IndexPage = () => {
     document.addEventListener('keydown', keydown)
     document.addEventListener('keyup', keyup)
 
+    const noPreventDefault = (e: TouchEvent): boolean => {
+      if (!e.target) {
+        return false
+      }
+      const target = e.target as Element
+      return target.closest('a') !== null
+    }
     let [tx, ty] = [0, 0]
     let touching = false
     const touchMoveThreshold = 32
     const touchStart = (e: TouchEvent) => {
+      if (noPreventDefault(e)) {
+        return
+      }
       e.preventDefault()
       e.stopPropagation()
       if (!touching) {
@@ -36,6 +46,9 @@ const IndexPage = () => {
       }
     }
     const touchMove = (e: TouchEvent) => {
+      if (noPreventDefault(e)) {
+        return
+      }
       e.preventDefault()
       e.stopPropagation()
       if (e.touches[0].screenY > ty + touchMoveThreshold) {
@@ -53,6 +66,9 @@ const IndexPage = () => {
       }
     }
     const touchEnd = (e: TouchEvent) => {
+      if (noPreventDefault(e)) {
+        return
+      }
       e.preventDefault()
       e.stopPropagation()
       if (e.touches.length === 0) {
@@ -171,7 +187,13 @@ const IndexPage = () => {
           }
         `}
       >
-        <a href="https://github.com/Doramanjyu/z-game">Source repository</a>
+        <a
+          href="https://github.com/Doramanjyu/z-game"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Source repository
+        </a>
       </div>
     </main>
   )
