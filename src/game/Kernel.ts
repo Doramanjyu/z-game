@@ -30,6 +30,7 @@ class KernelState {
   jumpPow: Vec2
   heat: number
   popped: number
+  trans: number
 
   constructor(s: InitialKernelState) {
     this.pos = s.pos || [0, 0]
@@ -39,6 +40,7 @@ class KernelState {
     this.jumpPow = [0, 0]
     this.heat = 0
     this.popped = 0
+    this.trans = 0
   }
 
   clone(): KernelState {
@@ -58,6 +60,7 @@ export class Kernel {
     jump: Anime
   }
   private readonly shadow: Splite
+  private readonly trans: Splite
   private readonly ellasticCoeff: number
   private currentAnime: Anime
   private state0: KernelState
@@ -90,6 +93,10 @@ export class Kernel {
     this.currentAnime = this.anime.idle
     this.shadow = new Splite(splite, {
       topLeft: [0, 24],
+      sz: [12, 12],
+    })
+    this.trans = new Splite(splite, {
+      topLeft: [0, 36],
       sz: [12, 12],
     })
 
@@ -212,6 +219,9 @@ export class Kernel {
         }
       }
     }
+    if (this.state.trans < 6) {
+      this.state.trans++
+    }
   }
 
   draw(ctx: CanvasRenderingContext2D, offset: Vec2, scale: number) {
@@ -230,12 +240,23 @@ export class Kernel {
         0,
       )
     }
-    this.currentAnime.draw(
-      ctx,
-      [offset[0] + this.state.pos[0], offset[1] + this.state.pos[1] - 6],
-      scale,
-      this.state.orientation,
-      mode,
-    )
+    if (this.state.trans > 2) {
+      this.currentAnime.draw(
+        ctx,
+        [offset[0] + this.state.pos[0], offset[1] + this.state.pos[1] - 6],
+        scale,
+        this.state.orientation,
+        mode,
+      )
+    }
+    if (this.state.trans < 6) {
+      this.trans.draw(
+        ctx,
+        [offset[0] + this.state.pos[0], offset[1] + this.state.pos[1] - 6],
+        scale,
+        this.state.trans - 2,
+        0,
+      )
+    }
   }
 }
