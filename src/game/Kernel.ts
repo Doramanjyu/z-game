@@ -61,11 +61,14 @@ export class Kernel {
   }
   private readonly shadow: Splite
   private readonly trans: Splite
+  private readonly explosion: Splite
   private readonly ellasticCoeff: number
   private currentAnime: Anime
   private state0: KernelState
 
   state: KernelState
+  explosionPos: Vec2
+  explosionNum: number
 
   constructor(splite: HTMLImageElement, state0: InitialKernelState) {
     this.ellasticCoeff = 0.5
@@ -99,9 +102,16 @@ export class Kernel {
       topLeft: [0, 36],
       sz: [12, 12],
     })
+    this.explosion = new Splite(splite, {
+      topLeft: [0, 48],
+      sz: [36, 12],
+    })
 
     this.state0 = new KernelState(state0)
     this.state = this.state0.clone()
+
+    this.explosionPos = this.state.pos
+    this.explosionNum = 0
   }
 
   reset() {
@@ -196,15 +206,21 @@ export class Kernel {
       }
     }
 
-    if (gameMap.at(mpBottom).heat()) {
-      this.state.heat++
-      if (this.state.heat > 5 * heatCount && this.state.popped == 0) {
+    if (this.explosionNum && this.explosionNum > 0) {
+      this.explosionNum--
+      if (this.explosionNum == 2) {
         this.state.heat = 5 * heatCount
         this.state.popped = popResume
 
         this.state.onGround = false
         this.state.vel = [0, -15]
         this.state.jumpPow = [0, 0]
+      }
+    } else if (gameMap.at(mpBottom).heat()) {
+      this.state.heat++
+      if (this.state.heat > 5 * heatCount - 2 && this.state.popped == 0) {
+        this.explosionPos = [this.state.pos[0], this.state.pos[1]]
+        this.explosionNum = 3
       }
     } else {
       this.state.heat--
@@ -252,9 +268,21 @@ export class Kernel {
     if (this.state.trans < 6) {
       this.trans.draw(
         ctx,
-        [offset[0] + this.state.pos[0], offset[1] + this.state.pos[1] - 6],
+        [offset[0] + this.state.pos[0], offset[1] + this.state.pos[1] - 8],
         scale,
         this.state.trans - 2,
+        0,
+      )
+    }
+    if (this.explosionNum > 0) {
+      this.explosion.draw(
+        ctx,
+        [
+          offset[0] + this.explosionPos[0] - 12,
+          offset[1] + this.explosionPos[1] - 6,
+        ],
+        scale,
+        3 - this.explosionNum,
         0,
       )
     }
