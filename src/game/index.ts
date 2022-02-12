@@ -94,11 +94,6 @@ class Game {
   }
 
   start() {
-    const keydown = this.keydown.bind(this)
-    const keyup = this.keyup.bind(this)
-    this.canvas.addEventListener('keydown', keydown)
-    this.canvas.addEventListener('keyup', keyup)
-    this.canvas.focus()
     const tickTimer = setInterval(this.tick.bind(this), 80)
 
     let showMessage = false
@@ -115,8 +110,6 @@ class Game {
     this.cleanup = () => {
       clearInterval(tickTimer)
       clearInterval(messageTimer)
-      this.canvas.removeEventListener('keydown', this.keydown.bind(this))
-      this.canvas.removeEventListener('keyup', this.keyup.bind(this))
     }
   }
 
@@ -154,10 +147,10 @@ class Game {
     }
   }
 
-  private keydown(e: KeyboardEvent) {
+  keydown(e: Pick<KeyboardEvent, 'code'>) {
     this.command.set(e.code, true)
   }
-  private keyup(e: KeyboardEvent) {
+  keyup(e: Pick<KeyboardEvent, 'code'>) {
     this.command.delete(e.code)
   }
 
