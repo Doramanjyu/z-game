@@ -24,11 +24,10 @@ const IndexPage = () => {
     document.addEventListener('keyup', keyup)
 
     const noPreventDefault = (e: TouchEvent): boolean => {
-      if (!e.target) {
+      if (!e.target || !(e.target instanceof Element)) {
         return false
       }
-      const target = e.target as Element
-      return target.closest('a') !== null
+      return e.target.closest('a') !== null
     }
     let [tx, ty] = [0, 0]
     let touching = false
