@@ -28,6 +28,7 @@ class Game {
   command: Map<string, boolean>
 
   origin: Vec2
+  viewpoint: Vec2
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -46,6 +47,8 @@ class Game {
 
     this.scale = 3
     this.origin = [mapData.start.pos[0] * 16, mapData.start.pos[1] * 16]
+    this.viewpoint = [0, 0]
+
     this.kernel = new Kernel(this.sprite, {
       pos: this.origin,
     })
@@ -63,8 +66,10 @@ class Game {
       frames: [0, 0, 1, 1, 2, 2, 1, 1],
     })
 
+    const mw = mapData.main[0].length
+    const mh = mapData.main.length
     this.gameMap = new GameMap<MapCell>(
-      [14, 12],
+      [mw, mh],
       (x: number, y: number) =>
         new MapCell(
           mapData.main[y][x][1],
@@ -72,26 +77,26 @@ class Game {
           mapData.type[y][x],
         ),
       [-100, 0],
-      [100, 12],
+      [100, mh],
       [640, 480],
     )
     this.overlayMap = new GameMap<OverlayMapCell>(
-      [14, 11],
+      [mw, mh],
       (x: number, y: number) =>
         new OverlayMapCell(mapData.overlay[y][x][1], mapData.overlay[y][x][0]),
       [-100, 0],
-      [100, 12],
+      [100, mh],
       [640, 480],
     )
     this.overlayAnimeMap = new GameMap<OverlayMapCell>(
-      [14, 11],
+      [mw, mh],
       (x: number, y: number) =>
         new OverlayMapCell(
           mapData.overlayAnime[y][x][1],
           mapData.overlayAnime[y][x][0],
         ),
       [-100, 0],
-      [100, 12],
+      [100, mh],
       [640, 480],
     )
     this.command = new Map<string, boolean>()
@@ -141,7 +146,17 @@ class Game {
         this.kernel.reset()
       }
 
-      const offset: Vec2 = [0, (this.origin[1] - state.pos[1]) / 3]
+      const offset: Vec2 = [
+        -this.viewpoint[0],
+        110 - this.origin[1] - this.viewpoint[1],
+      ]
+      const diffY = (state.pos[1] - this.origin[1]) / 1.5
+      if (this.viewpoint[1] < diffY + 16) {
+        this.viewpoint[1] += (diffY + 16 - this.viewpoint[1]) / 4
+      }
+      if (this.viewpoint[1] > diffY - 16) {
+        this.viewpoint[1] += (diffY - 16 - this.viewpoint[1]) / 4
+      }
 
       this.gameMap.draw(this.ctx, this.bg, offset, this.scale)
       this.kernel.draw(this.ctx, offset, this.scale)
