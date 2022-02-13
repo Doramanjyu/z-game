@@ -141,7 +141,7 @@ class Game {
         right: this.command.has('ArrowRight'),
         space: this.command.has('Space'),
       }
-      this.kernel.tick(kernelCmd, this.gameMap)
+      this.kernel.tick(kernelCmd, this.gameMap, this.collisionMap)
       this.bgOverlayAnime.tick()
 
       const state = this.kernel.state
@@ -178,9 +178,7 @@ class Game {
         this.scale,
       )
 
-      this.ctx.beginPath()
       this.collisionMap.draw(this.ctx, offset, this.scale)
-      this.ctx.closePath()
     } catch (err) {
       console.error(err)
       this.stop()

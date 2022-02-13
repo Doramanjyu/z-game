@@ -2,6 +2,7 @@ import { Anime } from './lib/Anime'
 import { Sprite } from './lib/Sprite'
 import { Vec2 } from './lib/Vec'
 import { GameMap } from './lib/GameMap'
+import { CollisionMap } from './lib/Collision'
 
 import { MapCell } from './MapCell'
 
@@ -118,7 +119,14 @@ export class Kernel {
     this.state = this.state0.clone()
   }
 
-  tick(cmd: KernelCommand, gameMap: GameMap<MapCell>) {
+  tick(cmd: KernelCommand, gameMap: GameMap<MapCell>, colMap: CollisionMap) {
+    colMap.check(
+      [this.state.pos[0] + 6, this.state.pos[1] + 4],
+      [
+        this.state.pos[0] + this.state.vel[0] + 6,
+        this.state.pos[1] + this.state.vel[1] + 4,
+      ],
+    )
     if (cmd.left && this.state.onGround) {
       this.state.jumpPow[0]--
       if (this.state.jumpPow[0] < -4) {
