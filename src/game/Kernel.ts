@@ -178,10 +178,7 @@ export class Kernel {
         if (this.state.popped == 0) {
           this.state.vel = this.state.jumpPow
         } else {
-          this.state.vel = [
-            this.state.jumpPow[0] * 1.25,
-            this.state.jumpPow[1] * 0.5,
-          ]
+          this.state.vel = [this.state.jumpPow[0], this.state.jumpPow[1] * 0.5]
         }
         this.state.jumpPow = [0, 0]
       } else if (!this.state.onGround) {
