@@ -235,7 +235,7 @@ export class Kernel {
         }
       }
     }
-    if (this.state.trans < 6) {
+    if (this.state.trans < 8) {
       this.state.trans++
     }
   }
@@ -265,10 +265,10 @@ export class Kernel {
         mode,
       )
     }
-    if (this.state.trans < 6) {
+    if (this.state.trans < 8) {
       this.trans.draw(
         ctx,
-        [offset[0] + this.state.pos[0], offset[1] + this.state.pos[1] - 8],
+        [offset[0] + this.state.pos[0], offset[1] + this.state.pos[1] - 5],
         scale,
         this.state.trans - 2,
         0,
@@ -279,7 +279,7 @@ export class Kernel {
         ctx,
         [
           offset[0] + this.explosionPos[0] - 12,
-          offset[1] + this.explosionPos[1] - 6,
+          offset[1] + this.explosionPos[1] - 8,
         ],
         scale,
         3 - this.explosionNum,
