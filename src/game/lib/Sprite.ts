@@ -11,17 +11,17 @@ export interface Drawer {
   sz(): Vec2
 }
 
-export type SpliteProp = {
+export type SpriteProp = {
   topLeft: Vec2
   sz: Vec2
 }
 
-export class Splite implements Drawer {
-  readonly splite: HTMLImageElement
-  readonly prop: SpliteProp
+export class Sprite implements Drawer {
+  readonly sprite: HTMLImageElement
+  readonly prop: SpriteProp
 
-  constructor(splite: HTMLImageElement, prop: SpliteProp) {
-    this.splite = splite
+  constructor(sprite: HTMLImageElement, prop: SpriteProp) {
+    this.sprite = sprite
     this.prop = prop
   }
 
@@ -33,7 +33,7 @@ export class Splite implements Drawer {
     mode2: number,
   ) {
     ctx.drawImage(
-      this.splite,
+      this.sprite,
       this.prop.topLeft[0] + mode1 * this.prop.sz[0],
       this.prop.topLeft[1] + mode2 * this.prop.sz[1],
       this.prop.sz[0],

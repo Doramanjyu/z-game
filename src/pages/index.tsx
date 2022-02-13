@@ -5,18 +5,18 @@ import Game from '@doramanjyu/z-game/game'
 
 import frame from '@doramanjyu/z-game/images/frame.svg'
 import frameInner from '@doramanjyu/z-game/images/frame_inner.svg'
-import splite from '@doramanjyu/z-game/images/splite.png'
+import sprite from '@doramanjyu/z-game/images/sprite.png'
 
 const IndexPage = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const spliteRef = useRef<HTMLImageElement>(null)
+  const spriteRef = useRef<HTMLImageElement>(null)
   const messageRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!canvasRef.current || !spliteRef.current || !messageRef.current) {
+    if (!canvasRef.current || !spriteRef.current || !messageRef.current) {
       return
     }
-    const g = new Game(canvasRef.current, spliteRef.current, messageRef.current)
+    const g = new Game(canvasRef.current, spriteRef.current, messageRef.current)
     g.start()
     const keydown = g.keydown.bind(g)
     const keyup = g.keyup.bind(g)
@@ -92,7 +92,7 @@ const IndexPage = () => {
       document.removeEventListener('keyup', keyup)
       g.stop()
     }
-  }, [canvasRef, spliteRef, messageRef])
+  }, [canvasRef, spriteRef, messageRef])
 
   return (
     <main>
@@ -165,8 +165,8 @@ const IndexPage = () => {
         ></div>
       </div>
       <img
-        ref={spliteRef}
-        src={splite}
+        ref={spriteRef}
+        src={sprite}
         style={{
           display: 'none',
         }}

@@ -1,4 +1,4 @@
-import { Drawer } from './Splite'
+import { Drawer } from './Sprite'
 import { Vec2 } from './Vec'
 
 export type Appearance = {

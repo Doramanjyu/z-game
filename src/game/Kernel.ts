@@ -1,5 +1,5 @@
 import { Anime } from './lib/Anime'
-import { Splite } from './lib/Splite'
+import { Sprite } from './lib/Sprite'
 import { Vec2 } from './lib/Vec'
 import { GameMap } from './lib/GameMap'
 
@@ -59,9 +59,9 @@ export class Kernel {
     squat: Anime
     jump: Anime
   }
-  private readonly shadow: Splite
-  private readonly trans: Splite
-  private readonly explosion: Splite
+  private readonly shadow: Sprite
+  private readonly trans: Sprite
+  private readonly explosion: Sprite
   private readonly ellasticCoeff: number
   private currentAnime: Anime
   private state0: KernelState
@@ -70,23 +70,23 @@ export class Kernel {
   explosionPos: Vec2
   explosionNum: number
 
-  constructor(splite: HTMLImageElement, state0: InitialKernelState) {
+  constructor(sprite: HTMLImageElement, state0: InitialKernelState) {
     this.ellasticCoeff = 0.5
 
     this.anime = {
-      idle: new Anime(splite, {
+      idle: new Anime(sprite, {
         topLeft: [0, 0],
         sz: [12, 12],
         frames: [0, 0, 0, 2, 0, 1, 0],
         patterns: 4,
       }),
-      squat: new Anime(splite, {
+      squat: new Anime(sprite, {
         topLeft: [0, 0],
         sz: [12, 12],
         frames: [3],
         patterns: 4,
       }),
-      jump: new Anime(splite, {
+      jump: new Anime(sprite, {
         topLeft: [0, 0],
         sz: [12, 12],
         frames: [2, 2, 0, 2, 2, 2, 0],
@@ -94,15 +94,15 @@ export class Kernel {
       }),
     }
     this.currentAnime = this.anime.idle
-    this.shadow = new Splite(splite, {
+    this.shadow = new Sprite(sprite, {
       topLeft: [0, 24],
       sz: [12, 12],
     })
-    this.trans = new Splite(splite, {
+    this.trans = new Sprite(sprite, {
       topLeft: [0, 36],
       sz: [12, 12],
     })
-    this.explosion = new Splite(splite, {
+    this.explosion = new Sprite(sprite, {
       topLeft: [0, 48],
       sz: [36, 12],
     })

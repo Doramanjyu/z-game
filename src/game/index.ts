@@ -1,4 +1,4 @@
-import { Splite } from './lib/Splite'
+import { Sprite } from './lib/Sprite'
 import { Anime } from './lib/Anime'
 import { GameMap } from './lib/GameMap'
 import { Vec2 } from './lib/Vec'
@@ -11,7 +11,7 @@ import mapData from './data/map.yaml'
 class Game {
   readonly canvas: HTMLCanvasElement
   readonly ctx: CanvasRenderingContext2D
-  readonly splite: HTMLImageElement
+  readonly sprite: HTMLImageElement
   readonly messageBox: HTMLDivElement
   cleanup?: () => void
 
@@ -20,8 +20,8 @@ class Game {
   readonly gameMap: GameMap<MapCell>
   readonly overlayMap: GameMap<OverlayMapCell>
   readonly overlayAnimeMap: GameMap<OverlayMapCell>
-  readonly bg: Splite
-  readonly bgOverlay: Splite
+  readonly bg: Sprite
+  readonly bgOverlay: Sprite
   readonly bgOverlayAnime: Anime
   readonly kernel: Kernel
 
@@ -31,7 +31,7 @@ class Game {
 
   constructor(
     canvas: HTMLCanvasElement,
-    splite: HTMLImageElement,
+    sprite: HTMLImageElement,
     messageBox: HTMLDivElement,
   ) {
     const ctx = canvas.getContext('2d')
@@ -41,23 +41,23 @@ class Game {
     this.ctx = ctx
     this.canvas = canvas
     this.ctx.imageSmoothingEnabled = false
-    this.splite = splite
+    this.sprite = sprite
     this.messageBox = messageBox
 
     this.scale = 3
     this.origin = [mapData.start.pos[0] * 16, mapData.start.pos[1] * 16]
-    this.kernel = new Kernel(this.splite, {
+    this.kernel = new Kernel(this.sprite, {
       pos: this.origin,
     })
-    this.bg = new Splite(this.splite, {
+    this.bg = new Sprite(this.sprite, {
       topLeft: [0, 512],
       sz: [16, 16],
     })
-    this.bgOverlay = new Splite(this.splite, {
+    this.bgOverlay = new Sprite(this.sprite, {
       topLeft: [0, 896],
       sz: [16, 16],
     })
-    this.bgOverlayAnime = new Anime(this.splite, {
+    this.bgOverlayAnime = new Anime(this.sprite, {
       topLeft: [0, 768],
       sz: [16, 16],
       frames: [0, 0, 1, 1, 2, 2, 1, 1],

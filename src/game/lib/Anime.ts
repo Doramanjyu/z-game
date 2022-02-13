@@ -1,18 +1,18 @@
 import { Vec2 } from './Vec'
-import { Splite, SpliteProp, Drawer } from './Splite'
+import { Sprite, SpriteProp, Drawer } from './Sprite'
 
-export type AnimeProp = SpliteProp & {
+export type AnimeProp = SpriteProp & {
   frames: number[]
   patterns?: number
 }
 
-export class Anime extends Splite implements Drawer {
+export class Anime extends Sprite implements Drawer {
   readonly prop: AnimeProp
   readonly patterns: number
   cnt = 0
 
-  constructor(splite: HTMLImageElement, prop: AnimeProp) {
-    super(splite, prop)
+  constructor(sprite: HTMLImageElement, prop: AnimeProp) {
+    super(sprite, prop)
     this.prop = prop
     if (prop.patterns) {
       this.patterns = prop.patterns
