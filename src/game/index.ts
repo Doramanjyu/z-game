@@ -82,7 +82,7 @@ class Game {
       [100, mh],
       [640, 480],
     )
-    this.collisionMap = new CollisionMap(this.gameMap)
+    this.collisionMap = new CollisionMap(this.gameMap, [16, 16])
     this.overlayMap = new GameMap<OverlayMapCell>(
       [mw, mh],
       (x: number, y: number) =>
@@ -179,7 +179,7 @@ class Game {
       )
 
       this.ctx.beginPath()
-      this.collisionMap.draw(this.ctx, this.bg, offset, this.scale)
+      this.collisionMap.draw(this.ctx, offset, this.scale)
       this.ctx.closePath()
     } catch (err) {
       console.error(err)
