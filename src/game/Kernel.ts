@@ -171,7 +171,6 @@ export class Kernel {
       Math.round((this.state.pos[0] - 2) / 16),
       Math.floor((this.state.pos[1] + vBottom) / 16),
     ]
-    const mpBottom2: Vec2 = [mpBottom[0], mpBottom[1] - 1]
     const vUp = this.state.vel[1] < 0 ? this.state.vel[1] : 0
     const mpUp: Vec2 = [
       Math.round((this.state.pos[0] + this.state.vel[0] - 2) / 16),
@@ -202,12 +201,9 @@ export class Kernel {
       }
       if (gameMap.at(mpSide).occupied()) {
         this.state.vel[0] *= -this.ellasticCoeff
+        this.state.pos[0] += this.state.vel[0]
       }
-      if (
-        gameMap.at(mpBottom).step() &&
-        !gameMap.at(mpBottom2).occupied() &&
-        this.state.vel[1] >= 0
-      ) {
+      if (gameMap.at(mpBottom).step() && this.state.vel[1] >= 0) {
         this.state.pos[1] = mpBottom[1] * 16
         this.state.pos[0] += this.state.vel[0]
         this.state.vel = [0, 0]
