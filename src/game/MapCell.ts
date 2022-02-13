@@ -1,4 +1,5 @@
 import { Cell, Appearance } from './lib/GameMap'
+import { Polygon } from './lib/Vec'
 
 export class MapCell implements Cell {
   readonly v: Appearance
@@ -23,6 +24,31 @@ export class MapCell implements Cell {
 
   heat(): boolean {
     return this.typ == 2
+  }
+
+  collision(): Polygon[] {
+    switch (this.typ) {
+      default:
+        return []
+      case 1:
+        return [
+          [
+            [0, 0.35],
+            [1, 0.35],
+            [1, 1.35],
+            [0, 1.35],
+            [0, 0.35],
+          ],
+        ]
+      case 2:
+      case 3:
+        return [
+          [
+            [0, 0.35],
+            [1, 0.35],
+          ],
+        ]
+    }
   }
 }
 

@@ -1,6 +1,7 @@
 import { Sprite } from './lib/Sprite'
 import { Anime } from './lib/Anime'
 import { GameMap } from './lib/GameMap'
+import { CollisionMap } from './lib/Collision'
 import { Vec2 } from './lib/Vec'
 
 import { Kernel } from './Kernel'
@@ -24,6 +25,7 @@ class Game {
   readonly bgOverlay: Sprite
   readonly bgOverlayAnime: Anime
   readonly kernel: Kernel
+  readonly collisionMap: CollisionMap
 
   command: Map<string, boolean>
 
@@ -80,6 +82,7 @@ class Game {
       [100, mh],
       [640, 480],
     )
+    this.collisionMap = new CollisionMap(this.gameMap)
     this.overlayMap = new GameMap<OverlayMapCell>(
       [mw, mh],
       (x: number, y: number) =>
@@ -174,6 +177,10 @@ class Game {
         offset,
         this.scale,
       )
+
+      this.ctx.beginPath()
+      this.collisionMap.draw(this.ctx, this.bg, offset, this.scale)
+      this.ctx.closePath()
     } catch (err) {
       console.error(err)
       this.stop()
