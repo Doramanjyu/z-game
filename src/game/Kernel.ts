@@ -6,7 +6,7 @@ import { GameMap } from './lib/GameMap'
 import { MapCell } from './MapCell'
 
 const heatCount = 8
-const popResume = 64
+const popResume = 96
 
 type KernelCommand = {
   left: boolean
@@ -175,10 +175,21 @@ export class Kernel {
     } else {
       if (!cmd.space && this.state.jumpPow[1] < 0) {
         this.state.onGround = false
-        this.state.vel = this.state.jumpPow
+        if (this.state.popped == 0) {
+          this.state.vel = this.state.jumpPow
+        } else {
+          this.state.vel = [
+            this.state.jumpPow[0] * 1.25,
+            this.state.jumpPow[1] * 0.5,
+          ]
+        }
         this.state.jumpPow = [0, 0]
       } else if (!this.state.onGround) {
-        this.state.vel[1] += 2
+        if (this.state.popped == 0) {
+          this.state.vel[1] += 2
+        } else {
+          this.state.vel[1] += 1.5
+        }
         if (this.state.vel[1] > 14) {
           this.state.vel[1] = 14
         }
