@@ -142,7 +142,7 @@ class Game {
       this.bgOverlayAnime.tick()
 
       const state = this.kernel.state
-      if (state.pos[1] > 16 * 14) {
+      if (state.pos[1] > 16 * 18) {
         this.kernel.reset()
       }
 
@@ -151,11 +151,11 @@ class Game {
         110 - this.origin[1] - this.viewpoint[1],
       ]
       const diffY = (state.pos[1] - this.origin[1]) / 1.5
-      if (this.viewpoint[1] < diffY + 16) {
-        this.viewpoint[1] += (diffY + 16 - this.viewpoint[1]) / 4
-      }
-      if (this.viewpoint[1] > diffY - 16) {
+      if (this.viewpoint[1] < diffY - 16) {
         this.viewpoint[1] += (diffY - 16 - this.viewpoint[1]) / 4
+      }
+      if (this.viewpoint[1] > diffY + 16) {
+        this.viewpoint[1] += (diffY + 16 - this.viewpoint[1]) / 4
       }
 
       this.gameMap.draw(this.ctx, this.bg, offset, this.scale)

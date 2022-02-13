@@ -145,34 +145,7 @@ export class Kernel {
       this.state.vel = [this.state.jumpPow[0], -4]
       this.state.jumpPow = [0, 0]
     }
-
-    const vBottom = this.state.vel[1] > 0 ? this.state.vel[1] : 0
-    const mpBottom: Vec2 = [
-      Math.round((this.state.pos[0] - 2) / 16),
-      Math.floor((this.state.pos[1] + vBottom + 1) / 16),
-    ]
-
-    this.state.pos[0] += this.state.vel[0]
-    this.state.pos[1] += this.state.vel[1]
-
-    const vUp = this.state.vel[1] < 0 ? this.state.vel[1] : 0
-    const mpUp: Vec2 = [
-      Math.round((this.state.pos[0] + this.state.vel[0] - 2) / 16),
-      Math.floor((this.state.pos[1] + vUp - 4) / 16),
-    ]
-    const mpSide: Vec2 = [
-      Math.round((this.state.pos[0] + this.state.vel[0] - 2) / 16),
-      Math.floor((this.state.pos[1] - 1) / 16),
-    ]
-
-    this.currentAnime = this.anime.idle
-    if (cmd.space && this.state.onGround) {
-      this.currentAnime = this.anime.squat
-      this.state.jumpPow[1] -= 2
-      if (this.state.jumpPow[1] < -11) {
-        this.state.jumpPow[1] = -11
-      }
-    } else {
+    if (!cmd.space || !this.state.onGround) {
       if (!cmd.space && this.state.jumpPow[1] < 0) {
         this.state.onGround = false
         if (this.state.popped == 0) {
@@ -191,28 +164,65 @@ export class Kernel {
           this.state.vel[1] = 14
         }
       }
-      if (!this.state.onGround) {
-        if (gameMap.at(mpUp).occupied() && this.state.vel[1] < 0) {
-          this.state.vel[1] *= -this.ellasticCoeff
-          this.state.vel[0] *= this.ellasticCoeff
-          this.state.pos[1] = mpUp[1] * 16 + 16 + 4
-        }
-        if (gameMap.at(mpSide).occupied()) {
-          this.state.vel[0] *= -this.ellasticCoeff
-        }
-        if (gameMap.at(mpBottom).step() && this.state.vel[1] >= 0) {
-          this.state.pos[1] = mpBottom[1] * 16
-          this.state.vel = [0, 0]
-          this.state.onGround = true
-          this.currentAnime = this.anime.squat
-        }
-        if (this.state.vel[1] < 0) {
-          this.currentAnime = this.anime.jump
-        } else if (this.state.vel[1] > 0) {
-          this.currentAnime = this.anime.squat
-        }
+    }
+
+    const vBottom = this.state.vel[1] > 0 ? this.state.vel[1] : 0
+    const mpBottom: Vec2 = [
+      Math.round((this.state.pos[0] - 2) / 16),
+      Math.floor((this.state.pos[1] + vBottom) / 16),
+    ]
+    const mpBottom2: Vec2 = [mpBottom[0], mpBottom[1] - 1]
+    const vUp = this.state.vel[1] < 0 ? this.state.vel[1] : 0
+    const mpUp: Vec2 = [
+      Math.round((this.state.pos[0] + this.state.vel[0] - 2) / 16),
+      Math.floor((this.state.pos[1] + vUp - 4) / 16),
+    ]
+    const mpUp2: Vec2 = [mpUp[0], mpUp[1] + 1]
+    const mpSide: Vec2 = [
+      Math.round((this.state.pos[0] + this.state.vel[0] - 2) / 16),
+      Math.floor((this.state.pos[1] - 1) / 16),
+    ]
+
+    this.currentAnime = this.anime.idle
+    if (cmd.space && this.state.onGround) {
+      this.currentAnime = this.anime.squat
+      this.state.jumpPow[1] -= 2
+      if (this.state.jumpPow[1] < -11) {
+        this.state.jumpPow[1] = -11
+      }
+    } else if (!this.state.onGround) {
+      if (
+        gameMap.at(mpUp).occupied() &&
+        !gameMap.at(mpUp2).occupied() &&
+        this.state.vel[1] < 0
+      ) {
+        this.state.vel[1] *= -this.ellasticCoeff
+        this.state.vel[0] *= this.ellasticCoeff
+        this.state.pos[1] = mpUp2[1] * 16 + 4
+      }
+      if (gameMap.at(mpSide).occupied()) {
+        this.state.vel[0] *= -this.ellasticCoeff
+      }
+      if (
+        gameMap.at(mpBottom).step() &&
+        !gameMap.at(mpBottom2).occupied() &&
+        this.state.vel[1] >= 0
+      ) {
+        this.state.pos[1] = mpBottom[1] * 16
+        this.state.pos[0] += this.state.vel[0]
+        this.state.vel = [0, 0]
+        this.state.onGround = true
+        this.currentAnime = this.anime.squat
+      }
+      if (this.state.vel[1] < 0) {
+        this.currentAnime = this.anime.jump
+      } else if (this.state.vel[1] > 0) {
+        this.currentAnime = this.anime.squat
       }
     }
+
+    this.state.pos[0] += this.state.vel[0]
+    this.state.pos[1] += this.state.vel[1]
 
     if (this.explosionNum && this.explosionNum > 0) {
       this.explosionNum--
@@ -221,7 +231,7 @@ export class Kernel {
         this.state.popped = popResume
 
         this.state.onGround = false
-        this.state.vel = [0, -15]
+        this.state.vel = [0, -17]
         this.state.jumpPow = [0, 0]
       }
     } else if (gameMap.at(mpBottom).heat()) {
