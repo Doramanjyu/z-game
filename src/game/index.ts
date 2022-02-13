@@ -146,17 +146,24 @@ class Game {
         this.kernel.reset()
       }
 
-      const offset: Vec2 = [
-        -this.viewpoint[0],
-        110 - this.origin[1] - this.viewpoint[1],
-      ]
-      const diffY = (state.pos[1] - this.origin[1]) / 1.5
+      const diffY = (state.pos[1] - this.origin[1]) / 1.25
       if (this.viewpoint[1] < diffY - 16) {
         this.viewpoint[1] += (diffY - 16 - this.viewpoint[1]) / 4
       }
       if (this.viewpoint[1] > diffY + 16) {
         this.viewpoint[1] += (diffY + 16 - this.viewpoint[1]) / 4
       }
+      const diffX =
+        (Math.round(((state.pos[0] - this.origin[0] - 6) * 3) / 640) * 640) / 3
+      this.viewpoint[0] += Math.max(
+        -50,
+        Math.min(50, (diffX - this.viewpoint[0]) / 2),
+      )
+
+      const offset: Vec2 = [
+        -this.viewpoint[0],
+        110 - this.origin[1] - this.viewpoint[1],
+      ]
 
       this.gameMap.draw(this.ctx, this.bg, offset, this.scale)
       this.kernel.draw(this.ctx, offset, this.scale)

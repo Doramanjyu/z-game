@@ -44,6 +44,9 @@ export class GameMap<T extends Cell> {
   draw(ctx: CanvasRenderingContext2D, d: Drawer, o: Vec2, scale: number) {
     const [cw, ch] = d.sz()
 
+    o[0] = Math.floor(o[0])
+    o[1] = Math.floor(o[1])
+
     const left = o[0] - this.s[0] * cw
     const si2 = left >= 0 ? this.s[0] : this.s[0] - Math.floor(left) / cw
     const ox2 = left >= 0 ? o[0] : o[0] + (Math.floor(left) % cw)
