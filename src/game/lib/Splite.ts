@@ -38,8 +38,8 @@ export class Splite implements Drawer {
       this.prop.topLeft[1] + mode2 * this.prop.sz[1],
       this.prop.sz[0],
       this.prop.sz[1],
-      p[0] * scale,
-      p[1] * scale,
+      Math.floor(p[0] * scale),
+      Math.floor(p[1] * scale),
       this.prop.sz[0] * scale,
       this.prop.sz[1] * scale,
     )
