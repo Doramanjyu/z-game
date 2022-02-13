@@ -28,7 +28,7 @@ class Game {
   command: Map<string, boolean>
 
   origin: Vec2
-  vewpoint: Vec2
+  viewpoint: Vec2
 
   constructor(
     canvas: HTMLCanvasElement,
