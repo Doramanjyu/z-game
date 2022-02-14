@@ -10,9 +10,13 @@ export const intersected = (
   sb: Vec2,
   eb: Vec2,
 ): boolean => {
-  const c1 = cross(diff(ea, sa), diff(sb, sa))
-  const c2 = cross(diff(ea, sa), diff(eb, sa))
-  const c3 = cross(diff(eb, sb), diff(sa, sb))
-  const c4 = cross(diff(eb, sb), diff(ea, sb))
+  const a = diff(ea, sa)
+  const b = diff(eb, sb)
+  const c1 = cross(a, diff(sb, sa))
+  const c2 = cross(a, diff(eb, sa))
+  const c3 = cross(b, diff(sa, sb))
+  const c4 = cross(b, diff(ea, sb))
   return c1 < 0 && c2 > 0 && c3 > 0 && c4 < 0
 }
+
+export const norm = (a: Vec2): number => Math.sqrt(a[0] * a[0] + a[1] * a[1])

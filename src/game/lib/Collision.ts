@@ -1,11 +1,12 @@
 import { CollisionCell, GameMap, cellRange } from './GameMap'
-import { Vec2, Polygon, intersected } from './Vec'
+import { Vec2, Polygon, diff, norm, intersected } from './Vec'
 
 type CollisionState = {
-  top: boolean
   right: boolean
-  bottom: boolean
   left: boolean
+
+  bottom?: number
+  top?: number
 }
 
 export class CollisionMap {
@@ -24,6 +25,10 @@ export class CollisionMap {
   }
 
   check(a: Vec2, b: Vec2): CollisionState {
+    const col: CollisionState = {
+      right: false,
+      left: false,
+    }
     const s: Vec2 = [
       Math.floor(Math.min(a[0], b[0]) / this.cellSz[0] - 0.5),
       Math.floor(Math.min(a[1], b[1]) / this.cellSz[1] - 0.5),
@@ -37,12 +42,6 @@ export class CollisionMap {
       [b[0] / this.cellSz[0], b[1] / this.cellSz[1]],
     ]
     this.motion = motion
-    const col: CollisionState = {
-      top: false,
-      right: false,
-      bottom: false,
-      left: false,
-    }
     for (let j = s[1]; j < e[1] + 1; j++) {
       for (let i = s[0]; i < e[0] + 1; i++) {
         const c = this.map.at([i, j])
@@ -57,9 +56,9 @@ export class CollisionMap {
               continue
             }
             if (pol[k][0] > pol[k + 1][0]) {
-              col.top = true
+              col.top = pol[k][1]
             } else if (pol[k][0] < pol[k + 1][0]) {
-              col.bottom = true
+              col.bottom = pol[k][1]
             }
             if (pol[k][1] > pol[k + 1][1]) {
               col.right = true
@@ -70,9 +69,6 @@ export class CollisionMap {
           }
         })
       }
-    }
-    if (col.left || col.right) {
-      console.log(col)
     }
     return col
   }
