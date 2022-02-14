@@ -42,6 +42,25 @@ export class MapCell implements Cell {
         [1, 0.1],
       ])
     }
+    if (this.colDir.right && this.colDir.bottom && !this.colDir.left) {
+      pol.push([
+        [1, 0.1],
+        [1, 0.9],
+        [0.3, 1.4],
+        [0, 1.4],
+      ])
+      return pol
+    }
+    if (this.colDir.left && this.colDir.bottom && !this.colDir.right) {
+      pol.push([
+        [1, 1.4],
+        [0.7, 1.4],
+        [0, 0.9],
+        [0, 0.1],
+      ])
+      return pol
+    }
+
     if (this.colDir.right) {
       pol.push([
         [1, 0.1],
