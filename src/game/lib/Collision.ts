@@ -1,6 +1,13 @@
 import { CollisionCell, GameMap, cellRange } from './GameMap'
 import { Vec2, Polygon, intersected } from './Vec'
 
+type CollisionState = {
+  top: boolean
+  right: boolean
+  bottom: boolean
+  left: boolean
+}
+
 export class CollisionMap {
   readonly map: GameMap<CollisionCell>
   readonly cellSz: Vec2
@@ -16,7 +23,7 @@ export class CollisionMap {
     this.intersection = []
   }
 
-  check(a: Vec2, b: Vec2): boolean {
+  check(a: Vec2, b: Vec2): CollisionState {
     const s: Vec2 = [
       Math.floor(Math.min(a[0], b[0]) / this.cellSz[0] - 0.5),
       Math.floor(Math.min(a[1], b[1]) / this.cellSz[1] - 0.5),
@@ -30,6 +37,12 @@ export class CollisionMap {
       [b[0] / this.cellSz[0], b[1] / this.cellSz[1]],
     ]
     this.motion = motion
+    const col: CollisionState = {
+      top: false,
+      right: false,
+      bottom: false,
+      left: false,
+    }
     for (let j = s[1]; j < e[1] + 1; j++) {
       for (let i = s[0]; i < e[0] + 1; i++) {
         const c = this.map.at([i, j])
@@ -40,13 +53,28 @@ export class CollisionMap {
           )
           pol.length > 0 && this.scanned.push(pol)
           for (let k = 0; k < pol.length - 1; k++) {
-            intersected(pol[k], pol[k + 1], motion[0], motion[1]) &&
-              this.intersection.push([pol[k], pol[k + 1]])
+            if (!intersected(pol[k], pol[k + 1], motion[0], motion[1])) {
+              continue
+            }
+            if (pol[k][0] > pol[k + 1][0]) {
+              col.top = true
+            } else if (pol[k][0] < pol[k + 1][0]) {
+              col.bottom = true
+            }
+            if (pol[k][1] > pol[k + 1][1]) {
+              col.right = true
+            } else if (pol[k][1] < pol[k + 1][1]) {
+              col.left = true
+            }
+            this.intersection.push([pol[k], pol[k + 1]])
           }
         })
       }
     }
-    return false
+    if (col.left || col.right) {
+      console.log(col)
+    }
+    return col
   }
 
   draw(ctx: CanvasRenderingContext2D, o: Vec2, scale: number) {
