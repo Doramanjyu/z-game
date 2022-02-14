@@ -35,16 +35,17 @@ export class MapCell implements Cell {
   }
 
   collision(): Polygon[] {
+    const topOffset = 0.05
     const pol: Polygon[] = []
     if (this.colDir.top) {
       pol.push([
-        [0, 0.1],
-        [1, 0.1],
+        [0, topOffset],
+        [1, topOffset],
       ])
     }
     if (this.colDir.right && this.colDir.bottom && !this.colDir.left) {
       pol.push([
-        [1, 0.1],
+        [1, topOffset],
         [1, 0.9],
         [0.3, 1.4],
         [0, 1.4],
@@ -56,7 +57,7 @@ export class MapCell implements Cell {
         [1, 1.4],
         [0.7, 1.4],
         [0, 0.9],
-        [0, 0.1],
+        [0, topOffset],
       ])
       return pol
     }
