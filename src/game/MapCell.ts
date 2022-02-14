@@ -27,7 +27,7 @@ export class MapCell implements Cell {
   }
 
   collision(): Polygon[] {
-    let pol: Polygon[] = []
+    const pol: Polygon[] = []
     if (this.colDir.top) {
       pol.push([
         [0, 0.1],

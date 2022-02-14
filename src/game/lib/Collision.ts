@@ -1,5 +1,5 @@
 import { CollisionCell, GameMap, cellRange } from './GameMap'
-import { Vec2, Polygon, diff, norm, intersected } from './Vec'
+import { Vec2, Polygon, intersected } from './Vec'
 
 type CollisionState = {
   right: boolean
