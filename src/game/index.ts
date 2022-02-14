@@ -24,6 +24,7 @@ class Game {
   readonly bg: Sprite
   readonly bgOverlay: Sprite
   readonly bgOverlayAnime: Anime
+  readonly bgGrad: Sprite
   readonly kernel: Kernel
   readonly collisionMap: CollisionMap
 
@@ -68,6 +69,10 @@ class Game {
       topLeft: [0, 768],
       sz: [16, 16],
       frames: [0, 0, 1, 1, 2, 2, 1, 1],
+    })
+    this.bgGrad = new Sprite(this.sprite, {
+      topLeft: [1024 - 16, 0],
+      sz: [16, 1024],
     })
 
     const mw = mapData.main[0].length
@@ -179,6 +184,15 @@ class Game {
         110 - this.origin[1] - this.viewpoint[1],
       ]
 
+      for (let x = 0; x < 640 / this.scale; x += 16) {
+        this.bgGrad.draw(
+          this.ctx,
+          [x, -1024 + 480 / this.scale - this.viewpoint[1] / 3],
+          this.scale,
+          0,
+          0,
+        )
+      }
       this.gameMap.draw(this.ctx, this.bg, offset, this.scale)
       this.kernel.draw(this.ctx, offset, this.scale)
       this.overlayMap.draw(this.ctx, this.bgOverlay, offset, this.scale)
