@@ -201,7 +201,6 @@ export class Kernel {
       }
       if (col.bottom && this.state.vel[1] >= 0) {
         this.state.pos[1] = col.bottom * 16
-        this.state.pos[0] += this.state.vel[0]
         this.state.vel = [0, 0]
         this.state.onGround = true
         this.currentAnime = this.anime.squat
