@@ -120,13 +120,6 @@ export class Kernel {
   }
 
   tick(cmd: KernelCommand, gameMap: GameMap<MapCell>, colMap: CollisionMap) {
-    const col = colMap.check(
-      [this.state.pos[0] + 6, this.state.pos[1] + 4],
-      [
-        this.state.pos[0] + this.state.vel[0] + 6,
-        this.state.pos[1] + this.state.vel[1] + 4,
-      ],
-    )
     if (cmd.left && this.state.onGround) {
       this.state.jumpPow[0]--
       if (this.state.jumpPow[0] < -4) {
@@ -178,6 +171,13 @@ export class Kernel {
       Math.round((this.state.pos[0] - 2) / 16),
       Math.floor(this.state.pos[1] / 16),
     ]
+    const col = colMap.check(
+      [this.state.pos[0] + 6, this.state.pos[1]],
+      [
+        this.state.pos[0] + this.state.vel[0] + 6,
+        this.state.pos[1] + this.state.vel[1],
+      ],
+    )
 
     this.currentAnime = this.anime.idle
     if (cmd.space && this.state.onGround) {
@@ -192,7 +192,10 @@ export class Kernel {
         this.state.vel[0] *= this.ellasticCoeff
         this.state.pos[1] = col.top * 16
       }
-      if (col.left || col.right) {
+      if (
+        (col.left && this.state.vel[0] < 0) ||
+        (col.right && this.state.vel[0] > 0)
+      ) {
         this.state.vel[0] *= -this.ellasticCoeff
         this.state.pos[0] += this.state.vel[0]
       }

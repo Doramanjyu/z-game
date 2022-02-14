@@ -52,13 +52,13 @@ export class CollisionMap {
           )
           pol.length > 0 && this.scanned.push(pol)
           for (let k = 0; k < pol.length - 1; k++) {
-            if (!intersected(pol[k], pol[k + 1], motion[0], motion[1])) {
+            if (!intersected(pol[k], pol[k + 1], motion[0], motion[1], 0.005)) {
               continue
             }
             if (pol[k][0] > pol[k + 1][0]) {
-              col.top = pol[k][1]
+              col.top = pol[k][1] + 0.01
             } else if (pol[k][0] < pol[k + 1][0]) {
-              col.bottom = pol[k][1]
+              col.bottom = pol[k][1] - 0.01
             }
             if (pol[k][1] > pol[k + 1][1]) {
               col.right = true
@@ -121,12 +121,12 @@ export class CollisionMap {
     }
 
     ctx.strokeStyle = 'yellow'
-    ctx.lineWidth = 3
+    ctx.lineWidth = 1
     drawPolygon(this.scanned)
     this.scanned = []
 
     ctx.strokeStyle = 'orange'
-    ctx.lineWidth = 3
+    ctx.lineWidth = 5
     drawPolygon(this.intersection)
     this.intersection = []
 
