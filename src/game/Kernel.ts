@@ -63,6 +63,7 @@ export class Kernel {
   private readonly shadow: Sprite
   private readonly trans: Sprite
   private readonly explosion: Sprite
+  private readonly headUpText: Sprite
   private readonly ellasticCoeff: number
   private currentAnime: Anime
   private state0: KernelState
@@ -70,6 +71,7 @@ export class Kernel {
   state: KernelState
   explosionPos: Vec2
   explosionNum: number
+  headUpTextMode: number
 
   constructor(sprite: HTMLImageElement, state0: InitialKernelState) {
     this.ellasticCoeff = 0.5
@@ -107,12 +109,17 @@ export class Kernel {
       topLeft: [0, 48],
       sz: [36, 12],
     })
+    this.headUpText = new Sprite(sprite, {
+      topLeft: [0, 60],
+      sz: [24, 12],
+    })
 
     this.state0 = new KernelState(state0)
     this.state = this.state0.clone()
 
     this.explosionPos = this.state.pos
     this.explosionNum = 0
+    this.headUpTextMode = 0
   }
 
   reset() {
@@ -178,6 +185,7 @@ export class Kernel {
         this.state.pos[1] + this.state.vel[1],
       ],
     )
+    this.headUpTextMode = gameMap.at(mpBottom).headUpText()
 
     this.currentAnime = this.anime.idle
     if (cmd.space && this.state.onGround) {
@@ -293,6 +301,15 @@ export class Kernel {
         ],
         scale,
         3 - this.explosionNum,
+        0,
+      )
+    }
+    if (this.headUpTextMode > 0) {
+      this.headUpText.draw(
+        ctx,
+        [offset[0] + this.state.pos[0] - 6, offset[1] + this.state.pos[1] - 15],
+        scale,
+        this.headUpTextMode - 1,
         0,
       )
     }

@@ -11,11 +11,19 @@ export class MapCell implements Cell {
   readonly v: Appearance
   readonly typ: number
   readonly colDir: CollisionDir
+  readonly item: number
 
-  constructor(mode1: number, mode2: number, typ: number, col: CollisionDir) {
+  constructor(
+    mode1: number,
+    mode2: number,
+    typ: number,
+    col: CollisionDir,
+    item: number,
+  ) {
     this.v = { mode1, mode2 }
     this.typ = typ
     this.colDir = col
+    this.item = item
   }
 
   appearance(): Appearance {
@@ -54,6 +62,13 @@ export class MapCell implements Cell {
     }
 
     return pol
+  }
+
+  headUpText(): number {
+    if (this.item > 0) {
+      return 1
+    }
+    return 0
   }
 }
 

@@ -86,7 +86,13 @@ class Game {
           left: t == 1 && tl != 1,
           right: t == 1 && tr != 1,
         }
-        return new MapCell(mapData.main[y][x][1], mapData.main[y][x][0], t, col)
+        return new MapCell(
+          mapData.main[y][x][1],
+          mapData.main[y][x][0],
+          t,
+          col,
+          mapData.item[y][x],
+        )
       },
       [-100, 0],
       [100, mh],
@@ -103,11 +109,15 @@ class Game {
     )
     this.overlayAnimeMap = new GameMap<OverlayMapCell>(
       [mw, mh],
-      (x: number, y: number) =>
-        new OverlayMapCell(
+      (x: number, y: number) => {
+        if (mapData.item[y][x] > 0) {
+          return new OverlayMapCell(2, 0)
+        }
+        return new OverlayMapCell(
           mapData.overlayAnime[y][x][1],
           mapData.overlayAnime[y][x][0],
-        ),
+        )
+      },
       [-100, 0],
       [100, mh],
       [640, 480],
