@@ -187,7 +187,7 @@ class Game {
       for (let x = 0; x < 640 / this.scale; x += 16) {
         this.bgGrad.draw(
           this.ctx,
-          [x, -1024 + 480 / this.scale - this.viewpoint[1] / 3],
+          [x, -1024 + 480 / this.scale - this.viewpoint[1] / 3 + 12],
           this.scale,
           0,
           0,
