@@ -1,17 +1,19 @@
 import { CollisionCell, GameMap, cellRange } from './GameMap'
-import { Vec2, Polygon } from './Vec'
+import { Vec2, Polygon, intersected } from './Vec'
 
 export class CollisionMap {
   readonly map: GameMap<CollisionCell>
   readonly cellSz: Vec2
 
   private scanned: Polygon[]
+  private intersection: Polygon[]
   private motion?: Polygon
 
   constructor(map: GameMap<CollisionCell>, cellSz: Vec2) {
     this.map = map
     this.cellSz = cellSz
     this.scanned = []
+    this.intersection = []
   }
 
   check(a: Vec2, b: Vec2): boolean {
@@ -23,10 +25,11 @@ export class CollisionMap {
       Math.floor(Math.max(a[0], b[0]) / this.cellSz[0] + 0.5),
       Math.floor(Math.max(a[1], b[1]) / this.cellSz[1] + 0.5),
     ]
-    this.motion = [
+    const motion: [Vec2, Vec2] = [
       [a[0] / this.cellSz[0], a[1] / this.cellSz[1]],
       [b[0] / this.cellSz[0], b[1] / this.cellSz[1]],
     ]
+    this.motion = motion
     for (let j = s[1]; j < e[1] + 1; j++) {
       for (let i = s[0]; i < e[0] + 1; i++) {
         const c = this.map.at([i, j])
@@ -36,6 +39,10 @@ export class CollisionMap {
             [],
           )
           pol.length > 0 && this.scanned.push(pol)
+          for (let k = 0; k < pol.length - 1; k++) {
+            intersected(pol[k], pol[k + 1], motion[0], motion[1]) &&
+              this.intersection.push([pol[k], pol[k + 1]])
+          }
         })
       }
     }
@@ -74,33 +81,38 @@ export class CollisionMap {
     }
     ctx.closePath()
 
+    const xy = (p: Vec2): Vec2 => [
+      (v.o[0] + cw * p[0]) * scale,
+      (v.o[1] + ch * p[1]) * scale,
+    ]
+    const drawPolygon = (poly: Polygon[]) => {
+      ctx.beginPath()
+      poly.forEach((pp) => {
+        pp.forEach((p, c) =>
+          c == 0 ? ctx.moveTo(...xy(p)) : ctx.lineTo(...xy(p)),
+        )
+        ctx.stroke()
+      })
+      ctx.closePath()
+    }
+
     ctx.strokeStyle = 'yellow'
     ctx.lineWidth = 3
-    ctx.beginPath()
-    this.scanned.forEach((pp) => {
-      pp.forEach((p, c) => {
-        const [x, y] = [
-          (v.o[0] + cw * p[0]) * scale,
-          (v.o[1] + ch * p[1]) * scale,
-        ]
-        c == 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y)
-      })
-      ctx.stroke()
-    })
-    ctx.closePath()
+    drawPolygon(this.scanned)
     this.scanned = []
+
+    ctx.strokeStyle = 'orange'
+    ctx.lineWidth = 3
+    drawPolygon(this.intersection)
+    this.intersection = []
 
     if (this.motion) {
       ctx.strokeStyle = 'red'
       ctx.lineWidth = 4
       ctx.beginPath()
-      this.motion.forEach((p, c) => {
-        const [x, y] = [
-          (v.o[0] + cw * p[0]) * scale,
-          (v.o[1] + ch * p[1]) * scale,
-        ]
-        c == 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y)
-      })
+      this.motion.forEach((p, c) =>
+        c == 0 ? ctx.moveTo(...xy(p)) : ctx.lineTo(...xy(p)),
+      )
       ctx.stroke()
       ctx.closePath()
     }
