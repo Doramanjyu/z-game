@@ -128,6 +128,9 @@ class Game {
   start() {
     const tickTimer = setInterval(this.tick.bind(this), 80)
 
+    this.showMessage("What's poppin?")
+    setTimeout(this.hideMessage.bind(this), 5000)
+
     this.cleanup = () => {
       clearInterval(tickTimer)
     }
