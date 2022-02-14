@@ -1,6 +1,7 @@
 import { Sprite } from './lib/Sprite'
 import { Anime } from './lib/Anime'
 import { GameMap } from './lib/GameMap'
+import { CollisionMap } from './lib/Collision'
 import { Vec2 } from './lib/Vec'
 
 import { Kernel } from './Kernel'
@@ -24,11 +25,13 @@ class Game {
   readonly bgOverlay: Sprite
   readonly bgOverlayAnime: Anime
   readonly kernel: Kernel
+  readonly collisionMap: CollisionMap
 
   command: Map<string, boolean>
 
   origin: Vec2
   viewpoint: Vec2
+  debugView: boolean
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -48,6 +51,7 @@ class Game {
     this.scale = 3
     this.origin = [mapData.start.pos[0] * 16, mapData.start.pos[1] * 16]
     this.viewpoint = [0, 0]
+    this.debugView = false
 
     this.kernel = new Kernel(this.sprite, {
       pos: this.origin,
@@ -70,16 +74,25 @@ class Game {
     const mh = mapData.main.length
     this.gameMap = new GameMap<MapCell>(
       [mw, mh],
-      (x: number, y: number) =>
-        new MapCell(
-          mapData.main[y][x][1],
-          mapData.main[y][x][0],
-          mapData.type[y][x],
-        ),
+      (x: number, y: number) => {
+        const t = mapData.type[y][x]
+        const tr = x + 1 > mw - 1 ? mw - 1 : mapData.type[y][x + 1]
+        const tl = x - 1 < 0 ? 0 : mapData.type[y][x - 1]
+        const tt = y - 1 < 0 ? 0 : mapData.type[y - 1][x]
+        const tb = y + 1 > mh - 1 ? mh - 1 : mapData.type[y + 1][x]
+        const col = {
+          top: t == 2 || t == 3 || (t == 1 && tt != 1),
+          bottom: t == 1 && tb != 1,
+          left: t == 1 && tl != 1,
+          right: t == 1 && tr != 1,
+        }
+        return new MapCell(mapData.main[y][x][1], mapData.main[y][x][0], t, col)
+      },
       [-100, 0],
       [100, mh],
       [640, 480],
     )
+    this.collisionMap = new CollisionMap(this.gameMap, [16, 16])
     this.overlayMap = new GameMap<OverlayMapCell>(
       [mw, mh],
       (x: number, y: number) =>
@@ -105,20 +118,8 @@ class Game {
   start() {
     const tickTimer = setInterval(this.tick.bind(this), 80)
 
-    let showMessage = false
-    const messageTest = () => {
-      if (showMessage) {
-        this.showMessage("What's poppin?")
-      } else {
-        this.hideMessage()
-      }
-      showMessage = !showMessage
-    }
-    const messageTimer = setInterval(messageTest, 5000)
-
     this.cleanup = () => {
       clearInterval(tickTimer)
-      clearInterval(messageTimer)
     }
   }
 
@@ -138,7 +139,7 @@ class Game {
         right: this.command.has('ArrowRight'),
         space: this.command.has('Space'),
       }
-      this.kernel.tick(kernelCmd, this.gameMap)
+      this.kernel.tick(kernelCmd, this.gameMap, this.collisionMap)
       this.bgOverlayAnime.tick()
 
       const state = this.kernel.state
@@ -174,6 +175,10 @@ class Game {
         offset,
         this.scale,
       )
+
+      if (this.debugView) {
+        this.collisionMap.draw(this.ctx, offset, this.scale)
+      }
     } catch (err) {
       console.error(err)
       this.stop()
@@ -184,6 +189,9 @@ class Game {
     this.command.set(e.code, true)
   }
   keyup(e: Pick<KeyboardEvent, 'code'>) {
+    if (this.command.has('F2')) {
+      this.debugView = !this.debugView
+    }
     this.command.delete(e.code)
   }
 

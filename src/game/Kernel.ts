@@ -2,6 +2,7 @@ import { Anime } from './lib/Anime'
 import { Sprite } from './lib/Sprite'
 import { Vec2 } from './lib/Vec'
 import { GameMap } from './lib/GameMap'
+import { CollisionMap } from './lib/Collision'
 
 import { MapCell } from './MapCell'
 
@@ -118,7 +119,7 @@ export class Kernel {
     this.state = this.state0.clone()
   }
 
-  tick(cmd: KernelCommand, gameMap: GameMap<MapCell>) {
+  tick(cmd: KernelCommand, gameMap: GameMap<MapCell>, colMap: CollisionMap) {
     if (cmd.left && this.state.onGround) {
       this.state.jumpPow[0]--
       if (this.state.jumpPow[0] < -4) {
@@ -166,21 +167,17 @@ export class Kernel {
       }
     }
 
-    const vBottom = this.state.vel[1] > 0 ? this.state.vel[1] : 0
     const mpBottom: Vec2 = [
       Math.round((this.state.pos[0] - 2) / 16),
-      Math.floor((this.state.pos[1] + vBottom) / 16),
+      Math.floor(this.state.pos[1] / 16),
     ]
-    const vUp = this.state.vel[1] < 0 ? this.state.vel[1] : 0
-    const mpUp: Vec2 = [
-      Math.round((this.state.pos[0] + this.state.vel[0] - 2) / 16),
-      Math.floor((this.state.pos[1] + vUp - 4) / 16),
-    ]
-    const mpUp2: Vec2 = [mpUp[0], mpUp[1] + 1]
-    const mpSide: Vec2 = [
-      Math.round((this.state.pos[0] + this.state.vel[0] - 2) / 16),
-      Math.floor((this.state.pos[1] - 1) / 16),
-    ]
+    const col = colMap.check(
+      [this.state.pos[0] + 6, this.state.pos[1]],
+      [
+        this.state.pos[0] + this.state.vel[0] + 6,
+        this.state.pos[1] + this.state.vel[1],
+      ],
+    )
 
     this.currentAnime = this.anime.idle
     if (cmd.space && this.state.onGround) {
@@ -190,21 +187,20 @@ export class Kernel {
         this.state.jumpPow[1] = -11
       }
     } else if (!this.state.onGround) {
-      if (
-        gameMap.at(mpUp).occupied() &&
-        !gameMap.at(mpUp2).occupied() &&
-        this.state.vel[1] < 0
-      ) {
+      if (col.top && this.state.vel[1] < 0) {
         this.state.vel[1] *= -this.ellasticCoeff
         this.state.vel[0] *= this.ellasticCoeff
-        this.state.pos[1] = mpUp2[1] * 16 + 4
+        this.state.pos[1] = col.top * 16
       }
-      if (gameMap.at(mpSide).occupied()) {
+      if (
+        (col.left && this.state.vel[0] < 0) ||
+        (col.right && this.state.vel[0] > 0)
+      ) {
         this.state.vel[0] *= -this.ellasticCoeff
         this.state.pos[0] += this.state.vel[0]
       }
-      if (gameMap.at(mpBottom).step() && this.state.vel[1] >= 0) {
-        this.state.pos[1] = mpBottom[1] * 16
+      if (col.bottom && this.state.vel[1] >= 0) {
+        this.state.pos[1] = col.bottom * 16
         this.state.pos[0] += this.state.vel[0]
         this.state.vel = [0, 0]
         this.state.onGround = true

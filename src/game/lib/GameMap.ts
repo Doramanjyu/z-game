@@ -1,5 +1,5 @@
 import { Drawer } from './Sprite'
-import { Vec2 } from './Vec'
+import { Vec2, Polygon } from './Vec'
 
 export type Appearance = {
   mode1: number
@@ -8,6 +8,10 @@ export type Appearance = {
 
 export interface Cell {
   appearance(): Appearance
+}
+
+export interface CollisionCell extends Cell {
+  collision(): Polygon[]
 }
 
 export class GameMap<T extends Cell> {
@@ -42,34 +46,16 @@ export class GameMap<T extends Cell> {
   }
 
   draw(ctx: CanvasRenderingContext2D, d: Drawer, o: Vec2, scale: number) {
+    const v = cellRange(d.sz(), this.s, this.e, o, this.screenSize, scale)
     const [cw, ch] = d.sz()
 
-    o[0] = Math.floor(o[0])
-    o[1] = Math.floor(o[1])
+    //console.log(v.s, v.e)
 
-    const left = o[0] - this.s[0] * cw
-    const si2 = left >= 0 ? this.s[0] : this.s[0] - Math.floor(left) / cw
-    const ox2 = left >= 0 ? o[0] : o[0] + (Math.floor(left) % cw)
-    const right = o[0] + this.e[0] * cw
-    const ei2 =
-      right < this.screenSize[0]
-        ? this.e[0]
-        : this.e[0] - Math.floor(right - this.screenSize[0]) / cw
-
-    const top = o[1] - this.s[1] * ch
-    const sj2 = top >= 0 ? this.s[1] : this.s[1] - Math.floor(top) / ch
-    const oy2 = top >= 0 ? o[1] : o[1] + (Math.floor(top) % ch)
-    const bottom = o[1] + this.e[1] * ch
-    const ej2 =
-      bottom < this.screenSize[1]
-        ? this.e[1]
-        : this.e[1] - Math.floor(bottom - this.screenSize[1]) / ch
-
-    for (let j = sj2; j < ej2; j++) {
-      for (let i = si2; i < ei2; i++) {
+    for (let j = v.s[1]; j < v.e[1]; j++) {
+      for (let i = v.s[0]; i < v.e[1]; i++) {
         const c = this.at([i, j])
         const a = c.appearance()
-        d.draw(ctx, [ox2 + i * cw, oy2 + j * ch], scale, a.mode1, a.mode2)
+        d.draw(ctx, [v.o[0] + i * cw, v.o[1] + j * ch], scale, a.mode1, a.mode2)
       }
     }
   }
@@ -78,4 +64,38 @@ export class GameMap<T extends Cell> {
 const posMod = (a: Vec2, b: Vec2): Vec2 => {
   const m = [a[0] % b[0], a[1] % b[1]]
   return [m[0] < 0 ? m[0] + b[0] : m[0], m[1] < 0 ? m[1] + b[1] : m[1]]
+}
+
+export const cellRange = (
+  sz: Vec2,
+  s: Vec2,
+  e: Vec2,
+  o: Vec2,
+  screenSize: Vec2,
+  scale: number,
+): {
+  s: Vec2
+  e: Vec2
+  o: Vec2
+} => {
+  o[0] = Math.floor(o[0])
+  o[1] = Math.floor(o[1])
+
+  const gw = Math.round(screenSize[0] / (sz[0] * scale)) + 2
+  const gh = Math.round(screenSize[1] / (sz[1] * scale)) + 2
+
+  const left = o[0] + s[0] * sz[0] + sz[0]
+  const top = o[1] + s[1] * sz[1] + sz[1]
+
+  const si2 = left >= 0 ? s[0] : s[0] - Math.floor(left / sz[0])
+  const ei2 = si2 + gw
+
+  const sj2 = top >= 0 ? s[1] : s[1] - Math.floor(top / sz[1])
+  const ej2 = sj2 + gh
+
+  return {
+    s: [si2, sj2],
+    e: [ei2, ej2],
+    o,
+  }
 }
