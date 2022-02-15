@@ -99,7 +99,7 @@ const IndexPage = () => {
       <title>What's poppin?</title>
       <div
         style={{
-          width: '808px',
+          width: '788px',
           height: '689px',
           backgroundImage: `url(${frame})`,
           position: 'relative',
@@ -113,7 +113,7 @@ const IndexPage = () => {
             height: '480px',
             borderRadius: '30px',
             position: 'absolute',
-            left: '84px',
+            left: '74px',
             top: '188px',
           }}
           css={css`
@@ -130,7 +130,7 @@ const IndexPage = () => {
             height: '480px',
             backgroundImage: `url(${frameInner})`,
             position: 'absolute',
-            left: '84px',
+            left: '74px',
             top: '188px',
           }}
         />
@@ -146,7 +146,7 @@ const IndexPage = () => {
             position: 'absolute',
             width: '540px',
             height: '85px',
-            left: '134px',
+            left: '124px',
             bottom: '34px',
             padding: '10px 20px',
             fontSize: '20px',
