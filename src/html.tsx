@@ -18,7 +18,7 @@ export default function HTML(props: Props) {
       <head>
         <meta charSet="utf-8" />
         <meta httpEquiv="x-ua-compatible" content="ie=edge" />
-        <meta name="viewport" content="width=900, shrink-to-fit=yes" />
+        <meta name="viewport" content="width=800, shrink-to-fit=yes" />
         {props.headComponents}
       </head>
       <body {...props.bodyAttributes}>

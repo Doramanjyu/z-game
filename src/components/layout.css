@@ -1,10 +1,10 @@
-@import "../css/typography.css";
+@import '../css/typography.css';
 
 body {
-  font-family: "PixelMplus10 Regular", georgia, serif;
+  font-family: 'PixelMplus10 Regular', georgia, serif;
   font-weight: normal;
   background-color: #224;
   color: #ff6;
-  width: 808px;
+  width: 788px;
   margin: 0 auto;
 }
