@@ -7,4 +7,5 @@ body {
   color: #ff6;
   width: 788px;
   margin: 0 auto;
+  overscroll-behavior: none;
 }
