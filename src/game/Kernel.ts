@@ -63,7 +63,7 @@ export class Kernel {
   private readonly shadow: Sprite
   private readonly trans: Sprite
   private readonly explosion: Sprite
-  private readonly headUpText: Sprite
+  private readonly headUpText: Anime
   private readonly ellasticCoeff: number
   private currentAnime: Anime
   private state0: KernelState
