@@ -72,7 +72,6 @@ export class Kernel {
   explosionPos: Vec2
   explosionNum: number
   headUpTextMode: number
-  headUpTextModePrev: number
 
   constructor(sprite: HTMLImageElement, state0: InitialKernelState) {
     this.ellasticCoeff = 0.5
@@ -124,7 +123,6 @@ export class Kernel {
     this.explosionPos = this.state.pos
     this.explosionNum = 0
     this.headUpTextMode = 0
-    this.headUpTextModePrev = 0
   }
 
   reset() {
