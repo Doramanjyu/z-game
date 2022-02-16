@@ -108,6 +108,7 @@ class Game {
           t,
           col,
           mapData.item[y][x],
+          mapData.dialog[y][x],
         )
       },
       [-100, 0],

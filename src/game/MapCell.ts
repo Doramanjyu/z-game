@@ -12,6 +12,7 @@ export class MapCell implements Cell {
   readonly typ: number
   readonly colDir: CollisionDir
   readonly item: number
+  readonly dialog: number
 
   constructor(
     mode1: number,
@@ -19,11 +20,13 @@ export class MapCell implements Cell {
     typ: number,
     col: CollisionDir,
     item: number,
+    dialog: number,
   ) {
     this.v = { mode1, mode2 }
     this.typ = typ
     this.colDir = col
     this.item = item
+    this.dialog = dialog
   }
 
   appearance(): Appearance {
@@ -90,6 +93,9 @@ export class MapCell implements Cell {
     }
     if (this.typ == 2) {
       return 2
+    }
+    if (this.dialog > 0) {
+      return 3
     }
     return 0
   }
