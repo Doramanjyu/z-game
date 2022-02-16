@@ -88,6 +88,9 @@ export class MapCell implements Cell {
     if (this.item > 0) {
       return 1
     }
+    if (this.typ == 2) {
+      return 2
+    }
     return 0
   }
 }

@@ -109,9 +109,12 @@ export class Kernel {
       topLeft: [0, 48],
       sz: [36, 12],
     })
-    this.headUpText = new Sprite(sprite, {
+    this.headUpText = new Anime(sprite, {
       topLeft: [0, 60],
       sz: [24, 12],
+      frames: [0, 1],
+      patterns: 2,
+      countDiv: 8,
     })
 
     this.state0 = new KernelState(state0)
@@ -259,6 +262,7 @@ export class Kernel {
 
   draw(ctx: CanvasRenderingContext2D, offset: Vec2, scale: number) {
     const kernelMode = this.currentAnime.tick()
+    this.headUpText.tick()
     const mode =
       (this.state.popped > 0 && this.state.popped != 2) ||
       this.state.heat == heatCount * 5 - 1
@@ -308,8 +312,8 @@ export class Kernel {
         ctx,
         [offset[0] + this.state.pos[0] - 6, offset[1] + this.state.pos[1] - 15],
         scale,
-        this.headUpTextMode - 1,
         0,
+        this.headUpTextMode - 1,
       )
     }
   }
