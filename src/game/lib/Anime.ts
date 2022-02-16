@@ -45,11 +45,14 @@ export class Anime extends Sprite implements Drawer {
     )
   }
 
-  tick(): number {
-    this.cnt++
+  tick(forceCnt?: number): number {
+    if (forceCnt !== undefined) {
+      this.cnt = forceCnt
+    }
     this.frame = Math.floor(
       (this.cnt / this.countDiv) % this.prop.frames.length,
     )
+    this.cnt++
     return this.prop.frames[this.frame]
   }
 }
