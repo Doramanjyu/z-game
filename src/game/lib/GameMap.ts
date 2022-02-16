@@ -49,8 +49,6 @@ export class GameMap<T extends Cell> {
     const v = cellRange(d.sz(), this.s, this.e, o, this.screenSize, scale)
     const [cw, ch] = d.sz()
 
-    //console.log(v.s, v.e)
-
     for (let j = v.s[1]; j < v.e[1]; j++) {
       for (let i = v.s[0]; i < v.e[0]; i++) {
         const c = this.at([i, j])
@@ -93,7 +91,6 @@ export const cellRange = (
   const sj2 = top >= 0 ? s[1] : s[1] - Math.floor(top / sz[1])
   const ej2 = sj2 + gh
 
-  console.log(si2, sj2, ei2, ej2)
   return {
     s: [si2, sj2],
     e: [ei2, ej2],
