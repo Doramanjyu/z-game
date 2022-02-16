@@ -188,7 +188,11 @@ export class Kernel {
         this.state.pos[1] + this.state.vel[1],
       ],
     )
+    const headUpTextModePrev = this.headUpTextMode
     this.headUpTextMode = gameMap.at(mpBottom).headUpText()
+    if (this.headUpTextMode > 0 && headUpTextModePrev == 0) {
+      this.headUpText.tick(0)
+    }
 
     this.currentAnime = this.anime.idle
     if (cmd.space && this.state.onGround) {
@@ -262,7 +266,9 @@ export class Kernel {
 
   draw(ctx: CanvasRenderingContext2D, offset: Vec2, scale: number) {
     const kernelMode = this.currentAnime.tick()
-    this.headUpText.tick()
+    if (this.headUpTextMode > 0) {
+      this.headUpText.tick()
+    }
     const mode =
       (this.state.popped > 0 && this.state.popped != 2) ||
       this.state.heat == heatCount * 5 - 1
