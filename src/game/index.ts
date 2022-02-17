@@ -6,6 +6,7 @@ import { Vec2 } from './lib/Vec'
 
 import { Kernel } from './Kernel'
 import { MapCell, OverlayMapCell } from './MapCell'
+import { ZEA } from './ZEA'
 
 import mapData from './data/map.yaml'
 
@@ -27,7 +28,7 @@ class Game {
   readonly bgGrad: Sprite
   readonly kernel: Kernel
   readonly collisionMap: CollisionMap
-  readonly zeaAnime: Anime
+  readonly zea: ZEA
 
   command: Map<string, boolean>
 
@@ -75,15 +76,10 @@ class Game {
       topLeft: [1024 - 16, 0],
       sz: [16, 1024],
     })
-    this.zeaAnime = new Anime(this.sprite, {
-      topLeft: [0, 72],
-      sz: [24, 24],
-      frames: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2,
-        2, 2, 2, 2, 2, 2,
-      ],
-      patterns: 5,
+    this.zea = new ZEA(this.sprite, {
+      pos: [60, 48],
+      mode: 1,
+      hasDialog: true,
     })
 
     const mw = mapData.main[0].length
@@ -108,7 +104,6 @@ class Game {
           t,
           col,
           mapData.item[y][x],
-          mapData.dialog[y][x],
         )
       },
       [-100, 0],
@@ -171,7 +166,7 @@ class Game {
       }
       this.kernel.tick(kernelCmd, this.gameMap, this.collisionMap)
       this.bgOverlayAnime.tick()
-      this.zeaAnime.tick()
+      this.zea.tick()
 
       const state = this.kernel.state
       if (state.pos[1] > 16 * 18) {
@@ -207,13 +202,7 @@ class Game {
         )
       }
       this.gameMap.draw(this.ctx, this.bg, offset, this.scale)
-      this.zeaAnime.draw(
-        this.ctx,
-        [offset[0] + 60, offset[1] + 31],
-        this.scale,
-        0,
-        1,
-      )
+      this.zea.draw(this.ctx, offset, this.scale)
 
       this.kernel.draw(this.ctx, offset, this.scale)
       this.overlayMap.draw(this.ctx, this.bgOverlay, offset, this.scale)
