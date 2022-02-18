@@ -1,29 +1,25 @@
 import { Cell, Appearance } from './lib/GameMap'
 import { Polygon } from './lib/Vec'
 
+import { GameEventTarget } from './events'
+
 type CollisionDir = {
   top: boolean
   bottom: boolean
   left: boolean
   right: boolean
 }
-export class MapCell implements Cell {
+
+export class MapCell extends GameEventTarget<MapCell> implements Cell {
   readonly v: Appearance
   readonly typ: number
   readonly colDir: CollisionDir
-  readonly item: number
 
-  constructor(
-    mode1: number,
-    mode2: number,
-    typ: number,
-    col: CollisionDir,
-    item: number,
-  ) {
+  constructor(mode1: number, mode2: number, typ: number, col: CollisionDir) {
+    super()
     this.v = { mode1, mode2 }
     this.typ = typ
     this.colDir = col
-    this.item = item
   }
 
   appearance(): Appearance {
@@ -85,7 +81,7 @@ export class MapCell implements Cell {
   }
 
   headUpText(): number {
-    if (this.item > 0) {
+    if (this.onAction) {
       return 1
     }
     if (this.typ == 2) {
@@ -96,7 +92,7 @@ export class MapCell implements Cell {
 }
 
 export class OverlayMapCell implements Cell {
-  readonly v: Appearance
+  v: Appearance
 
   constructor(mode1: number, mode2: number) {
     this.v = { mode1, mode2 }

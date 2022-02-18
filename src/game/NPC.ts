@@ -1,55 +1,76 @@
 import { Anime } from './lib/Anime'
 import { Vec2 } from './lib/Vec'
 
+import { GameEventTarget } from './events'
+
 export class NPCState {
   pos: Vec2
   mode: number
-  hasDialog: boolean
 
   constructor(s: InitialNPCState) {
     this.pos = s.pos || [0, 0]
     this.mode = s.mode || 0
-    this.hasDialog = s.hasDialog === undefined ? false : s.hasDialog
   }
 }
 
 export type InitialNPCState = {
   pos?: Vec2
   mode?: number
-  hasDialog?: boolean
 }
 
-export class NPC<State extends NPCState = NPCState> {
+export class NPC<State extends NPCState = NPCState> extends GameEventTarget<
+  NPC<State>
+> {
   private readonly anime: Anime
   private readonly headUpText: Anime
   state: State
+  active: boolean
 
   constructor(anime: Anime, headUpText: Anime, s: State) {
+    super()
     this.anime = anime
     this.headUpText = headUpText
     this.state = s
+    this.active = false
   }
 
-  tick() {
+  tick(p: Vec2) {
+    const sz = this.anime.sz()
+    const activePrev = this.active
+    this.active =
+      Math.abs(p[0] - this.state.pos[0]) < sz[0] / 2 &&
+      Math.abs(p[1] - this.state.pos[1]) < sz[1] / 2
+
+    if (!activePrev && this.active && this.onArrive) {
+      this.onArrive({ target: this })
+    }
+
     this.anime.tick()
     this.headUpText.tick()
   }
 
   draw(ctx: CanvasRenderingContext2D, offset: Vec2, scale: number) {
+    const sz = this.anime.sz()
     this.anime.draw(
       ctx,
-      [offset[0] + this.state.pos[0], offset[1] + this.state.pos[1] - 18],
+      [
+        offset[0] + this.state.pos[0] - sz[0] / 2,
+        offset[1] + this.state.pos[1] - sz[1] + 6,
+      ],
       scale,
       0,
       this.state.mode,
     )
-    if (this.state.hasDialog) {
+    if (this.onArrive || this.onAction) {
       this.headUpText.draw(
         ctx,
-        [offset[0] + this.state.pos[0], offset[1] + this.state.pos[1] - 20],
+        [
+          offset[0] + this.state.pos[0] - sz[0] / 2,
+          offset[1] + this.state.pos[1] - sz[1] + 4,
+        ],
         scale,
         0,
-        2,
+        2 + (this.active ? 1 : 0),
       )
     }
   }

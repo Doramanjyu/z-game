@@ -41,6 +41,7 @@ class Game {
     sprite: HTMLImageElement,
     messageBox: HTMLDivElement,
   ) {
+    const self = this
     const ctx = canvas.getContext('2d')
     if (!ctx) {
       throw 'failed to get canvas context'
@@ -77,10 +78,15 @@ class Game {
       sz: [16, 1024],
     })
     this.zea = new ZEA(this.sprite, {
-      pos: [60, 48],
+      pos: [70, 48],
       mode: 1,
-      hasDialog: true,
     })
+    this.zea.onArrive = () => {
+      self.showMessage('Hemlo')
+      setTimeout(() => {
+        self.hideMessage()
+      }, 2000)
+    }
 
     const mw = mapData.main[0].length
     const mh = mapData.main.length
@@ -98,13 +104,23 @@ class Game {
           left: t == 1 && tl != 1,
           right: t == 1 && tr != 1,
         }
-        return new MapCell(
+        const c = new MapCell(
           mapData.main[y][x][1],
           mapData.main[y][x][0],
           t,
           col,
-          mapData.item[y][x],
         )
+        if (mapData.item[y][x] > 0) {
+          c.onAction = () => {
+            c.onAction = undefined
+            self.overlayAnimeMap.set([x, y], new OverlayMapCell(0, 0))
+            self.showMessage('Yum Yum')
+            setTimeout(() => {
+              self.hideMessage()
+            }, 2000)
+          }
+        }
+        return c
       },
       [-100, 0],
       [100, mh],
@@ -166,12 +182,13 @@ class Game {
       }
       this.kernel.tick(kernelCmd, this.gameMap, this.collisionMap)
       this.bgOverlayAnime.tick()
-      this.zea.tick()
 
       const state = this.kernel.state
       if (state.pos[1] > 16 * 18) {
         this.kernel.reset()
       }
+
+      this.zea.tick(state.pos)
 
       const diffY = (state.pos[1] - this.origin[1]) / 1.25
       if (this.viewpoint[1] < diffY - 16) {
