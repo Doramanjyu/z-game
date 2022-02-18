@@ -45,6 +45,11 @@ export class GameMap<T extends Cell> {
     return this.data[p2[1] * this.sz[0] + p2[0]]
   }
 
+  set(p: Vec2, v: T) {
+    const p2 = posMod([Math.floor(p[0]), Math.floor(p[1])], this.sz)
+    this.data[p2[1] * this.sz[0] + p2[0]] = v
+  }
+
   draw(ctx: CanvasRenderingContext2D, d: Drawer, o: Vec2, scale: number) {
     const v = cellRange(d.sz(), this.s, this.e, o, this.screenSize, scale)
     const [cw, ch] = d.sz()

@@ -157,7 +157,19 @@ export class Kernel {
       this.state.jumpPow = [0, 0]
     }
     if (!cmd.space || !this.state.onGround) {
-      if (!cmd.space && this.state.jumpPow[1] < 0) {
+      const mpBottom0: Vec2 = [
+        Math.round((this.state.pos[0] - 2) / 16),
+        Math.floor(this.state.pos[1] / 16),
+      ]
+      const cell = gameMap.at(mpBottom0)
+      if (
+        this.state.jumpPow[0] == 0 &&
+        this.state.jumpPow[1] < 0 &&
+        this.state.jumpPow[1] > -4 &&
+        cell.onAction
+      ) {
+        cell.onAction({ target: cell })
+      } else if (!cmd.space && this.state.jumpPow[1] < 0) {
         this.state.onGround = false
         if (this.state.popped == 0) {
           this.state.vel = this.state.jumpPow
