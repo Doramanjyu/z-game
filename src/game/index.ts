@@ -20,8 +20,10 @@ class Game {
   readonly scale: number
 
   readonly gameMap: GameMap<MapCell>
+  readonly underMap: GameMap<OverlayMapCell>
   readonly overlayMap: GameMap<OverlayMapCell>
   readonly overlayAnimeMap: GameMap<OverlayMapCell>
+  readonly bgUnder: Sprite
   readonly bg: Sprite
   readonly bgOverlay: Sprite
   readonly bgOverlayAnime: Anime
@@ -59,6 +61,11 @@ class Game {
 
     this.kernel = new Kernel(this.sprite, {
       pos: this.origin,
+    })
+    this.bgUnder = new Sprite(this.sprite, {
+      topLeft: [512, 512],
+      sz: [16, 16],
+      baseScale: 2,
     })
     this.bg = new Sprite(this.sprite, {
       topLeft: [0, 512],
@@ -127,6 +134,15 @@ class Game {
       [640, 480],
     )
     this.collisionMap = new CollisionMap(this.gameMap, [16, 16])
+    this.underMap = new GameMap<OverlayMapCell>(
+      [mw, mh],
+      (x: number, y: number) =>
+        new OverlayMapCell(mapData.under[y][x][1], mapData.under[y][x][0]),
+      [-100, 0],
+      [100, mh],
+      [640, 480],
+      2,
+    )
     this.overlayMap = new GameMap<OverlayMapCell>(
       [mw, mh],
       (x: number, y: number) =>
@@ -218,6 +234,7 @@ class Game {
           0,
         )
       }
+      this.underMap.draw(this.ctx, this.bgUnder, offset, this.scale)
       this.gameMap.draw(this.ctx, this.bg, offset, this.scale)
       this.zea.draw(this.ctx, offset, this.scale)
 
