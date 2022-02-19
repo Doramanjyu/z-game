@@ -97,6 +97,7 @@ const IndexPage = () => {
   return (
     <main>
       <title>What's poppin?</title>
+      <h1 style={{ textAlign: 'center', margin: '3px' }}>UNDER DEVELOPMENT</h1>
       <div
         style={{
           width: '788px',
