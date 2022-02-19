@@ -20,6 +20,7 @@ export class GameMap<T extends Cell> {
   readonly s: Vec2
   readonly e: Vec2
   readonly screenSize: Vec2
+  readonly baseScale: number
 
   constructor(
     sz: Vec2,
@@ -27,11 +28,13 @@ export class GameMap<T extends Cell> {
     s: Vec2,
     e: Vec2,
     screenSize: Vec2,
+    baseScale = 1,
   ) {
     this.sz = sz
     this.s = s
     this.e = e
     this.screenSize = screenSize
+    this.baseScale = baseScale
     this.data = new Array<T>(sz[0] * sz[1])
     for (let j = 0; j < sz[1]; j++) {
       for (let i = 0; i < sz[0]; i++) {
@@ -51,7 +54,15 @@ export class GameMap<T extends Cell> {
   }
 
   draw(ctx: CanvasRenderingContext2D, d: Drawer, o: Vec2, scale: number) {
-    const v = cellRange(d.sz(), this.s, this.e, o, this.screenSize, scale)
+    const v = cellRange(
+      d.sz(),
+      this.s,
+      this.e,
+      o,
+      this.screenSize,
+      scale,
+      this.baseScale,
+    )
     const [cw, ch] = d.sz()
 
     for (let j = v.s[1]; j < v.e[1]; j++) {
@@ -76,6 +87,7 @@ export const cellRange = (
   o: Vec2,
   screenSize: Vec2,
   scale: number,
+  baseScale: number,
 ): {
   s: Vec2
   e: Vec2
@@ -90,11 +102,11 @@ export const cellRange = (
   const left = o[0] + s[0] * sz[0] + sz[0]
   const top = o[1] + s[1] * sz[1] + sz[1]
 
-  const si2 = left >= 0 ? s[0] : s[0] - Math.floor(left / sz[0])
-  const ei2 = si2 + gw
+  const si2 = left >= 0 ? s[0] : s[0] - Math.floor(left / sz[0]) - baseScale + 1
+  const ei2 = si2 + gw + baseScale - 1
 
-  const sj2 = top >= 0 ? s[1] : s[1] - Math.floor(top / sz[1])
-  const ej2 = sj2 + gh
+  const sj2 = top >= 0 ? s[1] : s[1] - Math.floor(top / sz[1]) - baseScale + 1
+  const ej2 = sj2 + gh + baseScale - 1
 
   return {
     s: [si2, sj2],

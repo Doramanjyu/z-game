@@ -14,15 +14,21 @@ export interface Drawer {
 export type SpriteProp = {
   topLeft: Vec2
   sz: Vec2
+  baseScale?: number
 }
 
 export class Sprite implements Drawer {
   readonly sprite: HTMLImageElement
-  readonly prop: SpriteProp
+  readonly prop: Required<SpriteProp>
 
   constructor(sprite: HTMLImageElement, prop: SpriteProp) {
     this.sprite = sprite
-    this.prop = prop
+    if (prop.baseScale === undefined) {
+    }
+    this.prop = {
+      baseScale: 1,
+      ...prop,
+    }
   }
 
   draw(
@@ -40,8 +46,8 @@ export class Sprite implements Drawer {
       this.prop.sz[1],
       Math.floor(p[0] * scale),
       Math.floor(p[1] * scale),
-      this.prop.sz[0] * scale,
-      this.prop.sz[1] * scale,
+      this.prop.sz[0] * scale * this.prop.baseScale,
+      this.prop.sz[1] * scale * this.prop.baseScale,
     )
   }
 

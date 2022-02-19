@@ -8,7 +8,7 @@ export type AnimeProp = SpriteProp & {
 }
 
 export class Anime extends Sprite implements Drawer {
-  readonly prop: AnimeProp
+  readonly propAnime: AnimeProp
   private readonly patterns: number
   private readonly countDiv: number
   private cnt = 0
@@ -16,7 +16,7 @@ export class Anime extends Sprite implements Drawer {
 
   constructor(sprite: HTMLImageElement, prop: AnimeProp) {
     super(sprite, prop)
-    this.prop = prop
+    this.propAnime = prop
     if (prop.patterns) {
       this.patterns = prop.patterns
     } else {
@@ -40,7 +40,7 @@ export class Anime extends Sprite implements Drawer {
       ctx,
       p,
       scale,
-      this.prop.frames[this.frame] + this.patterns * mode2,
+      this.propAnime.frames[this.frame] + this.patterns * mode2,
       mode1,
     )
   }
@@ -50,9 +50,9 @@ export class Anime extends Sprite implements Drawer {
       this.cnt = forceCnt
     }
     this.frame = Math.floor(
-      (this.cnt / this.countDiv) % this.prop.frames.length,
+      (this.cnt / this.countDiv) % this.propAnime.frames.length,
     )
     this.cnt++
-    return this.prop.frames[this.frame]
+    return this.propAnime.frames[this.frame]
   }
 }

@@ -84,6 +84,7 @@ export class CollisionMap {
       o,
       this.map.screenSize,
       scale,
+      1,
     )
     const [cw, ch] = this.cellSz
 
