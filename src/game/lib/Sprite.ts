@@ -23,8 +23,6 @@ export class Sprite implements Drawer {
 
   constructor(sprite: HTMLImageElement, prop: SpriteProp) {
     this.sprite = sprite
-    if (prop.baseScale === undefined) {
-    }
     this.prop = {
       baseScale: 1,
       ...prop,
