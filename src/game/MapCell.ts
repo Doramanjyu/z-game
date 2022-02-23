@@ -81,7 +81,7 @@ export class MapCell extends GameEventTarget<MapCell> implements Cell {
   }
 
   headUpText(): number {
-    if (this.onAction) {
+    if (this.onAction.length > 0) {
       return 1
     }
     if (this.typ == 2) {

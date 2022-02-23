@@ -3,10 +3,12 @@ import { Anime } from './lib/Anime'
 import { GameMap } from './lib/GameMap'
 import { CollisionMap } from './lib/Collision'
 import { Vec2 } from './lib/Vec'
+import { StateMachine, State, nopState } from './lib/StateMachine'
 
 import { Kernel } from './Kernel'
 import { MapCell, OverlayMapCell } from './MapCell'
 import { ZEA } from './ZEA'
+import { EventHandler } from './events'
 
 import mapData from './data/map.yaml'
 
@@ -19,6 +21,7 @@ class Game {
 
   readonly scale: number
 
+  readonly sm: StateMachine
   readonly gameMap: GameMap<MapCell>
   readonly underMap: GameMap<OverlayMapCell>
   readonly overlayMap: GameMap<OverlayMapCell>
@@ -88,11 +91,30 @@ class Game {
       pos: [70, 48],
       mode: 1,
     })
-    this.zea.onArrive = () => {
-      self.showMessage('Hemlo')
-      setTimeout(() => {
-        self.hideMessage()
-      }, 2000)
+    const zDialogs = ['Hemlo', '...']
+    let zTalkCnt = 0
+    const [zTalk, zTalkHandler] = this.newEventState<ZEA>({
+      nextStates: { next: nopState },
+      tick: () => {
+        self.showMessage(zDialogs[zTalkCnt])
+        zTalkCnt++
+        setTimeout(() => {
+          self.hideMessage()
+        }, 2000)
+        return zTalkCnt < zDialogs.length ? null : 'next'
+      },
+      enter: () => {
+        this.zea.hasDialog = true
+      },
+      leave: () => {
+        this.zea.hasDialog = false
+      },
+    })
+    this.zea.onAction.push(zTalkHandler)
+    this.sm = new StateMachine(zTalk)
+
+    this.kernel.onInteract = () => {
+      this.zea.interact()
     }
 
     const mw = mapData.main[0].length
@@ -118,14 +140,14 @@ class Game {
           col,
         )
         if (mapData.item[y][x] > 0) {
-          c.onAction = () => {
-            c.onAction = undefined
+          c.onAction.push(() => {
+            c.onAction = []
             self.overlayAnimeMap.set([x, y], new OverlayMapCell(0, 0))
             self.showMessage('Yum Yum')
             setTimeout(() => {
               self.hideMessage()
             }, 2000)
-          }
+          })
         }
         return c
       },
@@ -273,6 +295,14 @@ class Game {
   }
   private hideMessage() {
     this.messageBox.classList.add('hide')
+  }
+  private newEventState<T>(state: State): [State, EventHandler<T>] {
+    const h = () => {
+      if (this.sm.current === state) {
+        this.sm.tick()
+      }
+    }
+    return [state, h]
   }
 }
 

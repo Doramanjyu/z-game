@@ -25,6 +25,7 @@ export class NPC<State extends NPCState = NPCState> extends GameEventTarget<
   private readonly headUpText: Anime
   state: State
   active: boolean
+  hasDialog: boolean
 
   constructor(anime: Anime, headUpText: Anime, s: State) {
     super()
@@ -32,6 +33,7 @@ export class NPC<State extends NPCState = NPCState> extends GameEventTarget<
     this.headUpText = headUpText
     this.state = s
     this.active = false
+    this.hasDialog = false
   }
 
   tick(p: Vec2) {
@@ -42,11 +44,17 @@ export class NPC<State extends NPCState = NPCState> extends GameEventTarget<
       Math.abs(p[1] - this.state.pos[1]) < sz[1] / 2
 
     if (!activePrev && this.active && this.onArrive) {
-      this.onArrive({ target: this })
+      this.onArrive.forEach((h) => h({ target: this }))
     }
 
     this.anime.tick()
     this.headUpText.tick()
+  }
+
+  interact() {
+    if (this.active && this.onAction.length) {
+      this.onAction.forEach((h) => h({ target: this }))
+    }
   }
 
   draw(ctx: CanvasRenderingContext2D, offset: Vec2, scale: number) {
@@ -61,7 +69,7 @@ export class NPC<State extends NPCState = NPCState> extends GameEventTarget<
       0,
       this.state.mode,
     )
-    if (this.onArrive || this.onAction) {
+    if (this.hasDialog) {
       this.headUpText.draw(
         ctx,
         [
