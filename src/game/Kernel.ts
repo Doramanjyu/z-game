@@ -168,7 +168,7 @@ export class Kernel {
         this.state.jumpPow[1] > -4 &&
         cell.onAction
       ) {
-        cell.onAction({ target: cell })
+        cell.onAction.forEach((h) => h({ target: cell }))
       } else if (!cmd.space && this.state.jumpPow[1] < 0) {
         this.state.onGround = false
         if (this.state.popped == 0) {

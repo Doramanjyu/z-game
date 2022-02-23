@@ -1,6 +1,13 @@
+export type EventHandler<T> = (e: GameEvent<T>) => void
+
 export class GameEventTarget<T> {
-  onArrive?: (e: GameEvent<T>) => void
-  onAction?: (e: GameEvent<T>) => void
+  onArrive: EventHandler<T>[]
+  onAction: EventHandler<T>[]
+
+  constructor() {
+    this.onArrive = []
+    this.onAction = []
+  }
 }
 
 export type GameEvent<T> = {
