@@ -165,7 +165,7 @@ export class Kernel {
       if (
         this.state.jumpPow[0] == 0 &&
         this.state.jumpPow[1] < 0 &&
-        this.state.jumpPow[1] > -4
+        this.state.jumpPow[1] > -6
       ) {
         interacting = true
       } else if (!cmd.space && this.state.jumpPow[1] < 0) {
