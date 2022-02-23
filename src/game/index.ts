@@ -9,6 +9,7 @@ import { Kernel } from './Kernel'
 import { MapCell, OverlayMapCell } from './MapCell'
 import { ZEA } from './ZEA'
 import { EventHandler } from './events'
+import { DialogManager } from './dialog'
 
 import mapData from './data/map.yaml'
 
@@ -16,12 +17,13 @@ class Game {
   readonly canvas: HTMLCanvasElement
   readonly ctx: CanvasRenderingContext2D
   readonly sprite: HTMLImageElement
-  readonly messageBox: HTMLDivElement
   cleanup?: () => void
 
   readonly scale: number
 
   readonly sm: StateMachine
+  readonly dm: DialogManager
+
   readonly gameMap: GameMap<MapCell>
   readonly underMap: GameMap<OverlayMapCell>
   readonly overlayMap: GameMap<OverlayMapCell>
@@ -55,7 +57,8 @@ class Game {
     this.canvas = canvas
     this.ctx.imageSmoothingEnabled = false
     this.sprite = sprite
-    this.messageBox = messageBox
+
+    this.dm = new DialogManager(messageBox)
 
     this.scale = 3
     this.origin = [mapData.start.pos[0] * 16, mapData.start.pos[1] * 16]
@@ -96,11 +99,8 @@ class Game {
     const [zTalk, zTalkHandler] = this.newEventState<ZEA>({
       nextStates: { next: nopState },
       tick: () => {
-        self.showMessage(zDialogs[zTalkCnt])
-        zTalkCnt++
-        setTimeout(() => {
-          self.hideMessage()
-        }, 2000)
+        self.dm.showMessage(zDialogs[zTalkCnt], { timeout: 2000 })
+        zTalkCnt += 1
         return zTalkCnt < zDialogs.length ? null : 'next'
       },
       enter: () => {
@@ -143,10 +143,7 @@ class Game {
           c.onAction.push(() => {
             c.onAction = []
             self.overlayAnimeMap.set([x, y], new OverlayMapCell(0, 0))
-            self.showMessage('Yum Yum')
-            setTimeout(() => {
-              self.hideMessage()
-            }, 2000)
+            self.dm.showMessage('Yum Yum', { timeout: 2000 })
           })
         }
         return c
@@ -194,8 +191,7 @@ class Game {
   start() {
     const tickTimer = setInterval(this.tick.bind(this), 80)
 
-    this.showMessage("What's poppin?")
-    setTimeout(this.hideMessage.bind(this), 5000)
+    this.dm.showMessage("What's poppin?", { timeout: 5000 })
 
     this.cleanup = () => {
       clearInterval(tickTimer)
@@ -288,14 +284,6 @@ class Game {
     this.command.delete(e.code)
   }
 
-  private showMessage(text: string) {
-    this.messageBox.innerText = text
-    this.messageBox.style.display = 'block'
-    this.messageBox.classList.remove('hide')
-  }
-  private hideMessage() {
-    this.messageBox.classList.add('hide')
-  }
   private newEventState<T>(state: State): [State, EventHandler<T>] {
     const h = () => {
       if (this.sm.current === state) {
