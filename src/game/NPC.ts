@@ -51,6 +51,12 @@ export class NPC<State extends NPCState = NPCState> extends GameEventTarget<
     this.headUpText.tick()
   }
 
+  interact() {
+    if (this.active && this.onAction.length) {
+      this.onAction.forEach((h) => h({ target: this }))
+    }
+  }
+
   draw(ctx: CanvasRenderingContext2D, offset: Vec2, scale: number) {
     const sz = this.anime.sz()
     this.anime.draw(

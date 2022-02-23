@@ -67,6 +67,9 @@ export class Kernel {
   private readonly ellasticCoeff: number
   private currentAnime: Anime
   private state0: KernelState
+  private interacting: boolean
+
+  onInteract?: () => void
 
   state: KernelState
   explosionPos: Vec2
@@ -123,6 +126,7 @@ export class Kernel {
     this.explosionPos = this.state.pos
     this.explosionNum = 0
     this.headUpTextMode = 0
+    this.interacting = false
   }
 
   reset() {
@@ -156,19 +160,14 @@ export class Kernel {
       this.state.vel = [this.state.jumpPow[0], -4]
       this.state.jumpPow = [0, 0]
     }
+    let interacting = false
     if (!cmd.space || !this.state.onGround) {
-      const mpBottom0: Vec2 = [
-        Math.round((this.state.pos[0] - 2) / 16),
-        Math.floor(this.state.pos[1] / 16),
-      ]
-      const cell = gameMap.at(mpBottom0)
       if (
         this.state.jumpPow[0] == 0 &&
         this.state.jumpPow[1] < 0 &&
-        this.state.jumpPow[1] > -4 &&
-        cell.onAction
+        this.state.jumpPow[1] > -4
       ) {
-        cell.onAction.forEach((h) => h({ target: cell }))
+        interacting = true
       } else if (!cmd.space && this.state.jumpPow[1] < 0) {
         this.state.onGround = false
         if (this.state.popped == 0) {
@@ -274,6 +273,17 @@ export class Kernel {
     if (this.state.trans < 8) {
       this.state.trans++
     }
+
+    if (interacting && !this.interacting) {
+      const mpBottom0: Vec2 = [
+        Math.round((this.state.pos[0] - 2) / 16),
+        Math.floor(this.state.pos[1] / 16),
+      ]
+      const cell = gameMap.at(mpBottom0)
+      cell.onAction.forEach((h) => h({ target: cell }))
+      this.onInteract && this.onInteract()
+    }
+    this.interacting = interacting
   }
 
   draw(ctx: CanvasRenderingContext2D, offset: Vec2, scale: number) {

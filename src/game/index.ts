@@ -110,8 +110,12 @@ class Game {
         this.zea.hasDialog = false
       },
     })
-    this.zea.onArrive.push(zTalkHandler)
+    this.zea.onAction.push(zTalkHandler)
     this.sm = new StateMachine(zTalk)
+
+    this.kernel.onInteract = () => {
+      this.zea.interact()
+    }
 
     const mw = mapData.main[0].length
     const mh = mapData.main.length
