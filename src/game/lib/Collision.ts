@@ -78,7 +78,7 @@ export class CollisionMap {
     ctx.lineWidth = 1
 
     const v = cellRange(
-      this.map.sz,
+      this.cellSz,
       this.map.s,
       this.map.e,
       o,

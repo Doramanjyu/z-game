@@ -10,6 +10,7 @@ import { MapCell, OverlayMapCell } from './MapCell'
 import { ZEA } from './ZEA'
 import { EventHandler } from './events'
 import { DialogManager } from './dialog'
+import { DebugUI } from './debug'
 
 import mapData from './data/map.yaml'
 
@@ -42,6 +43,7 @@ class Game {
   origin: Vec2
   viewpoint: Vec2
   debugView: boolean
+  debugUI: DebugUI
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -64,6 +66,7 @@ class Game {
     this.origin = [mapData.start.pos[0] * 16, mapData.start.pos[1] * 16]
     this.viewpoint = [0, 0]
     this.debugView = false
+    this.debugUI = new DebugUI(sprite)
 
     this.kernel = new Kernel(this.sprite, {
       pos: this.origin,
@@ -238,10 +241,7 @@ class Game {
         Math.min(50, (diffX - this.viewpoint[0]) / 2),
       )
 
-      const offset: Vec2 = [
-        -this.viewpoint[0],
-        110 - this.origin[1] - this.viewpoint[1],
-      ]
+      const offset = this.offset()
 
       for (let x = 0; x < 640 / this.scale; x += 16) {
         this.bgGrad.draw(
@@ -267,6 +267,7 @@ class Game {
 
       if (this.debugView) {
         this.collisionMap.draw(this.ctx, offset, this.scale)
+        this.debugUI.draw(this.ctx, offset, this.scale)
       }
     } catch (err) {
       console.error(err)
@@ -274,9 +275,51 @@ class Game {
     }
   }
 
+  private offset(): Vec2 {
+    return [-this.viewpoint[0], 110 - this.origin[1] - this.viewpoint[1]]
+  }
+
   keydown(e: Pick<KeyboardEvent, 'code'>) {
     this.command.set(e.code, true)
+
+    if (this.debugView) {
+      switch (e.code) {
+        case 'KeyW':
+          this.debugUI.move([0, -1])
+          break
+        case 'KeyS':
+          this.debugUI.move([0, 1])
+          break
+        case 'KeyA':
+          this.debugUI.move([-1, 0])
+          break
+        case 'KeyD':
+          this.debugUI.move([1, 0])
+          break
+        case 'Enter':
+          if (!this.debugUI.done()) {
+            this.dm.showMessage(`<input id="cellValue" style="width: 100%"/>`)
+            const input = document.getElementById(
+              'cellValue',
+            ) as HTMLInputElement
+            if (!input) {
+              break
+            }
+            const mp = this.debugUI.getGrid(this.offset())
+            input.value = JSON.stringify(this.gameMap.at(mp).v)
+            input.focus()
+            this.debugUI.do(() => {
+              const v = JSON.parse(input.value)
+              this.gameMap.at(mp).v.mode1 = v.mode1
+              this.gameMap.at(mp).v.mode2 = v.mode2
+              this.dm.hideMessage()
+            })
+            break
+          }
+      }
+    }
   }
+
   keyup(e: Pick<KeyboardEvent, 'code'>) {
     if (this.command.has('F2')) {
       this.debugView = !this.debugView

@@ -11,15 +11,15 @@ export class DialogManager {
     this.messageBox = messageBox
   }
 
-  showMessage(text: string, opt: DialogOption) {
+  showMessage(text: string, opt?: DialogOption) {
     if (this.timeoutTimer) {
       clearTimeout(this.timeoutTimer)
     }
-    this.messageBox.innerText = text
+    this.messageBox.innerHTML = text
     this.messageBox.style.display = 'block'
     this.messageBox.classList.remove('hide')
 
-    if (opt.timeout) {
+    if (opt?.timeout) {
       this.timeoutTimer = setTimeout(this.hideMessage.bind(this), opt.timeout)
     }
   }
