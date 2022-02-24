@@ -10,6 +10,7 @@ import { MapCell, OverlayMapCell } from './MapCell'
 import { ZEA } from './ZEA'
 import { EventHandler } from './events'
 import { DialogManager } from './dialog'
+import { DebugUI } from './debug'
 
 import mapData from './data/map.yaml'
 
@@ -28,7 +29,6 @@ class Game {
   readonly underMap: GameMap<OverlayMapCell>
   readonly overlayMap: GameMap<OverlayMapCell>
   readonly overlayAnimeMap: GameMap<OverlayMapCell>
-  readonly ui: Sprite
   readonly bgUnder: Sprite
   readonly bg: Sprite
   readonly bgOverlay: Sprite
@@ -43,8 +43,7 @@ class Game {
   origin: Vec2
   viewpoint: Vec2
   debugView: boolean
-  debugCursor: Vec2
-  debugEditing?: Vec2
+  debugUI: DebugUI
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -67,14 +66,10 @@ class Game {
     this.origin = [mapData.start.pos[0] * 16, mapData.start.pos[1] * 16]
     this.viewpoint = [0, 0]
     this.debugView = false
-    this.debugCursor = [0, 0]
+    this.debugUI = new DebugUI(sprite)
 
     this.kernel = new Kernel(this.sprite, {
       pos: this.origin,
-    })
-    this.ui = new Sprite(this.sprite, {
-      topLeft: [992, 0],
-      sz: [16, 16],
     })
     this.bgUnder = new Sprite(this.sprite, {
       topLeft: [512, 512],
@@ -272,16 +267,7 @@ class Game {
 
       if (this.debugView) {
         this.collisionMap.draw(this.ctx, offset, this.scale)
-        this.ui.draw(
-          this.ctx,
-          [
-            this.debugCursor[0] * 16 + (offset[0] % 16),
-            this.debugCursor[1] * 16 + (offset[1] % 16),
-          ],
-          this.scale,
-          0,
-          0,
-        )
+        this.debugUI.draw(this.ctx, offset, this.scale)
       }
     } catch (err) {
       console.error(err)
@@ -294,65 +280,46 @@ class Game {
   }
 
   keydown(e: Pick<KeyboardEvent, 'code'>) {
-    if (this.debugEditing) {
-      if (e.code === 'Enter') {
-        const input = document.getElementById('cellValue') as HTMLInputElement
-        const v = JSON.parse(input.value)
-        this.gameMap.at(this.debugEditing).v.mode1 = v.mode1
-        this.gameMap.at(this.debugEditing).v.mode2 = v.mode2
-        this.debugEditing = undefined
-        this.dm.hideMessage()
-      }
-      return
-    }
-
     this.command.set(e.code, true)
 
     if (this.debugView) {
       switch (e.code) {
         case 'KeyW':
-          this.debugCursor[1]--
-          if (this.debugCursor[1] < 0) {
-            this.debugCursor[1] = 0
-          }
+          this.debugUI.move([0, -1])
           break
         case 'KeyS':
-          this.debugCursor[1]++
-          if (this.debugCursor[1] > 10) {
-            this.debugCursor[1] = 10
-          }
+          this.debugUI.move([0, 1])
           break
         case 'KeyA':
-          this.debugCursor[0]--
-          if (this.debugCursor[0] < 0) {
-            this.debugCursor[0] = 0
-          }
+          this.debugUI.move([-1, 0])
           break
         case 'KeyD':
-          this.debugCursor[0]++
-          if (this.debugCursor[0] > 13) {
-            this.debugCursor[0] = 13
-          }
+          this.debugUI.move([1, 0])
           break
-        case 'Enter': {
-          this.dm.showMessage(`<input id="cellValue" style="width: 100%"/>`)
-          const input = document.getElementById('cellValue') as HTMLInputElement
-          if (!input) {
+        case 'Enter':
+          if (!this.debugUI.done()) {
+            this.dm.showMessage(`<input id="cellValue" style="width: 100%"/>`)
+            const input = document.getElementById(
+              'cellValue',
+            ) as HTMLInputElement
+            if (!input) {
+              break
+            }
+            const mp = this.debugUI.getGrid(this.offset())
+            input.value = JSON.stringify(this.gameMap.at(mp).v)
+            input.focus()
+            this.debugUI.do(() => {
+              const v = JSON.parse(input.value)
+              this.gameMap.at(mp).v.mode1 = v.mode1
+              this.gameMap.at(mp).v.mode2 = v.mode2
+              this.dm.hideMessage()
+            })
             break
           }
-          const offset = this.offset()
-          const mp: Vec2 = [
-            Math.floor((this.debugCursor[0] * 16 - offset[0]) / 16),
-            Math.floor((this.debugCursor[1] * 16 - offset[1]) / 16),
-          ]
-          this.debugEditing = mp
-          input.value = JSON.stringify(this.gameMap.at(mp).v)
-          input.focus()
-          break
-        }
       }
     }
   }
+
   keyup(e: Pick<KeyboardEvent, 'code'>) {
     if (this.command.has('F2')) {
       this.debugView = !this.debugView
