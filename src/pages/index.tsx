@@ -95,7 +95,7 @@ const IndexPage = () => {
   }, [canvasRef, spriteRef, messageRef])
 
   return (
-    <main>
+    <main style={{ width: '788px', margin: '0 auto' }}>
       <title>What's poppin?</title>
       <h1 style={{ textAlign: 'center', margin: '3px' }}>UNDER DEVELOPMENT</h1>
       <div

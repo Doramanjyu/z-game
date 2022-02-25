@@ -310,8 +310,8 @@ export class Kernel {
         ctx,
         [offset[0] + this.state.pos[0], offset[1] + this.state.pos[1] - 6],
         scale,
-        this.state.orientation,
         mode,
+        this.state.orientation,
       )
     }
     if (this.state.trans < 8) {
@@ -340,8 +340,8 @@ export class Kernel {
         ctx,
         [offset[0] + this.state.pos[0] - 6, offset[1] + this.state.pos[1] - 15],
         scale,
-        0,
         this.headUpTextMode - 1,
+        0,
       )
     }
   }

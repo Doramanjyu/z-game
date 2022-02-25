@@ -40,8 +40,8 @@ export class Anime extends Sprite implements Drawer {
       ctx,
       p,
       scale,
-      this.propAnime.frames[this.frame] + this.patterns * mode2,
-      mode1,
+      this.propAnime.frames[this.frame] + this.patterns * mode1,
+      mode2,
     )
   }
 
