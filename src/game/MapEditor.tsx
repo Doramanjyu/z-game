@@ -8,6 +8,7 @@ type Props = {
 }
 
 const MapEditor: React.FC<Props> = ({ sprite }) => {
+  const main = mapData.main as number[][][]
   return (
     <div
       style={{
@@ -40,7 +41,7 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
         }
       `}
     >
-      {mapData.main.map((row, j) => (
+      {main.map((row, j) => (
         <div key={`row${j}`}>
           {row.map((cell, i) => {
             const under = mapData.under[j][i]
