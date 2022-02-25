@@ -66,8 +66,8 @@ export class NPC<State extends NPCState = NPCState> extends GameEventTarget<
         offset[1] + this.state.pos[1] - sz[1] + 6,
       ],
       scale,
-      0,
       this.state.mode,
+      0,
     )
     if (this.hasDialog) {
       this.headUpText.draw(
@@ -77,8 +77,8 @@ export class NPC<State extends NPCState = NPCState> extends GameEventTarget<
           offset[1] + this.state.pos[1] - sz[1] + 4,
         ],
         scale,
-        0,
         2 + (this.active ? 1 : 0),
+        0,
       )
     }
   }
