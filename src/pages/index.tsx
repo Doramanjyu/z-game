@@ -7,6 +7,8 @@ import frame from '@doramanjyu/z-game/images/frame.svg'
 import frameInner from '@doramanjyu/z-game/images/frame_inner.svg'
 import sprite from '@doramanjyu/z-game/images/sprite.png'
 
+import '@doramanjyu/z-game/css/layout.css'
+
 const IndexPage = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const spriteRef = useRef<HTMLImageElement>(null)
