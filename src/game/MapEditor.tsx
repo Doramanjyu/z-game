@@ -165,9 +165,8 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
             })}
           </div>
         ))}
-        <Draggable handle="#editInput">
+        <Draggable>
           <div
-            id="editInput"
             style={{
               backgroundColor: 'white',
               width: '200px',
@@ -194,6 +193,13 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
                 width: 3em;
                 text-align: center;
               }
+              input[type='number']::-webkit-inner-spin-button,
+              input[type='number']::-webkit-outer-spin-button {
+                -webkit-appearance: none;
+              }
+              input[type='number'] {
+                -moz-appearance: textfield;
+              }
             `}
           >
             <div>
@@ -208,6 +214,7 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
                   const v = parseInt(e.target.value)
                   isNaN(v) || updateValue({ abs: [v, value[1]] })
                 }}
+                type="number"
               />
               <button onClick={() => updateValue({ diff: [1, 0] })}>
                 &gt;
@@ -223,6 +230,7 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
                   const v = parseInt(e.target.value)
                   isNaN(v) || updateValue({ abs: [value[0], v] })
                 }}
+                type="number"
               />
               <button onClick={() => updateValue({ diff: [0, 1] })}>
                 &gt;
