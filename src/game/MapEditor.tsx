@@ -46,6 +46,7 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
       style={{
         width: '100%',
         height: '100vh',
+        fontSize: '14px',
       }}
     >
       <div
@@ -58,7 +59,6 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
           boxSizing: 'border-box',
           alignItems: 'center',
           color: 'white',
-          fontSize: '12px',
         }}
       >
         <label htmlFor="scale">scale</label>
@@ -164,11 +164,9 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
           <div
             style={{
               backgroundColor: 'white',
-              opacity: 0.7,
               width: '200px',
               height: 'auto',
               padding: '4px',
-              fontSize: '14px',
               color: 'black',
               borderRadius: '2px',
               borderTop: '1em solid #999',
@@ -178,9 +176,13 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
               right: '32px',
             }}
             css={css`
+              opacity: 0.6;
+              &:hover {
+                opacity: 0.8;
+              }
+
               button,
               select {
-                font-size: inherit;
                 margin: 2px 0;
               }
             `}
