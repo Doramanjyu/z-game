@@ -10,7 +10,8 @@ body {
 }
 
 button,
-select {
+select,
+option {
   font-family: inherit;
   font-size: inherit;
 }
