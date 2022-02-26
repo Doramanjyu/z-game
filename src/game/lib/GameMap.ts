@@ -1,13 +1,10 @@
 import { Drawer } from './Sprite'
 import { Vec2, Polygon } from './Vec'
 
-export type Appearance = {
-  mode1: number
-  mode2: number
-}
+export type Appearance = [number, number]
 
 export interface Cell {
-  appearance(): Appearance
+  appearance(layer: string): Appearance
 }
 
 export interface CollisionCell extends Cell {
@@ -53,7 +50,13 @@ export class GameMap<T extends Cell> {
     this.data[p2[1] * this.sz[0] + p2[0]] = v
   }
 
-  draw(ctx: CanvasRenderingContext2D, d: Drawer, o: Vec2, scale: number) {
+  draw(
+    ctx: CanvasRenderingContext2D,
+    d: Drawer,
+    o: Vec2,
+    scale: number,
+    layer: string,
+  ) {
     const v = cellRange(
       d.sz(),
       this.s,
@@ -68,8 +71,8 @@ export class GameMap<T extends Cell> {
     for (let j = v.s[1]; j < v.e[1]; j++) {
       for (let i = v.s[0]; i < v.e[0]; i++) {
         const c = this.at([i, j])
-        const a = c.appearance()
-        d.draw(ctx, [v.o[0] + i * cw, v.o[1] + j * ch], scale, a.mode1, a.mode2)
+        const a = c.appearance(layer)
+        d.draw(ctx, [v.o[0] + i * cw, v.o[1] + j * ch], scale, a[0], a[1])
       }
     }
   }
