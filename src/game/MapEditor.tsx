@@ -45,6 +45,7 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
         div > div > span {
           display: block;
           background-image: url(${sprite});
+          image-rendering: pixelated;
           position: absolute;
           left: 0;
           top: 0;
