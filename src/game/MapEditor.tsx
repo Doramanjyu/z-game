@@ -1,5 +1,7 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { css } from '@emotion/react'
+
+import { loadMap } from './map'
 
 import mapData from './data/map.yaml'
 
@@ -8,7 +10,16 @@ type Props = {
 }
 
 const MapEditor: React.FC<Props> = ({ sprite }) => {
-  const main = mapData.main as number[][][]
+  const gameMap = useMemo(
+    () =>
+      loadMap({
+        getItem: () => {
+          console.log('item event fired')
+        },
+      }),
+    [mapData],
+  )
+  console.log(gameMap.sz)
   return (
     <div
       style={{
@@ -21,6 +32,7 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
           margin: 0;
           padding: 0;
           height: 16px;
+          white-space: nowrap;
         }
         div > div {
           width: 16px;
@@ -41,18 +53,20 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
         }
       `}
     >
-      {main.map((row, j) => (
+      {[...Array(gameMap.sz[1])].map((_, j) => (
         <div key={`row${j}`}>
-          {row.map((cell, i) => {
-            const under = mapData.under[j][i]
-            const overlay = mapData.overlay[j][i]
-            const overlayAnime = mapData.overlayAnime[j][i]
-            const [mx, my] = [cell[1] * 16, 512 + cell[0] * 16]
-            const [ux, uy] = [512 + under[1] * 16, 512 + under[0] * 16]
-            const [ox, oy] = [overlay[1] * 16, 896 + overlay[0] * 16]
+          {[...Array(gameMap.sz[0])].map((_, i) => {
+            const cell = gameMap.at([i, j])
+            const main = cell.appearance('main')
+            const under = cell.appearance('under')
+            const overlay = cell.appearance('overlay')
+            const overlayAnime = cell.appearance('overlayAnime')
+            const [mx, my] = [main[0] * 16, 512 + main[1] * 16]
+            const [ux, uy] = [512 + under[0] * 16, 512 + under[1] * 16]
+            const [ox, oy] = [overlay[0] * 16, 896 + overlay[1] * 16]
             const [oax, oay] = [
-              overlayAnime[1] * 16,
-              768 + overlayAnime[0] * 16,
+              overlayAnime[0] * 16,
+              768 + overlayAnime[1] * 16,
             ]
             return (
               <div key={`col${i}`}>
