@@ -8,3 +8,10 @@ body {
   margin: 0;
   overscroll-behavior: none;
 }
+
+button,
+select,
+option {
+  font-family: inherit;
+  font-size: inherit;
+}
