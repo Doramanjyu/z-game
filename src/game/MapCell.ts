@@ -11,19 +11,23 @@ type CollisionDir = {
 }
 
 export class MapCell extends GameEventTarget<MapCell> implements Cell {
-  readonly v: Appearance
+  readonly v: { [layer: string]: Appearance }
   readonly typ: number
   readonly colDir: CollisionDir
 
-  constructor(mode1: number, mode2: number, typ: number, col: CollisionDir) {
+  constructor(
+    v: { [layer: string]: Appearance },
+    typ: number,
+    col: CollisionDir,
+  ) {
     super()
-    this.v = { mode1, mode2 }
+    this.v = v
     this.typ = typ
     this.colDir = col
   }
 
-  appearance(): Appearance {
-    return this.v
+  appearance(layer: string): Appearance {
+    return this.v[layer]
   }
 
   heat(): boolean {
@@ -88,17 +92,5 @@ export class MapCell extends GameEventTarget<MapCell> implements Cell {
       return 2
     }
     return 0
-  }
-}
-
-export class OverlayMapCell implements Cell {
-  v: Appearance
-
-  constructor(mode1: number, mode2: number) {
-    this.v = { mode1, mode2 }
-  }
-
-  appearance(): Appearance {
-    return this.v
   }
 }

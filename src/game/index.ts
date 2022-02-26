@@ -6,7 +6,7 @@ import { Vec2 } from './lib/Vec'
 import { StateMachine, State, nopState } from './lib/StateMachine'
 
 import { Kernel } from './Kernel'
-import { MapCell, OverlayMapCell } from './MapCell'
+import { MapCell } from './MapCell'
 import { ZEA } from './ZEA'
 import { EventHandler } from './events'
 import { DialogManager } from './dialog'
@@ -27,9 +27,6 @@ class Game {
   readonly dm: DialogManager
 
   readonly gameMap: GameMap<MapCell>
-  readonly underMap: GameMap<OverlayMapCell>
-  readonly overlayMap: GameMap<OverlayMapCell>
-  readonly overlayAnimeMap: GameMap<OverlayMapCell>
   readonly bgUnder: Sprite
   readonly bg: Sprite
   readonly bgOverlay: Sprite
@@ -136,15 +133,25 @@ class Game {
           right: t == 1 && tr != 1,
         }
         const c = new MapCell(
-          mapData.main[y][x][1],
-          mapData.main[y][x][0],
+          {
+            main: [mapData.main[y][x][1], mapData.main[y][x][0]],
+            under: [mapData.under[y][x][1], mapData.under[y][x][0]],
+            overlay: [mapData.overlay[y][x][1], mapData.overlay[y][x][0]],
+            overlayAnime:
+              mapData.item[y][x] > 0
+                ? [0, 2]
+                : [
+                    mapData.overlayAnime[y][x][1],
+                    mapData.overlayAnime[y][x][0],
+                  ],
+          },
           t,
           col,
         )
         if (mapData.item[y][x] > 0) {
-          c.onAction.push(() => {
+          c.onAction.push((e) => {
             c.onAction = []
-            self.overlayAnimeMap.set([x, y], new OverlayMapCell(0, 0))
+            e.target.v['overlayAnime'] = [0, 0]
             self.dm.showMessage('Yum Yum', { timeout: 2000 })
           })
         }
@@ -155,38 +162,6 @@ class Game {
       [640, 480],
     )
     this.collisionMap = new CollisionMap(this.gameMap, [16, 16])
-    this.underMap = new GameMap<OverlayMapCell>(
-      [mw, mh],
-      (x: number, y: number) =>
-        new OverlayMapCell(mapData.under[y][x][1], mapData.under[y][x][0]),
-      [-100, 0],
-      [100, mh],
-      [640, 480],
-      2,
-    )
-    this.overlayMap = new GameMap<OverlayMapCell>(
-      [mw, mh],
-      (x: number, y: number) =>
-        new OverlayMapCell(mapData.overlay[y][x][1], mapData.overlay[y][x][0]),
-      [-100, 0],
-      [100, mh],
-      [640, 480],
-    )
-    this.overlayAnimeMap = new GameMap<OverlayMapCell>(
-      [mw, mh],
-      (x: number, y: number) => {
-        if (mapData.item[y][x] > 0) {
-          return new OverlayMapCell(0, 2)
-        }
-        return new OverlayMapCell(
-          mapData.overlayAnime[y][x][1],
-          mapData.overlayAnime[y][x][0],
-        )
-      },
-      [-100, 0],
-      [100, mh],
-      [640, 480],
-    )
     this.command = new Map<string, boolean>()
   }
 
@@ -251,17 +226,25 @@ class Game {
           0,
         )
       }
-      this.underMap.draw(this.ctx, this.bgUnder, offset, this.scale)
-      this.gameMap.draw(this.ctx, this.bg, offset, this.scale)
+      this.gameMap.draw(this.ctx, this.bgUnder, offset, this.scale, 'under')
+      this.gameMap.draw(this.ctx, this.bg, offset, this.scale, 'main')
       this.zea.draw(this.ctx, offset, this.scale)
 
       this.kernel.draw(this.ctx, offset, this.scale)
-      this.overlayMap.draw(this.ctx, this.bgOverlay, offset, this.scale)
-      this.overlayAnimeMap.draw(
+      this.gameMap.draw(this.ctx, this.bgOverlay, offset, this.scale, 'overlay')
+      this.gameMap.draw(
         this.ctx,
         this.bgOverlayAnime,
         offset,
         this.scale,
+        'overlayAnime',
+      )
+      this.gameMap.draw(
+        this.ctx,
+        this.bgOverlayAnime,
+        offset,
+        this.scale,
+        'overlayAnime',
       )
 
       if (this.debugView) {
