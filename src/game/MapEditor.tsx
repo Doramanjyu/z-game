@@ -25,10 +25,15 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
   const [scale, setScale] = useState(2)
   const [_, setVersion] = useState(0)
   const [layer, setLayer] = useState('main')
-  const updateValue = (d: Vec2) => {
+  const updateValue = ({ diff, abs }: { diff?: Vec2; abs?: Vec2 }) => {
     const cell = gameMap.at(cursor)
-    cell.v[layer][0] += d[0]
-    cell.v[layer][1] += d[1]
+    if (diff) {
+      cell.v[layer][0] += diff[0]
+      cell.v[layer][1] += diff[1]
+    } else if (abs) {
+      cell.v[layer][0] = abs[0]
+      cell.v[layer][1] = abs[1]
+    }
     setValue(gameMap.at(cursor).v[layer])
     setVersion((v) => v + 1)
   }
@@ -160,8 +165,9 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
             })}
           </div>
         ))}
-        <Draggable>
+        <Draggable handle="#editInput">
           <div
+            id="editInput"
             style={{
               backgroundColor: 'white',
               width: '200px',
@@ -180,20 +186,47 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
               &:hover {
                 opacity: 0.8;
               }
-
               button,
               select {
                 margin: 2px 0;
               }
+              input.shortNum {
+                width: 3em;
+                text-align: center;
+              }
             `}
           >
             <div>
-              <button onClick={() => updateValue([-1, 0])}>&lt;</button>{' '}
-              {value[0]}{' '}
-              <button onClick={() => updateValue([1, 0])}>&gt;</button>{' '}
-              <button onClick={() => updateValue([0, -1])}>&lt;</button>{' '}
-              {value[1]}{' '}
-              <button onClick={() => updateValue([0, 1])}>&gt;</button>
+              <button onClick={() => updateValue({ diff: [-1, 0] })}>
+                &lt;
+              </button>
+              <input
+                value={value[0]}
+                className="shortNum"
+                onClick={(e) => (e.target as HTMLInputElement).select()}
+                onChange={(e) => {
+                  const v = parseInt(e.target.value)
+                  isNaN(v) || updateValue({ abs: [v, value[1]] })
+                }}
+              />
+              <button onClick={() => updateValue({ diff: [1, 0] })}>
+                &gt;
+              </button>{' '}
+              <button onClick={() => updateValue({ diff: [0, -1] })}>
+                &lt;
+              </button>
+              <input
+                value={value[1]}
+                className="shortNum"
+                onClick={(e) => (e.target as HTMLInputElement).select()}
+                onChange={(e) => {
+                  const v = parseInt(e.target.value)
+                  isNaN(v) || updateValue({ abs: [value[0], v] })
+                }}
+              />
+              <button onClick={() => updateValue({ diff: [0, 1] })}>
+                &gt;
+              </button>
             </div>
             <label htmlFor="layerSelect">layer</label>
             <select
