@@ -79,15 +79,15 @@ export const importGameData = ({ getItem }: Props): GameData => {
         )
         const c = new MapCell(
           {
-            main: [mapData.main[y][x][1], mapData.main[y][x][0]],
-            under: [mapData.under[y][x][1], mapData.under[y][x][0]],
-            overlay: [mapData.overlay[y][x][1], mapData.overlay[y][x][0]],
+            main: [mapData.main[y][x][0], mapData.main[y][x][1]],
+            under: [mapData.under[y][x][0], mapData.under[y][x][1]],
+            overlay: [mapData.overlay[y][x][0], mapData.overlay[y][x][1]],
             overlayAnime:
               items.length > 0
                 ? [0, 2]
                 : [
-                    mapData.overlayAnime[y][x][1],
                     mapData.overlayAnime[y][x][0],
+                    mapData.overlayAnime[y][x][1],
                   ],
           },
           t,
@@ -163,7 +163,7 @@ export const exportGameData = (g: GameData): Blob => {
     [
       Object.keys(data)
         .map((k) => `${k}:\n${paddedArray(data[k])}`)
-        .join('\n'),
+        .join('\n') + '\n',
     ],
     {
       type: 'plain/text',
