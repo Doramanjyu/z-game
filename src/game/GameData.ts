@@ -21,7 +21,7 @@ type GameData = GameMetaData & {
   m: GameMap<MapCell>
 }
 
-export const loadGameData = ({ getItem }: Props): GameData => {
+export const importGameData = ({ getItem }: Props): GameData => {
   const mw = mapData.main[0].length
   const mh = mapData.main.length
 
@@ -67,13 +67,23 @@ export const loadGameData = ({ getItem }: Props): GameData => {
           left: t == 1 && tl != 1,
           right: t == 1 && tr != 1,
         }
+        const items = (mapData.meta[y][x] as string[]).reduce<number[]>(
+          (acc, m) => {
+            const [t, v] = m.split('.')
+            if (t === 'item') {
+              acc.push(parseInt(v))
+            }
+            return acc
+          },
+          [],
+        )
         const c = new MapCell(
           {
             main: [mapData.main[y][x][1], mapData.main[y][x][0]],
             under: [mapData.under[y][x][1], mapData.under[y][x][0]],
             overlay: [mapData.overlay[y][x][1], mapData.overlay[y][x][0]],
             overlayAnime:
-              mapData.item[y][x] > 0
+              items.length > 0
                 ? [0, 2]
                 : [
                     mapData.overlayAnime[y][x][1],
@@ -84,7 +94,7 @@ export const loadGameData = ({ getItem }: Props): GameData => {
           col,
           mapData.meta[y][x],
         )
-        if (mapData.item[y][x] > 0) {
+        if (items.length > 0) {
           c.onAction.push((e) => {
             c.onAction = []
             e.target.v['overlayAnime'] = [0, 0]
@@ -98,6 +108,67 @@ export const loadGameData = ({ getItem }: Props): GameData => {
       [640, 480],
     ),
   }
+}
+
+export const exportGameData = (g: GameData): Blob => {
+  const paddedArray = (a: Array<Array<string>>): string => {
+    const len = new Array<number>(g.m.sz[0])
+    a.forEach((r) =>
+      r.forEach((v, i) => {
+        if (!len[i] || len[i] < v.length) {
+          len[i] = v.length
+        }
+      }),
+    )
+    return a
+      .reduce((out, r) => {
+        out.push(
+          `  - [ ${r
+            .reduce<Array<string>>((acc, v, i) => {
+              const pad = len[i] - v.length
+              acc.push(`${' '.repeat(pad)}${v}`)
+              return acc
+            }, [])
+            .join(', ')} ]`,
+        )
+        return out
+      }, [])
+      .join('\n')
+  }
+  const extractLayer = (layer: string) =>
+    [...Array(g.m.sz[1])].map((_, j) =>
+      [...Array(g.m.sz[0])].map((_, i) =>
+        JSON.stringify(g.m.at([i, j]).appearance(layer)),
+      ),
+    )
+  const extractMeta = () =>
+    [...Array(g.m.sz[1])].map((_, j) =>
+      [...Array(g.m.sz[0])].map((_, i) => JSON.stringify(g.m.at([i, j]).meta)),
+    )
+  const extractType = () =>
+    [...Array(g.m.sz[1])].map((_, j) =>
+      [...Array(g.m.sz[0])].map((_, i) => JSON.stringify(g.m.at([i, j]).typ)),
+    )
+
+  const data: { [key: string]: Array<Array<string>> } = {
+    meta: extractMeta(),
+    main: extractLayer('main'),
+    type: extractType(),
+    under: extractLayer('under'),
+    overlay: extractLayer('overlay'),
+    overlayAnime: extractLayer('overlayAnime'),
+  }
+
+  return new Blob(
+    [
+      Object.keys(data)
+        .map((k) => `${k}:\n${paddedArray(data[k])}`)
+        .join('\n'),
+    ],
+    {
+      type: 'plain/text',
+    },
+  )
 }
 
 export default GameData
