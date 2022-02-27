@@ -1,9 +1,11 @@
-import React, { useMemo, useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import Draggable from 'react-draggable'
 import { css } from '@emotion/react'
 
+import GameMap from './lib/GameMap'
 import { Vec2 } from './lib/vec'
 
+import MapCell from './MapCell'
 import { importGameData, exportGameData } from './GameData'
 
 type Props = {
@@ -27,6 +29,9 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
   const [scale, setScale] = useState(2)
   const [_, setVersion] = useState(0)
   const [layer, setLayer] = useState('main')
+
+  const incrementVersion = () => setVersion((v) => v + 1)
+
   const updateValue = ({ diff, abs }: { diff?: Vec2; abs?: Vec2 }) => {
     const cell = gameData.m.at(cursor)
     if (diff) {
@@ -37,19 +42,19 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
       cell.v[layer][1] = abs[1]
     }
     setValue(gameData.m.at(cursor).v[layer])
-    setVersion((v) => v + 1)
+    incrementVersion()
   }
   const updateCellType = (v: number) => {
     const cell = gameData.m.at(cursor)
     cell.typ = v
     setCellType(v)
-    setVersion((v) => v + 1)
+    incrementVersion()
   }
   const updateMeta = (v: string) => {
     const cell = gameData.m.at(cursor)
     cell.meta = v.split(' ')
     setMeta(v)
-    setVersion((v) => v + 1)
+    incrementVersion()
   }
   const changeLayer = (l: string) => {
     setLayer(l)
@@ -72,6 +77,43 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
     document.body.removeChild(link)
   }
 
+  const resize = (sz: Vec2) => {
+    const mPrev = gameData.m
+    const szPrev = [...mPrev.sz]
+    gameData.m = new GameMap<MapCell>(
+      sz,
+      (x: number, y: number) => {
+        if (x < 0) {
+          x = 0
+        } else if (y < 0) {
+          y = 0
+        } else if (x >= szPrev[0]) {
+          x = szPrev[0] - 1
+        } else if (y >= szPrev[1]) {
+          y = szPrev[1] - 1
+        }
+        return mPrev.at([x, y])
+      },
+      mPrev.s,
+      [mPrev.e[0], sz[1]],
+      mPrev.screenSize,
+    )
+    incrementVersion()
+  }
+  const onCommand: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
+    if (!(e?.target instanceof HTMLSelectElement)) {
+      return
+    }
+    switch (e.target.value) {
+      case 'addRight':
+        resize([gameData.m.sz[0] + 1, gameData.m.sz[1]])
+        break
+      case 'addBottom':
+        resize([gameData.m.sz[0], gameData.m.sz[1] + 1])
+        break
+    }
+  }
+
   return (
     <div
       style={{
@@ -86,7 +128,7 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
           height: '2rem',
           backgroundColor: '#333',
           display: 'flex',
-          padding: '4px 16px',
+          padding: '4px 8px',
           boxSizing: 'border-box',
           alignItems: 'stretch',
           color: 'white',
@@ -103,6 +145,8 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
           }
         `}
       >
+        <button onClick={onSave}>save as</button>
+        <Divider />
         <label htmlFor="scale">scale</label>
         <select
           id="scale"
@@ -112,8 +156,24 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
-        </select>{' '}
-        <button onClick={onSave}>save</button>
+        </select>
+        <label htmlFor="layerSelect">layer</label>
+        <select
+          id="layerSelect"
+          onChange={(e) => changeLayer(e.target.value)}
+          value={layer}
+        >
+          <option value="main">main</option>
+          <option value="under">under</option>
+          <option value="overlay">overlay</option>
+          <option value="overlayAnime">overlay anime</option>
+        </select>
+        <Divider />
+        <select value="command" onChange={onCommand}>
+          <option value="command">command</option>
+          <option value="addRight">→ add right</option>
+          <option value="addBottom">↓ add bottom</option>
+        </select>
       </div>
       <div
         style={{
@@ -309,19 +369,6 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
               </button>
             </div>
             <div>
-              <label htmlFor="layerSelect">layer</label>
-              <select
-                id="layerSelect"
-                onChange={(e) => changeLayer(e.target.value)}
-                defaultValue="main"
-              >
-                <option value="main">main</option>
-                <option value="under">under</option>
-                <option value="overlay">overlay</option>
-                <option value="overlayAnime">overlay anime</option>
-              </select>
-            </div>
-            <div>
               <label htmlFor="typeSelect">type</label>
               <select
                 id="typeSelect"
@@ -347,5 +394,16 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
     </div>
   )
 }
+
+const Divider = () => (
+  <span
+    style={{
+      height: '100%',
+      width: '2px',
+      margin: '0 8px',
+      backgroundColor: '#666',
+    }}
+  />
+)
 
 export default MapEditor
