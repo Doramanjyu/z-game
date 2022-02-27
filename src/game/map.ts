@@ -1,5 +1,5 @@
-import { GameMap } from './lib/GameMap'
-import { MapCell } from './MapCell'
+import GameMap from './lib/GameMap'
+import MapCell from './MapCell'
 import { EventHandler } from './events'
 
 import mapData from './data/map.yaml'

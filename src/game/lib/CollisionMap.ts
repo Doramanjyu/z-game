@@ -1,5 +1,5 @@
-import { CollisionCell, GameMap, cellRange } from './GameMap'
-import { Vec2, Polygon, intersected } from './Vec'
+import GameMap, { CollisionCell, cellRange } from './GameMap'
+import { Vec2, Polygon, intersected } from './vec'
 
 type CollisionState = {
   right: boolean
@@ -9,7 +9,7 @@ type CollisionState = {
   top?: number
 }
 
-export class CollisionMap {
+class CollisionMap {
   readonly map: GameMap<CollisionCell>
   readonly cellSz: Vec2
 
@@ -143,3 +143,5 @@ export class CollisionMap {
     }
   }
 }
+
+export default CollisionMap

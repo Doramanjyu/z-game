@@ -1,5 +1,5 @@
 import { Drawer } from './Sprite'
-import { Vec2, Polygon } from './Vec'
+import { Vec2, Polygon } from './vec'
 
 export type Appearance = [number, number]
 
@@ -11,7 +11,7 @@ export interface CollisionCell extends Cell {
   collision(): Polygon[]
 }
 
-export class GameMap<T extends Cell> {
+class GameMap<T extends Cell> {
   readonly sz: Vec2
   readonly data: Array<T>
   readonly s: Vec2
@@ -117,3 +117,5 @@ export const cellRange = (
     o,
   }
 }
+
+export default GameMap

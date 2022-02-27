@@ -1,4 +1,4 @@
-export class StateMachine {
+class StateMachine {
   private readonly initial: State
   private readonly states: Map<State, null>
   current: State
@@ -56,3 +56,5 @@ export const nopState = {
   nextStates: {},
   tick: () => null,
 }
+
+export default StateMachine

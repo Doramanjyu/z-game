@@ -1,5 +1,5 @@
-import { Vec2 } from './Vec'
-import { Sprite, SpriteProp, Drawer } from './Sprite'
+import { Vec2 } from './vec'
+import Sprite, { SpriteProp, Drawer } from './Sprite'
 
 export type AnimeProp = SpriteProp & {
   frames: number[]
@@ -7,7 +7,7 @@ export type AnimeProp = SpriteProp & {
   countDiv?: number
 }
 
-export class Anime extends Sprite implements Drawer {
+class Anime extends Sprite implements Drawer {
   readonly propAnime: AnimeProp
   private readonly patterns: number
   private readonly countDiv: number
@@ -56,3 +56,5 @@ export class Anime extends Sprite implements Drawer {
     return this.propAnime.frames[this.frame]
   }
 }
+
+export default Anime

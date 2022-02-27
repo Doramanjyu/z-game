@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react'
 import Draggable from 'react-draggable'
 import { css } from '@emotion/react'
 
-import { Vec2 } from './lib/Vec'
+import { Vec2 } from './lib/vec'
 
 import { loadMap } from './map'
 

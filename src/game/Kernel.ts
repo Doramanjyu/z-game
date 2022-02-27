@@ -1,10 +1,10 @@
-import { Anime } from './lib/Anime'
-import { Sprite } from './lib/Sprite'
-import { Vec2 } from './lib/Vec'
-import { GameMap } from './lib/GameMap'
-import { CollisionMap } from './lib/Collision'
+import Anime from './lib/Anime'
+import Sprite from './lib/Sprite'
+import { Vec2 } from './lib/vec'
+import GameMap from './lib/GameMap'
+import CollisionMap from './lib/CollisionMap'
 
-import { MapCell } from './MapCell'
+import MapCell from './MapCell'
 
 const heatCount = 8
 const popResume = 96
@@ -54,7 +54,7 @@ class KernelState {
   }
 }
 
-export class Kernel {
+class Kernel {
   private readonly anime: {
     idle: Anime
     squat: Anime
@@ -346,3 +346,5 @@ export class Kernel {
     }
   }
 }
+
+export default Kernel
