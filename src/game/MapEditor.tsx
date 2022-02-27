@@ -4,7 +4,7 @@ import { css } from '@emotion/react'
 
 import { Vec2 } from './lib/vec'
 
-import { loadGameData } from './GameData'
+import { importGameData, exportGameData } from './GameData'
 
 type Props = {
   sprite: string
@@ -13,7 +13,7 @@ type Props = {
 const MapEditor: React.FC<Props> = ({ sprite }) => {
   const gameData = useMemo(
     () =>
-      loadGameData({
+      importGameData({
         getItem: () => {
           console.log('item event fired')
         },
@@ -62,6 +62,16 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
     setMeta(gameData.m.at(p).meta.join(' '))
   }
 
+  const onSave = () => {
+    const b = exportGameData(gameData)
+    const link = document.createElement('a')
+    link.download = 'map.yaml'
+    link.href = URL.createObjectURL(b)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   return (
     <div
       style={{
@@ -78,9 +88,20 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
           display: 'flex',
           padding: '4px 16px',
           boxSizing: 'border-box',
-          alignItems: 'center',
+          alignItems: 'stretch',
           color: 'white',
         }}
+        css={css`
+          select,
+          button,
+          label {
+            margin: 0 2px;
+          }
+          label {
+            display: flex;
+            align-items: center;
+          }
+        `}
       >
         <label htmlFor="scale">scale</label>
         <select
@@ -91,7 +112,8 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
-        </select>
+        </select>{' '}
+        <button onClick={onSave}>save</button>
       </div>
       <div
         style={{
@@ -221,13 +243,22 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
               &:hover {
                 opacity: 0.8;
               }
+              div {
+                display: flex;
+                justify-content: center;
+              }
               button,
               select,
               input {
                 margin: 2px 0;
               }
-              select {
+              select,
+              label {
                 padding: 2px;
+              }
+              label {
+                display: flex;
+                align-items: center;
               }
               input.shortNum {
                 width: 2em;
@@ -258,7 +289,8 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
               />
               <button onClick={() => updateValue({ diff: [1, 0] })}>
                 &gt;
-              </button>{' '}
+              </button>
+              &nbsp;
               <button onClick={() => updateValue({ diff: [0, -1] })}>
                 &lt;
               </button>

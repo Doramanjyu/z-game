@@ -8,7 +8,7 @@ import Kernel from './Kernel'
 import ZEA from './ZEA'
 import { EventHandler } from './events'
 import DialogManager from './DialogManager'
-import GameData, { loadGameData } from './GameData'
+import GameData, { importGameData } from './GameData'
 
 class Game {
   readonly canvas: HTMLCanvasElement
@@ -53,7 +53,7 @@ class Game {
     this.sprite = sprite
 
     this.dm = new DialogManager(messageBox)
-    this.game = loadGameData({
+    this.game = importGameData({
       getItem: () => {
         self.dm.showMessage('Yum Yum', { timeout: 2000 })
       },
