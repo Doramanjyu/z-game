@@ -1,5 +1,5 @@
 import { Cell, Appearance } from './lib/GameMap'
-import { Polygon } from './lib/Vec'
+import { Polygon } from './lib/vec'
 
 import { GameEventTarget } from './events'
 
@@ -10,7 +10,7 @@ type CollisionDir = {
   right: boolean
 }
 
-export class MapCell extends GameEventTarget<MapCell> implements Cell {
+class MapCell extends GameEventTarget<MapCell> implements Cell {
   readonly v: { [layer: string]: Appearance }
   readonly typ: number
   readonly colDir: CollisionDir
@@ -94,3 +94,5 @@ export class MapCell extends GameEventTarget<MapCell> implements Cell {
     return 0
   }
 }
+
+export default MapCell

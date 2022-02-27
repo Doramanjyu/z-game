@@ -1,8 +1,8 @@
-import { Anime } from './lib/Anime'
+import Anime from './lib/Anime'
 
-import { NPC, NPCState, InitialNPCState } from './NPC'
+import NPC, { NPCState, InitialNPCState } from './NPC'
 
-export class ZEA extends NPC {
+class ZEA extends NPC {
   constructor(sprite: HTMLImageElement, state0: InitialNPCState) {
     super(
       new Anime(sprite, {
@@ -26,3 +26,5 @@ export class ZEA extends NPC {
     )
   }
 }
+
+export default ZEA

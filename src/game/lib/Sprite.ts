@@ -1,4 +1,4 @@
-import { Vec2 } from './Vec'
+import { Vec2 } from './vec'
 
 export interface Drawer {
   draw(
@@ -17,7 +17,7 @@ export type SpriteProp = {
   baseScale?: number
 }
 
-export class Sprite implements Drawer {
+class Sprite implements Drawer {
   readonly sprite: HTMLImageElement
   readonly prop: Required<SpriteProp>
 
@@ -53,3 +53,5 @@ export class Sprite implements Drawer {
     return this.prop.sz
   }
 }
+
+export default Sprite

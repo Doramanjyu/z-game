@@ -1,5 +1,5 @@
-import { Anime } from './lib/Anime'
-import { Vec2 } from './lib/Vec'
+import Anime from './lib/Anime'
+import { Vec2 } from './lib/vec'
 
 import { GameEventTarget } from './events'
 
@@ -18,7 +18,7 @@ export type InitialNPCState = {
   mode?: number
 }
 
-export class NPC<State extends NPCState = NPCState> extends GameEventTarget<
+class NPC<State extends NPCState = NPCState> extends GameEventTarget<
   NPC<State>
 > {
   private readonly anime: Anime
@@ -83,3 +83,5 @@ export class NPC<State extends NPCState = NPCState> extends GameEventTarget<
     }
   }
 }
+
+export default NPC

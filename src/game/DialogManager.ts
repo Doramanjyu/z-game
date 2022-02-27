@@ -2,7 +2,7 @@ type DialogOption = {
   timeout?: number
 }
 
-export class DialogManager {
+class DialogManager {
   readonly messageBox: HTMLDivElement
 
   private timeoutTimer?: ReturnType<typeof setTimeout>
@@ -28,3 +28,5 @@ export class DialogManager {
     this.messageBox.classList.add('hide')
   }
 }
+
+export default DialogManager
