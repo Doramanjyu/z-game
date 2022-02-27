@@ -1,18 +1,14 @@
 import Sprite from './lib/Sprite'
 import Anime from './lib/Anime'
-import GameMap from './lib/GameMap'
 import CollisionMap from './lib/CollisionMap'
 import { Vec2 } from './lib/vec'
 import StateMachine, { State, nopState } from './lib/StateMachine'
 
 import Kernel from './Kernel'
-import MapCell from './MapCell'
 import ZEA from './ZEA'
 import { EventHandler } from './events'
 import DialogManager from './DialogManager'
-import { loadMap } from './map'
-
-import mapData from './data/map.yaml'
+import GameData, { loadGameData } from './GameData'
 
 class Game {
   readonly canvas: HTMLCanvasElement
@@ -25,7 +21,7 @@ class Game {
   readonly sm: StateMachine
   readonly dm: DialogManager
 
-  readonly gameMap: GameMap<MapCell>
+  readonly game: GameData
   readonly bgUnder: Sprite
   readonly bg: Sprite
   readonly bgOverlay: Sprite
@@ -57,9 +53,14 @@ class Game {
     this.sprite = sprite
 
     this.dm = new DialogManager(messageBox)
+    this.game = loadGameData({
+      getItem: () => {
+        self.dm.showMessage('Yum Yum', { timeout: 2000 })
+      },
+    })
 
     this.scale = 3
-    this.origin = [mapData.start.pos[0] * 16, mapData.start.pos[1] * 16]
+    this.origin = this.game.init.kernel
     this.viewpoint = [0, 0]
     this.debugView = false
 
@@ -115,12 +116,7 @@ class Game {
       this.zea.interact()
     }
 
-    this.gameMap = loadMap({
-      getItem: () => {
-        self.dm.showMessage('Yum Yum', { timeout: 2000 })
-      },
-    })
-    this.collisionMap = new CollisionMap(this.gameMap, [16, 16])
+    this.collisionMap = new CollisionMap(this.game.m, [16, 16])
     this.command = new Map<string, boolean>()
   }
 
@@ -150,7 +146,7 @@ class Game {
         right: this.command.has('ArrowRight'),
         space: this.command.has('Space'),
       }
-      this.kernel.tick(kernelCmd, this.gameMap, this.collisionMap)
+      this.kernel.tick(kernelCmd, this.game.m, this.collisionMap)
       this.bgOverlayAnime.tick()
 
       const state = this.kernel.state
@@ -185,20 +181,20 @@ class Game {
           0,
         )
       }
-      this.gameMap.draw(this.ctx, this.bgUnder, offset, this.scale, 'under')
-      this.gameMap.draw(this.ctx, this.bg, offset, this.scale, 'main')
+      this.game.m.draw(this.ctx, this.bgUnder, offset, this.scale, 'under')
+      this.game.m.draw(this.ctx, this.bg, offset, this.scale, 'main')
       this.zea.draw(this.ctx, offset, this.scale)
 
       this.kernel.draw(this.ctx, offset, this.scale)
-      this.gameMap.draw(this.ctx, this.bgOverlay, offset, this.scale, 'overlay')
-      this.gameMap.draw(
+      this.game.m.draw(this.ctx, this.bgOverlay, offset, this.scale, 'overlay')
+      this.game.m.draw(
         this.ctx,
         this.bgOverlayAnime,
         offset,
         this.scale,
         'overlayAnime',
       )
-      this.gameMap.draw(
+      this.game.m.draw(
         this.ctx,
         this.bgOverlayAnime,
         offset,

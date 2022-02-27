@@ -4,16 +4,16 @@ import { css } from '@emotion/react'
 
 import { Vec2 } from './lib/vec'
 
-import { loadMap } from './map'
+import { loadGameData } from './GameData'
 
 type Props = {
   sprite: string
 }
 
 const MapEditor: React.FC<Props> = ({ sprite }) => {
-  const gameMap = useMemo(
+  const gameData = useMemo(
     () =>
-      loadMap({
+      loadGameData({
         getItem: () => {
           console.log('item event fired')
         },
@@ -26,7 +26,7 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
   const [_, setVersion] = useState(0)
   const [layer, setLayer] = useState('main')
   const updateValue = ({ diff, abs }: { diff?: Vec2; abs?: Vec2 }) => {
-    const cell = gameMap.at(cursor)
+    const cell = gameData.m.at(cursor)
     if (diff) {
       cell.v[layer][0] += diff[0]
       cell.v[layer][1] += diff[1]
@@ -34,16 +34,16 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
       cell.v[layer][0] = abs[0]
       cell.v[layer][1] = abs[1]
     }
-    setValue(gameMap.at(cursor).v[layer])
+    setValue(gameData.m.at(cursor).v[layer])
     setVersion((v) => v + 1)
   }
   const changeLayer = (l: string) => {
     setLayer(l)
-    setValue(gameMap.at(cursor).v[l])
+    setValue(gameData.m.at(cursor).v[l])
   }
   const updateCursor = (p: Vec2) => {
     setCursor(p)
-    setValue(gameMap.at(p).v[layer])
+    setValue(gameData.m.at(p).v[layer])
   }
 
   return (
@@ -111,10 +111,10 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
           }
         `}
       >
-        {[...Array(gameMap.sz[1])].map((_, j) => (
+        {[...Array(gameData.m.sz[1])].map((_, j) => (
           <div key={`row${j}`} className="row">
-            {[...Array(gameMap.sz[0])].map((_, i) => {
-              const cell = gameMap.at([i, j])
+            {[...Array(gameData.m.sz[0])].map((_, i) => {
+              const cell = gameData.m.at([i, j])
               const main = cell.appearance('main')
               const under = cell.appearance('under')
               const overlay = cell.appearance('overlay')
