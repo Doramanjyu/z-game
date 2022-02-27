@@ -20,7 +20,7 @@ class Anime extends Sprite implements Drawer {
     if (prop.patterns) {
       this.patterns = prop.patterns
     } else {
-      this.patterns = prop.frames.reduce((acc, v) => (acc > v ? acc : v), 0)
+      this.patterns = prop.frames.reduce((acc, v) => (acc > v ? acc : v), 0) + 1
     }
     if (prop.countDiv) {
       this.countDiv = prop.countDiv
