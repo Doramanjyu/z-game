@@ -11,6 +11,7 @@ body {
 
 button,
 select,
+input,
 option {
   font-family: inherit;
   font-size: inherit;
