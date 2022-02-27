@@ -22,6 +22,8 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
   )
   const [cursor, setCursor] = useState<Vec2>([0, 0])
   const [value, setValue] = useState<Vec2>([0, 0])
+  const [cellType, setCellType] = useState(0)
+  const [meta, setMeta] = useState('')
   const [scale, setScale] = useState(2)
   const [_, setVersion] = useState(0)
   const [layer, setLayer] = useState('main')
@@ -37,6 +39,18 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
     setValue(gameData.m.at(cursor).v[layer])
     setVersion((v) => v + 1)
   }
+  const updateCellType = (v: number) => {
+    const cell = gameData.m.at(cursor)
+    cell.typ = v
+    setCellType(v)
+    setVersion((v) => v + 1)
+  }
+  const updateMeta = (v: string) => {
+    const cell = gameData.m.at(cursor)
+    cell.meta = v.split(' ')
+    setMeta(v)
+    setVersion((v) => v + 1)
+  }
   const changeLayer = (l: string) => {
     setLayer(l)
     setValue(gameData.m.at(cursor).v[l])
@@ -44,6 +58,8 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
   const updateCursor = (p: Vec2) => {
     setCursor(p)
     setValue(gameData.m.at(p).v[layer])
+    setCellType(gameData.m.at(p).typ)
+    setMeta(gameData.m.at(p).meta.join(' '))
   }
 
   return (
@@ -115,6 +131,8 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
           <div key={`row${j}`} className="row">
             {[...Array(gameData.m.sz[0])].map((_, i) => {
               const cell = gameData.m.at([i, j])
+              const meta = cell.meta
+              const typ = cell.typ
               const main = cell.appearance('main')
               const under = cell.appearance('under')
               const overlay = cell.appearance('overlay')
@@ -160,6 +178,24 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
                       }}
                     />
                   )}
+                  {meta.length > 0 && (
+                    <span
+                      style={{
+                        backgroundPosition: `-${992 * scale}px -${
+                          16 * scale
+                        }px`,
+                      }}
+                    />
+                  )}
+                  {typ > 0 && (
+                    <span
+                      style={{
+                        backgroundPosition: `-${992 * scale}px -${
+                          (2 + typ) * 16 * scale
+                        }px`,
+                      }}
+                    />
+                  )}
                 </div>
               )
             })}
@@ -181,16 +217,20 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
               right: '32px',
             }}
             css={css`
-              opacity: 0.6;
+              opacity: 0.7;
               &:hover {
                 opacity: 0.8;
               }
               button,
-              select {
+              select,
+              input {
                 margin: 2px 0;
               }
+              select {
+                padding: 2px;
+              }
               input.shortNum {
-                width: 3em;
+                width: 2em;
                 text-align: center;
               }
               input[type='number']::-webkit-inner-spin-button,
@@ -236,17 +276,39 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
                 &gt;
               </button>
             </div>
-            <label htmlFor="layerSelect">layer</label>
-            <select
-              id="layerSelect"
-              onChange={(e) => changeLayer(e.target.value)}
-              defaultValue="main"
-            >
-              <option value="main">main</option>
-              <option value="under">under</option>
-              <option value="overlay">overlay</option>
-              <option value="overlayAnime">overlay anime</option>
-            </select>
+            <div>
+              <label htmlFor="layerSelect">layer</label>
+              <select
+                id="layerSelect"
+                onChange={(e) => changeLayer(e.target.value)}
+                defaultValue="main"
+              >
+                <option value="main">main</option>
+                <option value="under">under</option>
+                <option value="overlay">overlay</option>
+                <option value="overlayAnime">overlay anime</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="typeSelect">type</label>
+              <select
+                id="typeSelect"
+                onChange={(e) => updateCellType(parseInt(e.target.value))}
+                value={cellType}
+              >
+                <option value="0">none</option>
+                <option value="1">occupied</option>
+                <option value="2">heat</option>
+                <option value="3">step</option>
+              </select>
+            </div>
+            <div>
+              <input
+                style={{ width: '100%', boxSizing: 'border-box' }}
+                value={meta}
+                onChange={(e) => updateMeta(e.target.value)}
+              />
+            </div>
           </div>
         </Draggable>
       </div>

@@ -10,20 +10,49 @@ type Props = {
   getItem: EventHandler<MapCell>
 }
 
-type GameData = {
-  m: GameMap<MapCell>
+type GameMetaData = {
   init: {
     kernel: Vec2
   }
+  spawn: { [name: string]: Vec2 }
+}
+
+type GameData = GameMetaData & {
+  m: GameMap<MapCell>
 }
 
 export const loadGameData = ({ getItem }: Props): GameData => {
   const mw = mapData.main[0].length
   const mh = mapData.main.length
+
+  const meta = (mapData.meta as Array<Array<Array<string>>>).reduce(
+    (out, row, j) =>
+      row.reduce(
+        (out, m, i) =>
+          m.reduce((out, d) => {
+            const n = d.split('.')
+            switch (n[0]) {
+              case 'init':
+                out.init = { kernel: [i * 16, j * 16] }
+                break
+              case 'spawn':
+                out.spawn[n[1]] = [i * 16, j * 16]
+                break
+            }
+            return out
+          }, out),
+        out,
+      ),
+    {
+      init: {
+        kernel: [0, 0],
+      },
+      spawn: {},
+    } as GameMetaData,
+  )
+
   return {
-    init: {
-      kernel: [mapData.start.pos[0] * 16, mapData.start.pos[1] * 16],
-    },
+    ...meta,
     m: new GameMap<MapCell>(
       [mw, mh],
       (x: number, y: number) => {
@@ -53,6 +82,7 @@ export const loadGameData = ({ getItem }: Props): GameData => {
           },
           t,
           col,
+          mapData.meta[y][x],
         )
         if (mapData.item[y][x] > 0) {
           c.onAction.push((e) => {

@@ -11,19 +11,22 @@ type CollisionDir = {
 }
 
 class MapCell extends GameEventTarget<MapCell> implements Cell {
-  readonly v: { [layer: string]: Appearance }
-  readonly typ: number
-  readonly colDir: CollisionDir
+  v: { [layer: string]: Appearance }
+  typ: number
+  colDir: CollisionDir
+  meta: string[]
 
   constructor(
     v: { [layer: string]: Appearance },
     typ: number,
     col: CollisionDir,
+    meta: string[],
   ) {
     super()
     this.v = v
     this.typ = typ
     this.colDir = col
+    this.meta = meta
   }
 
   appearance(layer: string): Appearance {

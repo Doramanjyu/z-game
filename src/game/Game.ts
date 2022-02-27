@@ -90,7 +90,7 @@ class Game {
       sz: [16, 1024],
     })
     this.zea = new ZEA(this.sprite, {
-      pos: [70, 48],
+      pos: this.game.spawn.ZEA,
       mode: 1,
     })
     const zDialogs = ['Hemlo', '...']
