@@ -105,11 +105,11 @@ export const cellRange = (
   const left = o[0] + s[0] * sz[0] + sz[0]
   const top = o[1] + s[1] * sz[1] + sz[1]
 
-  const si2 = left >= 0 ? s[0] : s[0] - Math.floor(left / sz[0]) - baseScale + 1
-  const ei2 = si2 + gw + baseScale - 1
+  const si2 = left >= 0 ? s[0] : s[0] - Math.floor(left / sz[0]) - baseScale - 1
+  const ei2 = si2 + gw + baseScale + 1
 
-  const sj2 = top >= 0 ? s[1] : s[1] - Math.floor(top / sz[1]) - baseScale + 1
-  const ej2 = sj2 + gh + baseScale - 1
+  const sj2 = top >= 0 ? s[1] : s[1] - Math.floor(top / sz[1]) - baseScale - 1
+  const ej2 = sj2 + gh + baseScale + 1
 
   return {
     s: [si2, sj2],
