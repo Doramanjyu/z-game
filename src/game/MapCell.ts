@@ -29,6 +29,18 @@ class MapCell extends GameEventTarget<MapCell> implements Cell {
     this.meta = meta
   }
 
+  clone(): MapCell {
+    return new MapCell(
+      Object.keys(this.v).reduce((acc, k) => {
+        acc[k] = [...this.v[k]]
+        return acc
+      }, {} as { [layer: string]: Appearance }),
+      this.typ,
+      { ...this.colDir },
+      [...this.meta],
+    )
+  }
+
   appearance(layer: string): Appearance {
     return this.v[layer]
   }
