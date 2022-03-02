@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Draggable from 'react-draggable'
 import { css } from '@emotion/react'
 
@@ -22,6 +22,7 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
       }),
     [],
   )
+  const [clipboard, setClipboard] = useState<MapCell | null>()
   const [cursor, setCursor] = useState<Vec2>([0, 0])
   const [value, setValue] = useState<Vec2>([0, 0])
   const [cellType, setCellType] = useState(0)
@@ -77,12 +78,14 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
     document.body.removeChild(link)
   }
 
-  const resize = (sz: Vec2) => {
+  const resize = (offset: Vec2, sz: Vec2) => {
     const mPrev = gameData.m
     const szPrev = [...mPrev.sz]
     gameData.m = new GameMap<MapCell>(
       sz,
       (x: number, y: number) => {
+        x -= offset[0]
+        y -= offset[1]
         if (x < 0) {
           x = 0
         } else if (y < 0) {
@@ -92,7 +95,7 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
         } else if (y >= szPrev[1]) {
           y = szPrev[1] - 1
         }
-        return mPrev.at([x, y])
+        return mPrev.at([x, y]).clone()
       },
       mPrev.s,
       [mPrev.e[0], sz[1]],
@@ -106,13 +109,40 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
     }
     switch (e.target.value) {
       case 'addRight':
-        resize([gameData.m.sz[0] + 1, gameData.m.sz[1]])
+        resize([0, 0], [gameData.m.sz[0] + 1, gameData.m.sz[1]])
+        break
+      case 'addLeft':
+        resize([1, 0], [gameData.m.sz[0] + 1, gameData.m.sz[1]])
         break
       case 'addBottom':
-        resize([gameData.m.sz[0], gameData.m.sz[1] + 1])
+        resize([0, 0], [gameData.m.sz[0], gameData.m.sz[1] + 1])
+        break
+      case 'addTop':
+        resize([0, 1], [gameData.m.sz[0], gameData.m.sz[1] + 1])
         break
     }
   }
+
+  const onKeydown = useCallback((e: KeyboardEvent) => {
+    switch (e.code) {
+      case 'KeyC':
+        if (e.ctrlKey) {
+          setClipboard(gameData.m.at(cursor))
+        }
+        break
+      case 'KeyV':
+        if (e.ctrlKey && clipboard) {
+          gameData.m.set(cursor, clipboard.clone())
+          incrementVersion()
+        }
+        break
+    }
+  }, [])
+
+  useEffect(() => {
+    document.addEventListener('keydown', onKeydown)
+    return () => document.removeEventListener('keydown', onKeydown)
+  }, [onKeydown])
 
   return (
     <div
@@ -120,6 +150,7 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
         width: '100%',
         height: '100vh',
         fontSize: '14px',
+        backgroundColor: '#111',
       }}
     >
       <div
@@ -172,7 +203,9 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
         <select value="command" onChange={onCommand}>
           <option value="command">command</option>
           <option value="addRight">→ add right</option>
+          <option value="addLeft">← add left</option>
           <option value="addBottom">↓ add bottom</option>
+          <option value="addTop">↑ add top</option>
         </select>
       </div>
       <div
@@ -185,8 +218,10 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
           div.row {
             margin: 0;
             padding: 0;
+            width: ${gameData.m.sz[0] * 16 * scale}px;
             height: ${16 * scale}px;
             white-space: nowrap;
+            background-color: #224;
           }
           div.row > div {
             width: ${16 * scale}px;
