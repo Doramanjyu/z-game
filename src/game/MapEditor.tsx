@@ -123,21 +123,24 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
     }
   }
 
-  const onKeydown = useCallback((e: KeyboardEvent) => {
-    switch (e.code) {
-      case 'KeyC':
-        if (e.ctrlKey) {
-          setClipboard(gameData.m.at(cursor))
-        }
-        break
-      case 'KeyV':
-        if (e.ctrlKey && clipboard) {
-          gameData.m.set(cursor, clipboard.clone())
-          incrementVersion()
-        }
-        break
-    }
-  }, [])
+  const onKeydown = useCallback(
+    (e: KeyboardEvent) => {
+      switch (e.code) {
+        case 'KeyC':
+          if (e.ctrlKey) {
+            setClipboard(gameData.m.at(cursor))
+          }
+          break
+        case 'KeyV':
+          if (e.ctrlKey && clipboard) {
+            gameData.m.set(cursor, clipboard.clone())
+            incrementVersion()
+          }
+          break
+      }
+    },
+    [cursor, clipboard],
+  )
 
   useEffect(() => {
     document.addEventListener('keydown', onKeydown)
