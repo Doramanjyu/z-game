@@ -163,8 +163,11 @@ class Game {
       if (this.viewpoint[1] > diffY + 16) {
         this.viewpoint[1] += (diffY + 16 - this.viewpoint[1]) / 4
       }
+      const widthBlocks = Math.floor(640 / (16 * this.scale)) * 16 * this.scale
       const diffX =
-        (Math.round(((state.pos[0] - this.origin[0] - 6) * 3) / 640) * 640) / 3
+        (Math.round(((state.pos[0] - this.origin[0] - 6) * 3) / widthBlocks) *
+          widthBlocks) /
+        3
       this.viewpoint[0] += Math.max(
         -50,
         Math.min(50, (diffX - this.viewpoint[0]) / 2),
