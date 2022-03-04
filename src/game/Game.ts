@@ -164,8 +164,9 @@ class Game {
         this.viewpoint[1] += (diffY + 16 - this.viewpoint[1]) / 4
       }
       const widthBlocks = Math.floor(640 / (16 * this.scale)) * 16 * this.scale
+      console.log(this.origin[0])
       const diffX =
-        (Math.round(((state.pos[0] - this.origin[0] - 6) * 3) / widthBlocks) *
+        (Math.round(((state.pos[0] - 320 / this.scale) * 3) / widthBlocks) *
           widthBlocks) /
         3
       this.viewpoint[0] += Math.max(
