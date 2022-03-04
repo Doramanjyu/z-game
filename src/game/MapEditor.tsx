@@ -133,8 +133,18 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
           break
         case 'KeyV':
           if (e.ctrlKey && clipboard) {
-            gameData.m.set(cursor, clipboard.clone())
+            if (e.shiftKey) {
+              gameData.m.set(cursor, clipboard.clone())
+            } else {
+              gameData.m.at(cursor).v[layer] = [...clipboard.v[layer]]
+            }
             incrementVersion()
+          }
+          break
+        case 'KeyS':
+          if (e.ctrlKey) {
+            onSave()
+            e.preventDefault()
           }
           break
       }
