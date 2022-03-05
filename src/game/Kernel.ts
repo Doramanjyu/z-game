@@ -241,6 +241,15 @@ class Kernel {
     this.state.pos[0] += this.state.vel[0]
     this.state.pos[1] += this.state.vel[1]
 
+    const decreasePopped = (dec = 1) => {
+      if (this.state.popped > 0) {
+        this.state.popped -= dec
+        this.state.heat = 0
+        if (this.state.popped < 0) {
+          this.state.popped = 0
+        }
+      }
+    }
     if (this.explosionNum && this.explosionNum > 0) {
       this.explosionNum--
       if (this.explosionNum == 2) {
@@ -262,13 +271,7 @@ class Kernel {
       if (this.state.heat < 0) {
         this.state.heat = 0
       }
-      if (this.state.popped > 0) {
-        this.state.popped--
-        this.state.heat = 0
-        if (this.state.popped < 0) {
-          this.state.popped = 0
-        }
-      }
+      decreasePopped()
     }
     if (this.state.trans < 8) {
       this.state.trans++
@@ -276,6 +279,8 @@ class Kernel {
 
     if (interacting && !this.interacting) {
       this.state.jumpPow = [0, 0]
+      decreasePopped(10)
+
       const mpBottom0: Vec2 = [
         Math.round((this.state.pos[0] - 2) / 16),
         Math.floor(this.state.pos[1] / 16),
