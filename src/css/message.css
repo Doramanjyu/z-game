@@ -1,0 +1,36 @@
+@keyframes bounceIn {
+  from,
+  20%,
+  46%,
+  80%,
+  to {
+    transform: translate3d(0, 0, 0);
+    visibility: visible;
+  }
+  40%,
+  42% {
+    transform: translate3d(0, -20px, 0);
+  }
+  70% {
+    transform: translate3d(0, -8px, 0);
+  }
+  90% {
+    transform: translate3d(0, -2px, 0);
+  }
+}
+
+@keyframes bounceOut {
+  from,
+  50% {
+    transform: translate3d(0, 0, 0);
+  }
+  20% {
+    transform: translate3d(0, -2px, 0);
+  }
+  70% {
+    transform: translate3d(0, -5px, 0);
+  }
+  to {
+    visibility: hidden;
+  }
+}
