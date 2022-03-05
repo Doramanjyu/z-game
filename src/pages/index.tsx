@@ -38,7 +38,10 @@ const IndexPage = () => {
       if (!e.target || !(e.target instanceof Element)) {
         return false
       }
-      return e.target.closest('a') !== null
+      return (
+        e.target.closest('a') !== null ||
+        e.target.closest('.usableItem') !== null
+      )
     }
     let [tx, ty] = [0, 0]
     let touching = false
