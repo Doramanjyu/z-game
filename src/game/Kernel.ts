@@ -275,6 +275,7 @@ class Kernel {
     }
 
     if (interacting && !this.interacting) {
+      this.state.jumpPow = [0, 0]
       const mpBottom0: Vec2 = [
         Math.round((this.state.pos[0] - 2) / 16),
         Math.floor(this.state.pos[1] / 16),
