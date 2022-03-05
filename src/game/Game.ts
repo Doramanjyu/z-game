@@ -170,22 +170,29 @@ class Game {
 
       this.zea.tick(state.pos)
 
-      const diffY = (state.pos[1] - this.origin[1]) / 1.25
-      if (this.viewpoint[1] < diffY - 16) {
-        this.viewpoint[1] += (diffY - 16 - this.viewpoint[1]) / 4
+      const viewControl = (
+        vp: number,
+        diff: number,
+        tolerance: number,
+        gain: number,
+      ) => {
+        if (vp < diff - tolerance) {
+          vp += (diff - tolerance - vp) * gain
+        }
+        if (vp > diff + tolerance) {
+          vp += (diff + tolerance - vp) * gain
+        }
+        return Math.floor(vp)
       }
-      if (this.viewpoint[1] > diffY + 16) {
-        this.viewpoint[1] += (diffY + 16 - this.viewpoint[1]) / 4
-      }
-      const widthBlocks = Math.floor(640 / (16 * this.scale)) * 16 * this.scale
-      const diffX =
-        (Math.round(((state.pos[0] - 320 / this.scale) * 3) / widthBlocks) *
-          widthBlocks) /
-        3
-      this.viewpoint[0] += Math.max(
-        -50,
-        Math.min(50, (diffX - this.viewpoint[0]) / 2),
-      )
+      this.viewpoint = [
+        viewControl(this.viewpoint[0], state.pos[0] - this.origin[0], 24, 0.25),
+        viewControl(
+          this.viewpoint[1],
+          (state.pos[1] - this.origin[1]) / 1.25,
+          16,
+          0.3,
+        ),
+      ]
 
       const offset = this.offset()
 
@@ -229,7 +236,7 @@ class Game {
   }
 
   private offset(): Vec2 {
-    return [-this.viewpoint[0], 110 - this.origin[1] - this.viewpoint[1]]
+    return [-this.viewpoint[0] - 28, 110 - this.origin[1] - this.viewpoint[1]]
   }
 
   keydown(e: Pick<KeyboardEvent, 'code'>) {
