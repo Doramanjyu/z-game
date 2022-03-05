@@ -1,7 +1,9 @@
 import { Cell, Appearance } from './lib/GameMap'
 import { Polygon } from './lib/vec'
 
-import { GameEventTarget } from './events'
+import { GameEventContext } from './context'
+import { GameEventTarget } from './event'
+import { itemLabels } from './item'
 
 type CollisionDir = {
   top: boolean
@@ -11,26 +13,79 @@ type CollisionDir = {
 }
 
 class MapCell extends GameEventTarget<MapCell> implements Cell {
+  private readonly eventCtx: GameEventContext
   v: { [layer: string]: Appearance }
   typ: number
   colDir: CollisionDir
   meta: string[]
+  override: { [layer: string]: () => Appearance | null }
+  numItems: number
+  state: {
+    itemsEarned: number
+  }
 
   constructor(
+    ec: GameEventContext,
     v: { [layer: string]: Appearance },
     typ: number,
     col: CollisionDir,
     meta: string[],
   ) {
     super()
+    this.eventCtx = ec
     this.v = v
     this.typ = typ
     this.colDir = col
     this.meta = meta
+    this.override = {}
+    this.state = {
+      itemsEarned: 0,
+    }
+
+    const items = meta.reduce<number[]>((acc, m) => {
+      const [t, v] = m.split('.')
+      if (t === 'item') {
+        acc.push(parseInt(v))
+      }
+      return acc
+    }, [])
+    this.numItems = items.length
+    if (this.numItems > 0) {
+      const self = this
+      this.override['overlayAnime'] = (): Appearance | null => {
+        if (self.state.itemsEarned < items.length) {
+          return [0, 2]
+        }
+        return null
+      }
+      this.onAction.push((e) => {
+        if (self.state.itemsEarned < self.numItems) {
+          e.updateItems((itemsPrev) => {
+            const id = items[self.state.itemsEarned]
+            e.effectItem(id)
+            itemsPrev.push({
+              id: id,
+              label: itemLabels[id],
+              onUse: () => {
+                e.updateItems((itemsPrev) =>
+                  itemsPrev.filter((item) => item.id !== id),
+                )
+                if (id === 0) {
+                  e.dialogManager.showMessage('Nyoh, biji', { timeout: 2000 })
+                }
+              },
+            })
+            return itemsPrev
+          })
+          self.state.itemsEarned += 1
+        }
+      })
+    }
   }
 
   clone(): MapCell {
     return new MapCell(
+      this.eventCtx,
       Object.keys(this.v).reduce((acc, k) => {
         acc[k] = [...this.v[k]]
         return acc
@@ -42,6 +97,12 @@ class MapCell extends GameEventTarget<MapCell> implements Cell {
   }
 
   appearance(layer: string): Appearance {
+    if (layer in this.override) {
+      const overriden = this.override[layer]()
+      if (overriden) {
+        return overriden
+      }
+    }
     return this.v[layer]
   }
 
@@ -100,7 +161,7 @@ class MapCell extends GameEventTarget<MapCell> implements Cell {
   }
 
   headUpText(): number {
-    if (this.onAction.length > 0) {
+    if (this.state.itemsEarned < this.numItems) {
       return 1
     }
     if (this.typ == 2) {

@@ -1,5 +1,5 @@
 import { Vec2 } from './vec'
-import Sprite, { SpriteProp, Drawer } from './Sprite'
+import Sprite, { SpriteProp, Drawer, DrawOptions } from './Sprite'
 
 export type AnimeProp = SpriteProp & {
   frames: number[]
@@ -35,6 +35,7 @@ class Anime extends Sprite implements Drawer {
     scale: number,
     mode1: number,
     mode2: number,
+    opt?: DrawOptions,
   ) {
     super.draw(
       ctx,
@@ -42,6 +43,7 @@ class Anime extends Sprite implements Drawer {
       scale,
       this.propAnime.frames[this.frame] + this.patterns * mode1,
       mode2,
+      opt,
     )
   }
 

@@ -2,13 +2,9 @@ import GameMap from './lib/GameMap'
 import { Vec2 } from './lib/vec'
 
 import MapCell from './MapCell'
-import { EventHandler } from './events'
+import { GameEventContext } from './context'
 
 import mapData from './data/map.yaml'
-
-type Props = {
-  getItem: EventHandler<MapCell>
-}
 
 type GameMetaData = {
   init: {
@@ -21,7 +17,7 @@ type GameData = GameMetaData & {
   m: GameMap<MapCell>
 }
 
-export const importGameData = ({ getItem }: Props): GameData => {
+export const importGameData = (ec: GameEventContext): GameData => {
   const mw = mapData.main[0].length
   const mh = mapData.main.length
 
@@ -67,40 +63,21 @@ export const importGameData = ({ getItem }: Props): GameData => {
           left: t == 1 && tl != 1,
           right: t == 1 && tr != 1,
         }
-        const items = (mapData.meta[y][x] as string[]).reduce<number[]>(
-          (acc, m) => {
-            const [t, v] = m.split('.')
-            if (t === 'item') {
-              acc.push(parseInt(v))
-            }
-            return acc
-          },
-          [],
-        )
         const c = new MapCell(
+          ec,
           {
             main: [mapData.main[y][x][0], mapData.main[y][x][1]],
             under: [mapData.under[y][x][0], mapData.under[y][x][1]],
             overlay: [mapData.overlay[y][x][0], mapData.overlay[y][x][1]],
-            overlayAnime:
-              items.length > 0
-                ? [0, 2]
-                : [
-                    mapData.overlayAnime[y][x][0],
-                    mapData.overlayAnime[y][x][1],
-                  ],
+            overlayAnime: [
+              mapData.overlayAnime[y][x][0],
+              mapData.overlayAnime[y][x][1],
+            ],
           },
           t,
           col,
           mapData.meta[y][x],
         )
-        if (items.length > 0) {
-          c.onAction.push((e) => {
-            c.onAction = []
-            e.target.v['overlayAnime'] = [0, 0]
-            getItem(e)
-          })
-        }
         return c
       },
       [-100, 0],

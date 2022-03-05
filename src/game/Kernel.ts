@@ -5,6 +5,7 @@ import GameMap from './lib/GameMap'
 import CollisionMap from './lib/CollisionMap'
 
 import MapCell from './MapCell'
+import { GameEventContext } from './context'
 
 const heatCount = 8
 const popResume = 96
@@ -55,6 +56,7 @@ class KernelState {
 }
 
 class Kernel {
+  private readonly eventCtx: GameEventContext
   private readonly anime: {
     idle: Anime
     squat: Anime
@@ -64,10 +66,17 @@ class Kernel {
   private readonly trans: Sprite
   private readonly explosion: Sprite
   private readonly headUpText: Anime
+  private readonly item: Sprite
   private readonly ellasticCoeff: number
   private currentAnime: Anime
   private state0: KernelState
   private interacting: boolean
+  private earnedItem?: {
+    id: number
+    effectCnt: number
+  }
+
+  readonly effectItem: (id: number) => void
 
   onInteract?: () => void
 
@@ -76,7 +85,12 @@ class Kernel {
   explosionNum: number
   headUpTextMode: number
 
-  constructor(sprite: HTMLImageElement, state0: InitialKernelState) {
+  constructor(
+    ec: GameEventContext,
+    sprite: HTMLImageElement,
+    state0: InitialKernelState,
+  ) {
+    this.eventCtx = ec
     this.ellasticCoeff = 0.5
 
     this.anime = {
@@ -119,6 +133,10 @@ class Kernel {
       patterns: 2,
       countDiv: 8,
     })
+    this.item = new Sprite(sprite, {
+      topLeft: [512, 0],
+      sz: [12, 12],
+    })
 
     this.state0 = new KernelState(state0)
     this.state = this.state0.clone()
@@ -127,6 +145,14 @@ class Kernel {
     this.explosionNum = 0
     this.headUpTextMode = 0
     this.interacting = false
+
+    const self = this
+    this.effectItem = (id: number): void => {
+      self.earnedItem = {
+        id: id,
+        effectCnt: 0,
+      }
+    }
   }
 
   reset() {
@@ -286,10 +312,17 @@ class Kernel {
         Math.floor(this.state.pos[1] / 16),
       ]
       const cell = gameMap.at(mpBottom0)
-      cell.onAction.forEach((h) => h({ target: cell }))
+      cell.onAction.forEach((h) => h({ ...this.eventCtx, target: cell }))
       this.onInteract && this.onInteract()
     }
     this.interacting = interacting
+
+    if (this.earnedItem) {
+      this.earnedItem.effectCnt += 1
+      if (this.earnedItem.effectCnt > 12) {
+        this.earnedItem = undefined
+      }
+    }
   }
 
   draw(ctx: CanvasRenderingContext2D, offset: Vec2, scale: number) {
@@ -348,6 +381,20 @@ class Kernel {
         scale,
         this.headUpTextMode - 1,
         0,
+      )
+    }
+    if (this.earnedItem) {
+      const opacity = 1 - Math.ceil((this.earnedItem.effectCnt - 1) / 3) / 4
+      this.item.draw(
+        ctx,
+        [
+          offset[0] + this.state.pos[0],
+          offset[1] + this.state.pos[1] - 12 - this.earnedItem.effectCnt,
+        ],
+        scale,
+        this.earnedItem.id,
+        0,
+        { opacity },
       )
     }
   }

@@ -1,5 +1,9 @@
 import { Vec2 } from './vec'
 
+export type DrawOptions = {
+  opacity?: number
+}
+
 export interface Drawer {
   draw(
     ctx: CanvasRenderingContext2D,
@@ -7,6 +11,7 @@ export interface Drawer {
     scale: number,
     mode1: number,
     mode2: number,
+    opt?: DrawOptions,
   ): void
   sz(): Vec2
 }
@@ -35,7 +40,11 @@ class Sprite implements Drawer {
     scale: number,
     mode1: number,
     mode2: number,
+    opt?: DrawOptions,
   ) {
+    if (opt?.opacity !== undefined) {
+      ctx.globalAlpha = opt.opacity
+    }
     ctx.drawImage(
       this.sprite,
       this.prop.topLeft[0] + mode1 * this.prop.sz[0],
@@ -47,6 +56,9 @@ class Sprite implements Drawer {
       this.prop.sz[0] * scale * this.prop.baseScale,
       this.prop.sz[1] * scale * this.prop.baseScale,
     )
+    if (opt?.opacity !== undefined) {
+      ctx.globalAlpha = 1
+    }
   }
 
   sz() {

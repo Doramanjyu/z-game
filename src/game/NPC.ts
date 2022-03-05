@@ -1,7 +1,8 @@
 import Anime from './lib/Anime'
 import { Vec2 } from './lib/vec'
 
-import { GameEventTarget } from './events'
+import { GameEventContext } from './context'
+import { GameEventTarget } from './event'
 
 export class NPCState {
   pos: Vec2
@@ -21,14 +22,16 @@ export type InitialNPCState = {
 class NPC<State extends NPCState = NPCState> extends GameEventTarget<
   NPC<State>
 > {
+  private readonly eventCtx: GameEventContext
   private readonly anime: Anime
   private readonly headUpText: Anime
   state: State
   active: boolean
   hasDialog: boolean
 
-  constructor(anime: Anime, headUpText: Anime, s: State) {
+  constructor(ec: GameEventContext, anime: Anime, headUpText: Anime, s: State) {
     super()
+    this.eventCtx = ec
     this.anime = anime
     this.headUpText = headUpText
     this.state = s
@@ -44,7 +47,7 @@ class NPC<State extends NPCState = NPCState> extends GameEventTarget<
       Math.abs(p[1] - this.state.pos[1]) < sz[1] / 2
 
     if (!activePrev && this.active && this.onArrive) {
-      this.onArrive.forEach((h) => h({ target: this }))
+      this.onArrive.forEach((h) => h({ ...this.eventCtx, target: this }))
     }
 
     this.anime.tick()
@@ -53,7 +56,7 @@ class NPC<State extends NPCState = NPCState> extends GameEventTarget<
 
   interact() {
     if (this.active && this.onAction.length) {
-      this.onAction.forEach((h) => h({ target: this }))
+      this.onAction.forEach((h) => h({ ...this.eventCtx, target: this }))
     }
   }
 
