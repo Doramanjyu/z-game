@@ -147,6 +147,9 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
             e.preventDefault()
           }
           break
+        case 'Delete':
+          gameData.m.at(cursor).v[layer] = [0, 0]
+          incrementVersion()
       }
     },
     [cursor, clipboard],
