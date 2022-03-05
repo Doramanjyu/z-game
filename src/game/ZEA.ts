@@ -2,9 +2,16 @@ import Anime from './lib/Anime'
 
 import NPC, { NPCState, InitialNPCState } from './NPC'
 
+import { GameEventContext } from './context'
+
 class ZEA extends NPC {
-  constructor(sprite: HTMLImageElement, state0: InitialNPCState) {
+  constructor(
+    ec: GameEventContext,
+    sprite: HTMLImageElement,
+    state0: InitialNPCState,
+  ) {
     super(
+      ec,
       new Anime(sprite, {
         topLeft: [0, 72],
         sz: [24, 24],

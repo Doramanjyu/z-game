@@ -16,8 +16,19 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
   const gameData = useMemo(
     () =>
       importGameData({
-        getItem: () => {
-          console.log('item event fired')
+        updateItems: () => {
+          console.error('unexpected call of updateItems')
+        },
+        dialogManager: {
+          showMessage: () => {
+            console.error('unexpected call of showMessage')
+          },
+          hideMessage: () => {
+            console.error('unexpected call of hideMessage')
+          },
+        },
+        effectItem: () => {
+          console.error('unexpected call of effectItem')
         },
       }),
     [],

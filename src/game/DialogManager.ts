@@ -2,7 +2,12 @@ type DialogOption = {
   timeout?: number
 }
 
-class DialogManager {
+export interface DialogManagerInterface {
+  showMessage(text: string, opt?: DialogOption): void
+  hideMessage(): void
+}
+
+class DialogManager implements DialogManagerInterface {
   readonly messageBox: HTMLDivElement
 
   private timeoutTimer?: ReturnType<typeof setTimeout>

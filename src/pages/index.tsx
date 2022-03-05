@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import { css, keyframes } from '@emotion/react'
 
-import Game from '@doramanjyu/z-game/game'
+import Game, { ItemUI } from '@doramanjyu/z-game/game'
 
 import frame from '@doramanjyu/z-game/images/frame.svg'
 import frameInner from '@doramanjyu/z-game/images/frame_inner.svg'
@@ -11,12 +11,23 @@ const IndexPage = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const spriteRef = useRef<HTMLImageElement>(null)
   const messageRef = useRef<HTMLDivElement>(null)
+  const itemUIRef = useRef<ItemUI>(null)
 
   useEffect(() => {
-    if (!canvasRef.current || !spriteRef.current || !messageRef.current) {
+    if (
+      !canvasRef.current ||
+      !spriteRef.current ||
+      !messageRef.current ||
+      !itemUIRef.current
+    ) {
       return
     }
-    const g = new Game(canvasRef.current, spriteRef.current, messageRef.current)
+    const g = new Game(
+      canvasRef.current,
+      spriteRef.current,
+      messageRef.current,
+      itemUIRef.current.updateItems,
+    )
     g.start()
     const keydown = g.keydown.bind(g)
     const keyup = g.keyup.bind(g)
@@ -134,36 +145,46 @@ const IndexPage = () => {
             left: '74px',
             top: '188px',
           }}
-        />
-        <div
-          ref={messageRef}
-          style={{
-            boxSizing: 'border-box',
-            backgroundColor: 'rgba(255, 255, 255, 0.8)',
-            borderWidth: '2px',
-            borderStyle: 'dotted',
-            borderRadius: '0 20px 20px 20px',
-            borderColor: 'white',
-            position: 'absolute',
-            width: '540px',
-            height: '85px',
-            left: '124px',
-            bottom: '34px',
-            padding: '10px 20px',
-            fontSize: '20px',
-            lineHeight: '25px',
-            color: '#600',
-            display: 'none',
-            animationIterationCount: 1,
-            animationFillMode: 'forwards',
-          }}
-          css={css`
-            animation: ${bounceIn} 0.8s ease;
-            &.hide {
-              animation: ${bounceOut} 0.5s ease;
-            }
-          `}
-        ></div>
+        >
+          <ItemUI
+            ref={itemUIRef}
+            sprite={sprite}
+            scale={3}
+            style={{
+              position: 'absolute',
+              top: '16px',
+            }}
+          />
+          <div
+            ref={messageRef}
+            style={{
+              boxSizing: 'border-box',
+              backgroundColor: 'rgba(255, 255, 255, 0.8)',
+              borderWidth: '2px',
+              borderStyle: 'dotted',
+              borderRadius: '0 20px 20px 20px',
+              borderColor: 'white',
+              position: 'absolute',
+              width: '540px',
+              height: '85px',
+              left: '50px',
+              bottom: '30px',
+              padding: '10px 20px',
+              fontSize: '20px',
+              lineHeight: '25px',
+              color: '#600',
+              display: 'none',
+              animationIterationCount: 1,
+              animationFillMode: 'forwards',
+            }}
+            css={css`
+              animation: ${bounceIn} 0.8s ease;
+              &.hide {
+                animation: ${bounceOut} 0.5s ease;
+              }
+            `}
+          />
+        </div>
       </div>
       <img
         ref={spriteRef}

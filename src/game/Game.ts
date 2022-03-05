@@ -6,9 +6,11 @@ import StateMachine, { State, nopState } from './lib/StateMachine'
 
 import Kernel from './Kernel'
 import ZEA from './ZEA'
-import { EventHandler } from './events'
+import { EventHandler } from './event'
 import DialogManager from './DialogManager'
 import GameData, { importGameData } from './GameData'
+import { ItemUpdater } from './item'
+import { GameEventContext } from './context'
 
 class Game {
   readonly canvas: HTMLCanvasElement
@@ -41,6 +43,7 @@ class Game {
     canvas: HTMLCanvasElement,
     sprite: HTMLImageElement,
     messageBox: HTMLDivElement,
+    updateItems: (updater: ItemUpdater) => void,
   ) {
     const self = this
     const ctx = canvas.getContext('2d')
@@ -52,21 +55,32 @@ class Game {
     this.ctx.imageSmoothingEnabled = false
     this.sprite = sprite
 
+    updateItems(() => [])
     this.dm = new DialogManager(messageBox)
-    this.game = importGameData({
-      getItem: () => {
-        self.dm.showMessage('Yum Yum', { timeout: 2000 })
+
+    let effectItem: (id: number) => void = () => {
+      console.error('item effect not ready')
+    }
+    const eventCtx: GameEventContext = {
+      updateItems,
+      dialogManager: this.dm,
+      effectItem: (id: number) => {
+        effectItem && effectItem(id)
       },
-    })
+    }
+
+    this.game = importGameData(eventCtx)
 
     this.scale = 3
     this.origin = this.game.init.kernel
     this.viewpoint = [0, 0]
     this.debugView = false
 
-    this.kernel = new Kernel(this.sprite, {
+    this.kernel = new Kernel(eventCtx, this.sprite, {
       pos: this.origin,
     })
+    effectItem = this.kernel.effectItem
+
     this.bgUnder = new Sprite(this.sprite, {
       topLeft: [512, 512],
       sz: [16, 16],
@@ -89,7 +103,7 @@ class Game {
       topLeft: [1024 - 16, 0],
       sz: [16, 1024],
     })
-    this.zea = new ZEA(this.sprite, {
+    this.zea = new ZEA(eventCtx, this.sprite, {
       pos: this.game.spawn.ZEA,
       mode: 1,
     })
@@ -164,7 +178,6 @@ class Game {
         this.viewpoint[1] += (diffY + 16 - this.viewpoint[1]) / 4
       }
       const widthBlocks = Math.floor(640 / (16 * this.scale)) * 16 * this.scale
-      console.log(this.origin[0])
       const diffX =
         (Math.round(((state.pos[0] - 320 / this.scale) * 3) / widthBlocks) *
           widthBlocks) /
