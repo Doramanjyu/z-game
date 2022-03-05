@@ -1,11 +1,13 @@
 import React, { useEffect, useRef } from 'react'
-import { css, keyframes } from '@emotion/react'
+import { css } from '@emotion/react'
 
 import Game, { ItemUI } from '@doramanjyu/z-game/game'
 
 import frame from '@doramanjyu/z-game/images/frame.svg'
 import frameInner from '@doramanjyu/z-game/images/frame_inner.svg'
 import sprite from '@doramanjyu/z-game/images/sprite.png'
+
+import '@doramanjyu/z-game/css/message.css'
 
 const IndexPage = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -178,9 +180,9 @@ const IndexPage = () => {
               animationFillMode: 'forwards',
             }}
             css={css`
-              animation: ${bounceIn} 0.8s ease;
+              animation: bounceIn 0.8s ease;
               &.hide {
-                animation: ${bounceOut} 0.5s ease;
+                animation: bounceOut 0.5s ease;
               }
             `}
           />
@@ -219,36 +221,5 @@ const IndexPage = () => {
     </main>
   )
 }
-
-const bounceIn = keyframes`
-  from, 20%, 46%, 80%, to {
-    transform: translate3d(0,0,0);
-    visibility: visible;
-  }
-  40%, 42% {
-    transform: translate3d(0, -20px, 0);
-  }
-  70% {
-    transform: translate3d(0, -8px, 0);
-  }
-  90% {
-    transform: translate3d(0,-2px,0);
-  }
-`
-
-const bounceOut = keyframes`
-  from, 50% {
-    transform: translate3d(0,0,0);
-  }
-  20% {
-    transform: translate3d(0,-2px,0);
-  }
-  70% {
-    transform: translate3d(0,-5px,0);
-  }
-  to {
-    visibility: hidden;
-  }
-`
 
 export default IndexPage
