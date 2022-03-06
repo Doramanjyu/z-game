@@ -159,6 +159,14 @@ class Kernel {
     this.state = this.state0.clone()
   }
 
+  mapPos() {
+    const mp: Vec2 = [
+      Math.round((this.state.pos[0] - 2) / 16),
+      Math.floor(this.state.pos[1] / 16),
+    ]
+    return mp
+  }
+
   tick(cmd: KernelCommand, gameMap: GameMap<MapCell>, colMap: CollisionMap) {
     if (cmd.left && this.state.onGround) {
       this.state.jumpPow[0]--
@@ -214,10 +222,7 @@ class Kernel {
       }
     }
 
-    const mpBottom: Vec2 = [
-      Math.round((this.state.pos[0] - 2) / 16),
-      Math.floor(this.state.pos[1] / 16),
-    ]
+    const mpBottom = this.mapPos()
     const col = colMap.check(
       [this.state.pos[0] + 6, this.state.pos[1]],
       [

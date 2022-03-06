@@ -23,6 +23,7 @@ class MapCell extends GameEventTarget<MapCell> implements Cell {
   state: {
     itemsEarned: number
   }
+  gameover: boolean
 
   constructor(
     ec: GameEventContext,
@@ -41,6 +42,8 @@ class MapCell extends GameEventTarget<MapCell> implements Cell {
     this.state = {
       itemsEarned: 0,
     }
+
+    this.gameover = meta.some((v) => v === 'gameover')
 
     const items = meta.reduce<number[]>((acc, m) => {
       const [t, v] = m.split('.')

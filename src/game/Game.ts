@@ -163,11 +163,11 @@ class Game {
       this.kernel.tick(kernelCmd, this.game.m, this.collisionMap)
       this.bgOverlayAnime.tick()
 
-      const state = this.kernel.state
-      if (state.pos[1] > 16 * 18) {
+      if (this.game.m.at(this.kernel.mapPos()).gameover) {
         this.kernel.reset()
       }
 
+      const state = this.kernel.state
       this.zea.tick(state.pos)
 
       const viewControl = (
