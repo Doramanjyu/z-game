@@ -1,7 +1,7 @@
 import GameMap from './lib/GameMap'
 import { Vec2 } from './lib/vec'
 
-import MapCell from './MapCell'
+import MapCell, { CellType } from './MapCell'
 import { GameEventContext } from './context'
 
 import mapData from './data/map.yaml'
@@ -58,12 +58,14 @@ export const importGameData = (ec: GameEventContext): GameData => {
         const tt = y - 1 < 0 ? 0 : mapData.type[y - 1][x]
         const tb = y + 1 > mh - 1 ? mh - 1 : mapData.type[y + 1][x]
         const col = {
-          top: t == 2 || t == 3 || (t == 1 && tt != 1),
-          bottom: t == 1 && tb != 1,
-          left: t == 1 && tl != 1,
-          right: t == 1 && tr != 1,
+          top:
+            t === CellType.Heat ||
+            t === CellType.Step ||
+            (t === CellType.Occupied && tt !== CellType.Occupied),
+          bottom: t === CellType.Occupied && tb !== CellType.Occupied,
+          left: t === CellType.Occupied && tl !== CellType.Occupied,
+          right: t === CellType.Occupied && tr !== CellType.Occupied,
         }
-        const metaOverride = y === mh - 1 ? ['gameover'] : []
         const c = new MapCell(
           ec,
           {
@@ -75,9 +77,9 @@ export const importGameData = (ec: GameEventContext): GameData => {
               mapData.overlayAnime[y][x][1],
             ],
           },
-          t,
+          y === mh - 1 ? CellType.GameOver : t,
           col,
-          [...mapData.meta[y][x], ...metaOverride],
+          mapData.meta[y][x],
         )
         return c
       },

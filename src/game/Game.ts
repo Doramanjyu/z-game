@@ -9,6 +9,7 @@ import ZEA from './ZEA'
 import { EventHandler } from './event'
 import DialogManager from './DialogManager'
 import GameData, { importGameData } from './GameData'
+import { CellType } from './MapCell'
 import { ItemUpdater } from './item'
 import { GameEventContext } from './context'
 
@@ -163,7 +164,7 @@ class Game {
       this.kernel.tick(kernelCmd, this.game.m, this.collisionMap)
       this.bgOverlayAnime.tick()
 
-      if (this.game.m.at(this.kernel.mapPos()).gameover) {
+      if (this.game.m.at(this.kernel.mapPos()).typ === CellType.GameOver) {
         this.kernel.reset()
       }
 
