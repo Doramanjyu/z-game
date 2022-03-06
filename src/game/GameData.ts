@@ -115,7 +115,7 @@ export const exportGameData = (g: GameData): Blob => {
   const extractLayer = (layer: string) =>
     [...Array(g.m.sz[1])].map((_, j) =>
       [...Array(g.m.sz[0])].map((_, i) =>
-        JSON.stringify(g.m.at([i, j]).appearance(layer)),
+        JSON.stringify(g.m.at([i, j]).v[layer]),
       ),
     )
   const extractMeta = () =>
