@@ -63,6 +63,7 @@ export const importGameData = (ec: GameEventContext): GameData => {
           left: t == 1 && tl != 1,
           right: t == 1 && tr != 1,
         }
+        const metaOverride = y === mh - 1 ? ['gameover'] : []
         const c = new MapCell(
           ec,
           {
@@ -76,7 +77,7 @@ export const importGameData = (ec: GameEventContext): GameData => {
           },
           t,
           col,
-          mapData.meta[y][x],
+          [...mapData.meta[y][x], ...metaOverride],
         )
         return c
       },
