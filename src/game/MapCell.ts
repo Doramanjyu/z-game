@@ -12,10 +12,18 @@ type CollisionDir = {
   right: boolean
 }
 
+export const enum CellType {
+  None = 0,
+  Occupied = 1,
+  Heat = 2,
+  Step = 3,
+  GameOver = 4,
+}
+
 class MapCell extends GameEventTarget<MapCell> implements Cell {
   private readonly eventCtx: GameEventContext
   v: { [layer: string]: Appearance }
-  typ: number
+  typ: CellType
   colDir: CollisionDir
   meta: string[]
   override: { [layer: string]: () => Appearance | null }
@@ -23,12 +31,11 @@ class MapCell extends GameEventTarget<MapCell> implements Cell {
   state: {
     itemsEarned: number
   }
-  gameover: boolean
 
   constructor(
     ec: GameEventContext,
     v: { [layer: string]: Appearance },
-    typ: number,
+    typ: CellType,
     col: CollisionDir,
     meta: string[],
   ) {
@@ -42,8 +49,6 @@ class MapCell extends GameEventTarget<MapCell> implements Cell {
     this.state = {
       itemsEarned: 0,
     }
-
-    this.gameover = meta.some((v) => v === 'gameover')
 
     const items = meta.reduce<number[]>((acc, m) => {
       const [t, v] = m.split('.')
@@ -110,7 +115,7 @@ class MapCell extends GameEventTarget<MapCell> implements Cell {
   }
 
   heat(): boolean {
-    return this.typ == 2
+    return this.typ == CellType.Heat
   }
 
   collision(): Polygon[] {
@@ -167,7 +172,7 @@ class MapCell extends GameEventTarget<MapCell> implements Cell {
     if (this.state.itemsEarned < this.numItems) {
       return 1
     }
-    if (this.typ == 2) {
+    if (this.typ == CellType.Heat) {
       return 2
     }
     return 0

@@ -5,7 +5,7 @@ import { css } from '@emotion/react'
 import GameMap from './lib/GameMap'
 import { Vec2 } from './lib/vec'
 
-import MapCell from './MapCell'
+import MapCell, { CellType } from './MapCell'
 import { importGameData, exportGameData } from './GameData'
 
 type Props = {
@@ -437,10 +437,11 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
                 onChange={(e) => updateCellType(parseInt(e.target.value))}
                 value={cellType}
               >
-                <option value="0">none</option>
-                <option value="1">occupied</option>
-                <option value="2">heat</option>
-                <option value="3">step</option>
+                <option value={CellType.None}>none</option>
+                <option value={CellType.Occupied}>occupied</option>
+                <option value={CellType.Heat}>heat</option>
+                <option value={CellType.Step}>step</option>
+                <option value={CellType.GameOver}>game over</option>
               </select>
             </div>
             <div>
