@@ -277,10 +277,10 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
               const cell = gameData.m.at([i, j])
               const meta = cell.meta
               const typ = cell.typ
-              const main = cell.appearance('main')
-              const under = cell.appearance('under')
-              const overlay = cell.appearance('overlay')
-              const overlayAnime = cell.appearance('overlayAnime')
+              const main = cell.v['main']
+              const under = cell.v['under']
+              const overlay = cell.v['overlay']
+              const overlayAnime = cell.v['overlayAnime']
               const [mx, my] = [main[0] * 16, 512 + main[1] * 16]
               const [ux, uy] = [512 + under[0] * 16, 512 + under[1] * 16]
               const [ox, oy] = [overlay[0] * 16, 896 + overlay[1] * 16]
