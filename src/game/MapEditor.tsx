@@ -90,6 +90,16 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
     setCursor(p)
     updateUI(p)
   }
+  const updateCursorRelative = (p: Vec2) => {
+    setCursor((c) => {
+      const c2: Vec2 = [
+        Math.min(gameData.m.sz[0] - 1, Math.max(0, c[0] + p[0])),
+        Math.min(gameData.m.sz[1] - 1, Math.max(0, c[1] + p[1])),
+      ]
+      updateUI(c2)
+      return c2
+    })
+  }
 
   const onSave = () => {
     const b = exportGameData(gameData)
@@ -180,6 +190,19 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
           }
           updateUI(cursor)
           incrementVersion()
+          break
+        case 'ArrowUp':
+          updateCursorRelative([0, -1])
+          break
+        case 'ArrowDown':
+          updateCursorRelative([0, 1])
+          break
+        case 'ArrowLeft':
+          updateCursorRelative([-1, 0])
+          break
+        case 'ArrowRight':
+          updateCursorRelative([1, 0])
+          break
       }
     },
     [cursor, clipboard],
