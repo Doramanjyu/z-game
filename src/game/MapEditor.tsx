@@ -48,7 +48,7 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
   const [cellType, setCellType] = useState(0)
   const [meta, setMeta] = useState('')
   const [scale, setScale] = useState(2)
-  const [version, setVersion] = useState(0)
+  const [_version, setVersion] = useState(0)
   const [layer, setLayer] = useState('main')
 
   const incrementVersion = () => setVersion((v) => v + 1)
