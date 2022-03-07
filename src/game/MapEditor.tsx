@@ -13,33 +13,42 @@ type Props = {
 }
 
 const MapEditor: React.FC<Props> = ({ sprite }) => {
-  const gameData = useMemo(
-    () =>
-      importGameData({
-        updateItems: () => {
-          console.error('unexpected call of updateItems')
-        },
-        dialogManager: {
-          showMessage: () => {
-            console.error('unexpected call of showMessage')
-          },
-          hideMessage: () => {
-            console.error('unexpected call of hideMessage')
-          },
-        },
-        effectItem: () => {
-          console.error('unexpected call of effectItem')
-        },
-      }),
+  const eventCtx = {
+    updateItems: () => {
+      console.error('unexpected call of updateItems')
+    },
+    dialogManager: {
+      showMessage: () => {
+        console.error('unexpected call of showMessage')
+      },
+      hideMessage: () => {
+        console.error('unexpected call of hideMessage')
+      },
+    },
+    effectItem: () => {
+      console.error('unexpected call of effectItem')
+    },
+  }
+  const emptyCell = new MapCell(
+    eventCtx,
+    {
+      main: [0, 0],
+      under: [0, 0],
+      overlay: [0, 0],
+      overlayAnime: [0, 0],
+    },
+    CellType.None,
+    { top: false, bottom: false, left: false, right: false },
     [],
   )
+  const gameData = useMemo(() => importGameData(eventCtx), [])
   const [clipboard, setClipboard] = useState<MapCell | null>()
   const [cursor, setCursor] = useState<Vec2>([0, 0])
   const [value, setValue] = useState<Vec2>([0, 0])
   const [cellType, setCellType] = useState(0)
   const [meta, setMeta] = useState('')
   const [scale, setScale] = useState(2)
-  const [_, setVersion] = useState(0)
+  const [_version, setVersion] = useState(0)
   const [layer, setLayer] = useState('main')
 
   const incrementVersion = () => setVersion((v) => v + 1)
@@ -72,11 +81,14 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
     setLayer(l)
     setValue(gameData.m.at(cursor).v[l])
   }
-  const updateCursor = (p: Vec2) => {
-    setCursor(p)
+  const updateUI = (p: Vec2) => {
     setValue(gameData.m.at(p).v[layer])
     setCellType(gameData.m.at(p).typ)
     setMeta(gameData.m.at(p).meta.join(' '))
+  }
+  const updateCursor = (p: Vec2) => {
+    setCursor(p)
+    updateUI(p)
   }
 
   const onSave = () => {
@@ -112,6 +124,7 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
       [mPrev.e[0], sz[1]],
       mPrev.screenSize,
     )
+    updateUI(cursor)
     incrementVersion()
   }
   const onCommand: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
@@ -149,6 +162,7 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
             } else {
               gameData.m.at(cursor).v[layer] = [...clipboard.v[layer]]
             }
+            updateUI(cursor)
             incrementVersion()
           }
           break
@@ -159,7 +173,12 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
           }
           break
         case 'Delete':
-          gameData.m.at(cursor).v[layer] = [0, 0]
+          if (e.shiftKey) {
+            gameData.m.set(cursor, emptyCell.clone())
+          } else {
+            gameData.m.at(cursor).v[layer] = [0, 0]
+          }
+          updateUI(cursor)
           incrementVersion()
       }
     },
