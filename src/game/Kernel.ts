@@ -276,7 +276,9 @@ class Kernel {
       if (this.state.popped > 0) {
         this.state.popped -= dec
         this.state.heat = 0
-        if (this.state.popped < 0) {
+        if (dec > 1 && this.state.popped < 2) {
+          this.state.popped = 2
+        } else if (this.state.popped < 0) {
           this.state.popped = 0
         }
       }
