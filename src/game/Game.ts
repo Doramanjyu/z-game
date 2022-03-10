@@ -6,6 +6,7 @@ import StateMachine, { State, nopState } from './lib/StateMachine'
 
 import Kernel from './Kernel'
 import ZEA from './ZEA'
+import Nggis from './Nggis'
 import { EventHandler } from './event'
 import DialogManager from './DialogManager'
 import GameData, { importGameData } from './GameData'
@@ -33,6 +34,7 @@ class Game {
   readonly kernel: Kernel
   readonly collisionMap: CollisionMap
   readonly zea: ZEA
+  readonly nggis: Nggis
 
   command: Map<string, boolean>
 
@@ -108,6 +110,10 @@ class Game {
       pos: this.game.spawn.ZEA,
       mode: 1,
     })
+    this.nggis = new Nggis(eventCtx, this.sprite, {
+      pos: this.game.spawn.Nggis,
+      mode: 0,
+    })
     const zDialogs = ['Hemlo', '...']
     let zTalkCnt = 0
     const [zTalk, zTalkHandler] = this.newEventState<ZEA>({
@@ -170,6 +176,7 @@ class Game {
 
       const state = this.kernel.state
       this.zea.tick(state.pos)
+      this.nggis.tick(state.pos)
 
       const viewControl = (
         vp: number,
@@ -209,6 +216,7 @@ class Game {
       this.game.m.draw(this.ctx, this.bgUnder, offset, this.scale, 'under')
       this.game.m.draw(this.ctx, this.bg, offset, this.scale, 'main')
       this.zea.draw(this.ctx, offset, this.scale)
+      this.nggis.draw(this.ctx, offset, this.scale)
 
       this.kernel.draw(this.ctx, offset, this.scale)
       this.game.m.draw(this.ctx, this.bgOverlay, offset, this.scale, 'overlay')
