@@ -67,7 +67,7 @@ class MapCell extends GameEventTarget<MapCell> implements Cell {
         return null
       }
       this.onAction.push((e) => {
-        if (self.state.itemsEarned < self.numItems) {
+        if (e && self.state.itemsEarned < self.numItems) {
           e.updateItems((itemsPrev) => {
             const id = items[self.state.itemsEarned]
             e.effectItem(id)

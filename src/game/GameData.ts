@@ -32,7 +32,7 @@ export const importGameData = (ec: GameEventContext): GameData => {
                 out.init = { kernel: [i * 16, j * 16] }
                 break
               case 'spawn':
-                out.spawn[n[1]] = [i * 16, j * 16]
+                out.spawn[n[1]] = [i * 16 + 8, j * 16]
                 break
             }
             return out

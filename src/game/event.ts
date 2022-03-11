@@ -1,6 +1,6 @@
 import { GameEventContext } from './context'
 
-export type EventHandler<T> = (e: GameEvent<T>) => void
+export type EventHandler<T> = (e?: GameEvent<T>) => void
 
 export class GameEventTarget<T> {
   onArrive: EventHandler<T>[]
