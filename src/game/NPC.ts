@@ -19,17 +19,29 @@ export type InitialNPCState = {
   mode?: number
 }
 
+type Props = {
+  offset?: Vec2
+  textOffset?: Vec2
+}
+
 class NPC<State extends NPCState = NPCState> extends GameEventTarget<
   NPC<State>
 > {
   private readonly eventCtx: GameEventContext
   private readonly anime: Anime
   private readonly headUpText: Anime
+  private readonly props: Required<Props>
   state: State
   active: boolean
   hasDialog: boolean
 
-  constructor(ec: GameEventContext, anime: Anime, headUpText: Anime, s: State) {
+  constructor(
+    ec: GameEventContext,
+    anime: Anime,
+    headUpText: Anime,
+    s: State,
+    props?: Props,
+  ) {
     super()
     this.eventCtx = ec
     this.anime = anime
@@ -37,6 +49,11 @@ class NPC<State extends NPCState = NPCState> extends GameEventTarget<
     this.state = s
     this.active = false
     this.hasDialog = false
+    this.props = {
+      offset: [0, 0],
+      textOffset: [0, 0],
+      ...props,
+    }
   }
 
   tick(p: Vec2) {
@@ -65,19 +82,23 @@ class NPC<State extends NPCState = NPCState> extends GameEventTarget<
     this.anime.draw(
       ctx,
       [
-        offset[0] + this.state.pos[0] - sz[0] / 2,
-        offset[1] + this.state.pos[1] - sz[1] + 6,
+        offset[0] + this.props.offset[0] + this.state.pos[0] - sz[0] / 2,
+        offset[1] + this.props.offset[1] + this.state.pos[1] - sz[1] + 6,
       ],
       scale,
       this.state.mode,
       0,
     )
     if (this.hasDialog) {
+      const szText = this.headUpText.sz()
       this.headUpText.draw(
         ctx,
         [
-          offset[0] + this.state.pos[0] - sz[0] / 2,
-          offset[1] + this.state.pos[1] - sz[1] + 4,
+          offset[0] +
+            this.props.textOffset[0] +
+            this.state.pos[0] -
+            szText[0] / 2,
+          offset[1] + this.props.textOffset[1] + this.state.pos[1] - sz[1],
         ],
         scale,
         2 + (this.active ? 1 : 0),

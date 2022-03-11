@@ -42,6 +42,14 @@ class StateMachine {
     this.states.forEach((v, s) => s.reset && s.reset())
     this.set(this.initial)
   }
+
+  handler(s: State) {
+    return () => {
+      if (this.current === s) {
+        this.tick()
+      }
+    }
+  }
 }
 
 export type State = {

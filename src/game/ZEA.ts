@@ -30,6 +30,9 @@ class ZEA extends NPC {
         countDiv: 8,
       }),
       new NPCState(state0),
+      {
+        textOffset: [0, 4],
+      },
     )
   }
 }

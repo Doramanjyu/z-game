@@ -27,6 +27,10 @@ class Nggis extends NPC {
         countDiv: 8,
       }),
       new NPCState(state0),
+      {
+        offset: [0, -16],
+        textOffset: [0, -19],
+      },
     )
   }
 }

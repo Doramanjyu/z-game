@@ -2,12 +2,11 @@ import Sprite from './lib/Sprite'
 import Anime from './lib/Anime'
 import CollisionMap from './lib/CollisionMap'
 import { Vec2 } from './lib/vec'
-import StateMachine, { State, nopState } from './lib/StateMachine'
+import StateMachine, { nopState } from './lib/StateMachine'
 
 import Kernel from './Kernel'
 import ZEA from './ZEA'
 import Nggis from './Nggis'
-import { EventHandler } from './event'
 import DialogManager from './DialogManager'
 import GameData, { importGameData } from './GameData'
 import { CellType } from './MapCell'
@@ -22,7 +21,6 @@ class Game {
 
   readonly scale: number
 
-  readonly sm: StateMachine
   readonly dm: DialogManager
 
   readonly game: GameData
@@ -106,17 +104,14 @@ class Game {
       topLeft: [1024 - 16, 0],
       sz: [16, 1024],
     })
+
     this.zea = new ZEA(eventCtx, this.sprite, {
       pos: this.game.spawn.ZEA,
       mode: 1,
     })
-    this.nggis = new Nggis(eventCtx, this.sprite, {
-      pos: this.game.spawn.Nggis,
-      mode: 0,
-    })
     const zDialogs = ['Hemlo', '...']
     let zTalkCnt = 0
-    const [zTalk, zTalkHandler] = this.newEventState<ZEA>({
+    const zTalk = {
       nextStates: { next: nopState },
       tick: () => {
         self.dm.showMessage(zDialogs[zTalkCnt], { timeout: 2000 })
@@ -129,12 +124,36 @@ class Game {
       leave: () => {
         this.zea.hasDialog = false
       },
+    }
+    const smZ = new StateMachine(zTalk)
+    this.zea.onAction.push(smZ.handler(zTalk))
+
+    this.nggis = new Nggis(eventCtx, this.sprite, {
+      pos: this.game.spawn.Nggis,
+      mode: 0,
     })
-    this.zea.onAction.push(zTalkHandler)
-    this.sm = new StateMachine(zTalk)
+    const nggisDialogs = ['Halo']
+    let nggisTalkCnt = 0
+    const nggisTalk = {
+      nextStates: { next: nopState },
+      tick: () => {
+        self.dm.showMessage(nggisDialogs[nggisTalkCnt], { timeout: 2000 })
+        nggisTalkCnt += 1
+        return nggisTalkCnt < nggisDialogs.length ? null : 'next'
+      },
+      enter: () => {
+        this.nggis.hasDialog = true
+      },
+      leave: () => {
+        this.nggis.hasDialog = false
+      },
+    }
+    const smNggis = new StateMachine(nggisTalk)
+    this.nggis.onAction.push(smNggis.handler(nggisTalk))
 
     this.kernel.onInteract = () => {
       this.zea.interact()
+      this.nggis.interact()
     }
 
     this.collisionMap = new CollisionMap(this.game.m, [16, 16])
@@ -257,15 +276,6 @@ class Game {
       this.debugView = !this.debugView
     }
     this.command.delete(e.code)
-  }
-
-  private newEventState<T>(state: State): [State, EventHandler<T>] {
-    const h = () => {
-      if (this.sm.current === state) {
-        this.sm.tick()
-      }
-    }
-    return [state, h]
   }
 }
 

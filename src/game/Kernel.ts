@@ -161,7 +161,7 @@ class Kernel {
 
   mapPos() {
     const mp: Vec2 = [
-      Math.round((this.state.pos[0] - 2) / 16),
+      Math.round((this.state.pos[0] - 8) / 16),
       Math.floor(this.state.pos[1] / 16),
     ]
     return mp
@@ -224,9 +224,9 @@ class Kernel {
 
     const mpBottom = this.mapPos()
     const col = colMap.check(
-      [this.state.pos[0] + 6, this.state.pos[1]],
+      [this.state.pos[0], this.state.pos[1]],
       [
-        this.state.pos[0] + this.state.vel[0] + 6,
+        this.state.pos[0] + this.state.vel[0],
         this.state.pos[1] + this.state.vel[1],
       ],
     )
@@ -315,7 +315,7 @@ class Kernel {
       decreasePopped(10)
 
       const mpBottom0: Vec2 = [
-        Math.round((this.state.pos[0] - 2) / 16),
+        Math.floor(this.state.pos[0] / 16),
         Math.floor(this.state.pos[1] / 16),
       ]
       const cell = gameMap.at(mpBottom0)
@@ -345,7 +345,7 @@ class Kernel {
     if (this.state.onGround) {
       this.shadow.draw(
         ctx,
-        [offset[0] + this.state.pos[0], offset[1] + this.state.pos[1] - 5],
+        [offset[0] + this.state.pos[0] - 6, offset[1] + this.state.pos[1] - 5],
         scale,
         mode * 4 + kernelMode,
         0,
@@ -354,7 +354,7 @@ class Kernel {
     if (this.state.trans > 2) {
       this.currentAnime.draw(
         ctx,
-        [offset[0] + this.state.pos[0], offset[1] + this.state.pos[1] - 6],
+        [offset[0] + this.state.pos[0] - 6, offset[1] + this.state.pos[1] - 6],
         scale,
         mode,
         this.state.orientation,
@@ -363,7 +363,7 @@ class Kernel {
     if (this.state.trans < 8) {
       this.trans.draw(
         ctx,
-        [offset[0] + this.state.pos[0], offset[1] + this.state.pos[1] - 5],
+        [offset[0] + this.state.pos[0] - 6, offset[1] + this.state.pos[1] - 5],
         scale,
         this.state.trans - 2,
         0,
@@ -373,7 +373,7 @@ class Kernel {
       this.explosion.draw(
         ctx,
         [
-          offset[0] + this.explosionPos[0] - 12,
+          offset[0] + this.explosionPos[0] - 18,
           offset[1] + this.explosionPos[1] - 8,
         ],
         scale,
@@ -384,7 +384,10 @@ class Kernel {
     if (this.headUpTextMode > 0) {
       this.headUpText.draw(
         ctx,
-        [offset[0] + this.state.pos[0] - 6, offset[1] + this.state.pos[1] - 15],
+        [
+          offset[0] + this.state.pos[0] - 12,
+          offset[1] + this.state.pos[1] - 15,
+        ],
         scale,
         this.headUpTextMode - 1,
         0,
@@ -395,7 +398,7 @@ class Kernel {
       this.item.draw(
         ctx,
         [
-          offset[0] + this.state.pos[0],
+          offset[0] + this.state.pos[0] - 6,
           offset[1] + this.state.pos[1] - 12 - this.earnedItem.effectCnt,
         ],
         scale,
