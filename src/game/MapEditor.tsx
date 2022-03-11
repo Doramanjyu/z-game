@@ -73,7 +73,7 @@ const MapEditor: React.FC<Props> = ({ sprite }) => {
   }
   const updateMeta = (v: string) => {
     const cell = gameData.m.at(cursor)
-    cell.meta = v.split(' ')
+    cell.meta = v === '' ? [] : v.split(' ')
     setMeta(v)
     incrementVersion()
   }
