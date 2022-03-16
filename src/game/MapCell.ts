@@ -79,7 +79,7 @@ class MapCell extends GameEventTarget<MapCell> implements Cell {
                   itemsPrev.filter((item) => item.id !== id),
                 )
                 if (id === 0) {
-                  e.dialogManager.showMessage('Nyoh, biji', { timeout: 2000 })
+                  e.dialogManager.showMessage('Nyoh, biji', { timeout: 1000 })
                 }
               },
             })

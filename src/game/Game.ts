@@ -2,7 +2,7 @@ import Sprite from './lib/Sprite'
 import Anime from './lib/Anime'
 import CollisionMap from './lib/CollisionMap'
 import { Vec2 } from './lib/vec'
-import StateMachine, { nopState } from './lib/StateMachine'
+import StateMachine from './lib/StateMachine'
 
 import Kernel from './Kernel'
 import ZEA from './ZEA'
@@ -12,6 +12,7 @@ import GameData, { importGameData } from './GameData'
 import { CellType } from './MapCell'
 import { ItemUpdater } from './item'
 import { GameEventContext } from './context'
+import { newDialogState } from './dialogState'
 
 class Game {
   readonly canvas: HTMLCanvasElement
@@ -46,7 +47,6 @@ class Game {
     messageBox: HTMLDivElement,
     updateItems: (updater: ItemUpdater) => void,
   ) {
-    const self = this
     const ctx = canvas.getContext('2d')
     if (!ctx) {
       throw 'failed to get canvas context'
@@ -109,22 +109,7 @@ class Game {
       pos: this.game.spawn.ZEA,
       mode: 1,
     })
-    const zDialogs = ['Hemlo', '...']
-    let zTalkCnt = 0
-    const zTalk = {
-      nextStates: { next: nopState },
-      tick: () => {
-        self.dm.showMessage(zDialogs[zTalkCnt], { timeout: 2000 })
-        zTalkCnt += 1
-        return zTalkCnt < zDialogs.length ? null : 'next'
-      },
-      enter: () => {
-        this.zea.hasDialog = true
-      },
-      leave: () => {
-        this.zea.hasDialog = false
-      },
-    }
+    const zTalk = newDialogState(this.dm, this.zea, ['Hemlo', '...'], 0)
     const smZ = new StateMachine(zTalk)
     this.zea.onAction.push(smZ.handler(zTalk))
 
@@ -132,22 +117,7 @@ class Game {
       pos: this.game.spawn.Nggis,
       mode: 0,
     })
-    const nggisDialogs = ['Halo']
-    let nggisTalkCnt = 0
-    const nggisTalk = {
-      nextStates: { next: nopState },
-      tick: () => {
-        self.dm.showMessage(nggisDialogs[nggisTalkCnt], { timeout: 2000 })
-        nggisTalkCnt += 1
-        return nggisTalkCnt < nggisDialogs.length ? null : 'next'
-      },
-      enter: () => {
-        this.nggis.hasDialog = true
-      },
-      leave: () => {
-        this.nggis.hasDialog = false
-      },
-    }
+    const nggisTalk = newDialogState(this.dm, this.nggis, ['Halo'], 1)
     const smNggis = new StateMachine(nggisTalk)
     this.nggis.onAction.push(smNggis.handler(nggisTalk))
 
@@ -163,7 +133,7 @@ class Game {
   start() {
     const tickTimer = setInterval(this.tick.bind(this), 80)
 
-    this.dm.showMessage("What's poppin?", { timeout: 5000 })
+    this.dm.showMessage("What's poppin?")
 
     this.cleanup = () => {
       clearInterval(tickTimer)
@@ -268,12 +238,19 @@ class Game {
   }
 
   keydown(e: Pick<KeyboardEvent, 'code'>) {
+    if (this.dm.open) {
+      return
+    }
     this.command.set(e.code, true)
   }
 
   keyup(e: Pick<KeyboardEvent, 'code'>) {
     if (this.command.has('F2')) {
       this.debugView = !this.debugView
+    }
+    if (this.dm.open) {
+      this.dm.keyup(e)
+      return
     }
     this.command.delete(e.code)
   }
