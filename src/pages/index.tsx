@@ -184,6 +184,14 @@ const IndexPage = () => {
               &.hide {
                 animation: bounceOut 0.5s ease;
               }
+              span.messageLast:after {
+                content: '▼';
+                animation: cursorBlink 1s linear infinite;
+              }
+              span.message:after {
+                content: '▶';
+                animation: cursorBlink 1s linear infinite;
+              }
             `}
           />
         </div>
